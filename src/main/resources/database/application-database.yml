@@ -1,0 +1,20 @@
+#DB 설정
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    url: jdbc:mariadb://127.0.0.1:3306/ttubeog
+    username: root
+    password: short0720
+
+#JPA 설정
+  jpa:
+    database-platform:
+    hibernate:
+      ddl-auto: create
+
+#배포 할 떄는 open-in-view false 설정
+    open-in-view: false
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
