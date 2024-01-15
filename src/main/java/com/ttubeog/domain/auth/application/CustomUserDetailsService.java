@@ -1,7 +1,7 @@
 package com.ttubeog.domain.auth.application;
 
-import com.ttubeog.domain.user.domain.User;
-import com.ttubeog.domain.user.domain.repository.UserRepository;
+import com.ttubeog.domain.member.domain.Member;
+import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import jakarta.transaction.Transactional;
@@ -17,22 +17,22 @@ import java.util.Optional;
 @Service
 public class CustomUserDetailsService implements UserDetailsService{
 
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         
-        User user = userRepository.findByEmail(email)
+        Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() ->
                         new UsernameNotFoundException("유저 정보를 찾을 수 없습니다.")
         );
 
-        return UserPrincipal.create(user);
+        return UserPrincipal.create(member);
     }
 
     @Transactional
     public UserDetails loadUserById(Long id) {
-        Optional<User> user = userRepository.findById(id);
+        Optional<Member> user = memberRepository.findById(id);
         DefaultAssert.isOptionalPresent(user);
 
         return UserPrincipal.create(user.get());

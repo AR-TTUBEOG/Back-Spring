@@ -1,7 +1,7 @@
-package com.ttubeog.domain.user.presentation;
+package com.ttubeog.domain.member.presentation;
 
-import com.ttubeog.domain.user.application.UserService;
-import com.ttubeog.domain.user.dto.response.UserDetailRes;
+import com.ttubeog.domain.member.application.MemberService;
+import com.ttubeog.domain.member.dto.response.MemberDetailRes;
 import com.ttubeog.global.config.security.token.CurrentUser;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ErrorResponse;
@@ -18,24 +18,24 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Users", description = "Users API")
+@Tag(name = "Member", description = "Member API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/users")
-public class UserController {
+@RequestMapping("/api/v1/member")
+public class MemberController {
 
-    private final UserService testService;
+    private final MemberService memberService;
 
     @Operation(summary = "유저 정보 확인", description = "현재 접속된 유저정보를 확인합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "유저 확인 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = UserDetailRes.class) ) } ),
+            @ApiResponse(responseCode = "200", description = "유저 확인 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = MemberDetailRes.class) ) } ),
             @ApiResponse(responseCode = "400", description = "유저 확인 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @GetMapping
     public ResponseEntity<?> getCurrentUser(
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
     ) {
-        return testService.getCurrentUser(userPrincipal);
+        return memberService.getCurrentUser(userPrincipal);
     }
 
 }

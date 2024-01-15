@@ -1,8 +1,8 @@
-package com.ttubeog.domain.user.application;
+package com.ttubeog.domain.member.application;
 
-import com.ttubeog.domain.user.dto.response.UserDetailRes;
-import com.ttubeog.domain.user.domain.User;
-import com.ttubeog.domain.user.domain.repository.UserRepository;
+import com.ttubeog.domain.member.dto.response.MemberDetailRes;
+import com.ttubeog.domain.member.domain.Member;
+import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
@@ -16,25 +16,25 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
-public class UserService {
-    private final UserRepository userRepository;
+public class MemberService {
+    private final MemberRepository memberRepository;
 
     // 현재 유저 조회
     public ResponseEntity<?> getCurrentUser(UserPrincipal userPrincipal){
-        Optional<User> checkUser = userRepository.findById(userPrincipal.getId());
+        Optional<Member> checkUser = memberRepository.findById(userPrincipal.getId());
         DefaultAssert.isOptionalPresent(checkUser);
-        User user = checkUser.get();
+        Member member = checkUser.get();
 
-        UserDetailRes userDetailRes = UserDetailRes.builder()
-                .id(user.getId())
-                .email(user.getEmail())
-                .name(user.getName())
-                .ImgUrl(user.getImageUrl())
+        MemberDetailRes memberDetailRes = MemberDetailRes.builder()
+                .id(member.getId())
+                .email(member.getEmail())
+                .name(member.getName())
+                .ImgUrl(member.getImageUrl())
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
-                .information(userDetailRes)
+                .information(memberDetailRes)
                 .build();
 
         return ResponseEntity.ok(apiResponse);

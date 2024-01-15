@@ -1,4 +1,4 @@
-package com.ttubeog.domain.user.domain;
+package com.ttubeog.domain.member.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

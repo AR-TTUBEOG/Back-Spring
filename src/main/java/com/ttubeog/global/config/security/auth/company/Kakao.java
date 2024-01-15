@@ -1,6 +1,6 @@
 package com.ttubeog.global.config.security.auth.company;
 
-import com.ttubeog.domain.user.domain.Provider;
+import com.ttubeog.domain.member.domain.Provider;
 import com.ttubeog.global.config.security.auth.OAuth2UserInfo;
 
 import java.util.Map;

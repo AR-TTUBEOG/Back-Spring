@@ -1,6 +1,6 @@
 package com.ttubeog.global.config.security.auth;
 
-import com.ttubeog.domain.user.domain.Provider;
+import com.ttubeog.domain.member.domain.Provider;
 import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.config.security.auth.company.Kakao;
 

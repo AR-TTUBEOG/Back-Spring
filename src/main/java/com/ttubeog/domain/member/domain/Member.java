@@ -1,4 +1,4 @@
-package com.ttubeog.domain.user.domain;
+package com.ttubeog.domain.member.domain;
 
 import com.ttubeog.domain.common.BaseEntity;
 import jakarta.persistence.*;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
-public class User extends BaseEntity {
+public class Member extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,7 +34,7 @@ public class User extends BaseEntity {
     private String providerId;
 
     @Builder
-    public User(Long id, String name, String email, String imageUrl, Boolean emailVerified, String password, Provider provider, Role role, String providerId) {
+    public Member(Long id, String name, String email, String imageUrl, Boolean emailVerified, String password, Provider provider, Role role, String providerId) {
         this.id = id;
         this.name = name;
         this.email = email;

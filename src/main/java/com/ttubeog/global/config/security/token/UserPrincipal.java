@@ -1,6 +1,6 @@
 package com.ttubeog.global.config.security.token;
 
-import com.ttubeog.domain.user.domain.User;
+import com.ttubeog.domain.member.domain.Member;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,7 +15,7 @@ import java.util.Map;
 @Getter
 public class UserPrincipal implements OAuth2User, UserDetails{
 
-    private final User user;
+    private final Member member;
 
     private final Long id;
     private final String email;
@@ -23,27 +23,27 @@ public class UserPrincipal implements OAuth2User, UserDetails{
     private final Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
 
-    public UserPrincipal(User user, Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
-        this.user = user;
+    public UserPrincipal(Member member, Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+        this.member = member;
         this.id = id;
         this.email = email;
         this.password = password;
         this.authorities = authorities;
     }
 
-    public static UserPrincipal create(final User user) {
-        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getValue()));
+    public static UserPrincipal create(final Member member) {
+        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(member.getRole().getValue()));
         return new UserPrincipal(
-                user,
-                user.getId(),
-                user.getEmail(),
-                user.getPassword(),
+                member,
+                member.getId(),
+                member.getEmail(),
+                member.getPassword(),
                 authorities
         );
     }
 
-    public static UserPrincipal create(User user, Map<String, Object> attributes) {
-        UserPrincipal userPrincipal = UserPrincipal.create(user);
+    public static UserPrincipal create(Member member, Map<String, Object> attributes) {
+        UserPrincipal userPrincipal = UserPrincipal.create(member);
         userPrincipal.setAttributes(attributes);
         return userPrincipal;
     }

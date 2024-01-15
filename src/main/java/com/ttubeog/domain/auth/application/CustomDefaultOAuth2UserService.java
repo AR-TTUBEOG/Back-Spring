@@ -1,9 +1,9 @@
 package com.ttubeog.domain.auth.application;
 
-import com.ttubeog.domain.user.domain.Provider;
-import com.ttubeog.domain.user.domain.Role;
-import com.ttubeog.domain.user.domain.User;
-import com.ttubeog.domain.user.domain.repository.UserRepository;
+import com.ttubeog.domain.member.domain.Provider;
+import com.ttubeog.domain.member.domain.Role;
+import com.ttubeog.domain.member.domain.Member;
+import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.config.security.auth.OAuth2UserInfo;
 import com.ttubeog.global.config.security.auth.OAuth2UserInfoFactory;
@@ -21,7 +21,7 @@ import java.util.Optional;
 @Service
 public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService{
     
-    private final UserRepository userRepository;
+    private final MemberRepository memberRepository;
     
     @Override
     public OAuth2User loadUser(OAuth2UserRequest oAuth2UserRequest) throws OAuth2AuthenticationException {
@@ -38,21 +38,21 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService{
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(oAuth2UserRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());
         DefaultAssert.isAuthentication(!oAuth2UserInfo.getEmail().isEmpty());
         
-        Optional<User> userOptional = userRepository.findByEmail(oAuth2UserInfo.getEmail());
-        User user;
+        Optional<Member> userOptional = memberRepository.findByEmail(oAuth2UserInfo.getEmail());
+        Member member;
         if(userOptional.isPresent()) {
-            user = userOptional.get();
-            DefaultAssert.isAuthentication(user.getProvider().equals(Provider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId())));
-            user = updateExistingUser(user, oAuth2UserInfo);
+            member = userOptional.get();
+            DefaultAssert.isAuthentication(member.getProvider().equals(Provider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId())));
+            member = updateExistingUser(member, oAuth2UserInfo);
         } else {
-            user = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
+            member = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
         }
 
-        return UserPrincipal.create(user, oAuth2User.getAttributes());
+        return UserPrincipal.create(member, oAuth2User.getAttributes());
     }
 
-    private User registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
-        User user = User.builder()
+    private Member registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
+        Member member = Member.builder()
                     .provider(Provider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))
                     .providerId(oAuth2UserInfo.getId())
                     .name(oAuth2UserInfo.getName())
@@ -61,14 +61,14 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService{
                     .role(Role.USER)
                     .build();
         
-        return userRepository.save(user);
+        return memberRepository.save(member);
     }
 
-    private User updateExistingUser(User user, OAuth2UserInfo oAuth2UserInfo) {
+    private Member updateExistingUser(Member member, OAuth2UserInfo oAuth2UserInfo) {
 
-        user.updateName(oAuth2UserInfo.getName());
-        user.updateImageUrl(oAuth2UserInfo.getImageUrl());
+        member.updateName(oAuth2UserInfo.getName());
+        member.updateImageUrl(oAuth2UserInfo.getImageUrl());
 
-        return userRepository.save(user);
+        return memberRepository.save(member);
     }
 }
