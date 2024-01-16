@@ -3,7 +3,7 @@ package com.ttubeog.domain.auth.application;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.global.DefaultAssert;
-import com.ttubeog.global.config.security.token.UserPrincipal;
+import com.ttubeog.global.config.security.token.MemberPrincipal;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-public class CustomUserDetailsService implements UserDetailsService{
+public class CustomMemberDetailsService implements UserDetailsService{
 
     private final MemberRepository memberRepository;
 
@@ -24,10 +24,10 @@ public class CustomUserDetailsService implements UserDetailsService{
         
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("유저 정보를 찾을 수 없습니다.")
+                        new UsernameNotFoundException("멤버 정보를 찾을 수 없습니다.")
         );
 
-        return UserPrincipal.create(member);
+        return MemberPrincipal.create(member);
     }
 
     @Transactional
@@ -35,7 +35,7 @@ public class CustomUserDetailsService implements UserDetailsService{
         Optional<Member> user = memberRepository.findById(id);
         DefaultAssert.isOptionalPresent(user);
 
-        return UserPrincipal.create(user.get());
+        return MemberPrincipal.create(user.get());
     }
     
 }

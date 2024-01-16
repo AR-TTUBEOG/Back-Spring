@@ -7,7 +7,7 @@ import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.config.security.auth.OAuth2UserInfo;
 import com.ttubeog.global.config.security.auth.OAuth2UserInfoFactory;
-import com.ttubeog.global.config.security.token.UserPrincipal;
+import com.ttubeog.global.config.security.token.MemberPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -37,21 +37,21 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService{
     private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(oAuth2UserRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());
         DefaultAssert.isAuthentication(!oAuth2UserInfo.getEmail().isEmpty());
-        
+
         Optional<Member> userOptional = memberRepository.findByEmail(oAuth2UserInfo.getEmail());
         Member member;
         if(userOptional.isPresent()) {
             member = userOptional.get();
             DefaultAssert.isAuthentication(member.getProvider().equals(Provider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId())));
-            member = updateExistingUser(member, oAuth2UserInfo);
+            member = updateExistingMember(member, oAuth2UserInfo);
         } else {
-            member = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
+            member = registerNewMember(oAuth2UserRequest, oAuth2UserInfo);
         }
 
-        return UserPrincipal.create(member, oAuth2User.getAttributes());
+        return MemberPrincipal.create(member, oAuth2User.getAttributes());
     }
 
-    private Member registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
+    private Member registerNewMember(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
         Member member = Member.builder()
                     .provider(Provider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))
                     .providerId(oAuth2UserInfo.getId())
@@ -64,7 +64,7 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService{
         return memberRepository.save(member);
     }
 
-    private Member updateExistingUser(Member member, OAuth2UserInfo oAuth2UserInfo) {
+    private Member updateExistingMember(Member member, OAuth2UserInfo oAuth2UserInfo) {
 
         member.updateName(oAuth2UserInfo.getName());
         member.updateImageUrl(oAuth2UserInfo.getImageUrl());

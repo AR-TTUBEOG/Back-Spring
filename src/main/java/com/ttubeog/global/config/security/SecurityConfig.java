@@ -1,7 +1,7 @@
 package com.ttubeog.global.config.security;
 
 import com.ttubeog.domain.auth.application.CustomDefaultOAuth2UserService;
-import com.ttubeog.domain.auth.application.CustomUserDetailsService;
+import com.ttubeog.domain.auth.application.CustomMemberDetailsService;
 import com.ttubeog.domain.auth.domain.repository.CustomAuthorizationRequestRepository;
 import com.ttubeog.global.config.security.handler.CustomSimpleUrlAuthenticationFailureHandler;
 import com.ttubeog.global.config.security.handler.CustomSimpleUrlAuthenticationSuccessHandler;
@@ -30,7 +30,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 public class SecurityConfig {
     
-    private final CustomUserDetailsService customUserDetailsService;
+    private final CustomMemberDetailsService customMemberDetailsService;
     private final CustomDefaultOAuth2UserService customOAuth2UserService;
     private final CustomSimpleUrlAuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
     private final CustomSimpleUrlAuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
@@ -50,7 +50,7 @@ public class SecurityConfig {
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
 
-        authenticationProvider.setUserDetailsService(customUserDetailsService);
+        authenticationProvider.setUserDetailsService(customMemberDetailsService);
         authenticationProvider.setPasswordEncoder(passwordEncoder());
 
         return authenticationProvider;
