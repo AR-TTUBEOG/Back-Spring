@@ -40,4 +40,16 @@ public class MemberService {
         return ResponseEntity.ok(apiResponse);
     }
 
+    public Optional<Member> findById(Long id) {
+        return memberRepository.findById(id);
+    }
+
+    public void update(MemberDetailRes memberDetailRes) {
+
+    }
+
+    public void save(MemberDetailRes memberDetailRes) {
+
+    }
+
 }
