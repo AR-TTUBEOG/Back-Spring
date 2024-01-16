@@ -33,4 +33,8 @@ public class Benefit extends BaseEntity {
         this.type = type;
         this.store = store;
     }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }

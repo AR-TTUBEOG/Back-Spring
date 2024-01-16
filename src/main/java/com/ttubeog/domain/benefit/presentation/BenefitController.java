@@ -3,7 +3,9 @@ package com.ttubeog.domain.benefit.presentation;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttubeog.domain.benefit.application.BenefitService;
 import com.ttubeog.domain.benefit.dto.request.CreateBenefitReq;
+import com.ttubeog.domain.benefit.dto.request.UpdateBenefitReq;
 import com.ttubeog.domain.benefit.dto.response.CreateBenefitRes;
+import com.ttubeog.domain.benefit.dto.response.UpdateBenefitRes;
 import com.ttubeog.global.config.security.token.CurrentUser;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ErrorResponse;
@@ -56,5 +58,20 @@ public class BenefitController {
             @PathVariable(value = "benefitId") Long benefitId
     ) throws JsonProcessingException {
         return benefitService.deleteBenefit(userPrincipal, benefitId);
+    }
+
+    //혜택 수정
+    @Operation(summary = "혜택 수정", description = "매장의 혜택을 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "혜택 수정 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = UpdateBenefitRes.class) ) } ),
+            @ApiResponse(responseCode = "400", description = "혜택 수정 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
+    })
+    @PatchMapping
+    public ResponseEntity<?> updateBenefit(
+            @Parameter(description = "Accesstoken을 입력해주세요.", required = true)
+            @CurrentUser UserPrincipal userPrincipal,
+            @Valid @RequestBody UpdateBenefitReq updateBenefitReq
+            ) throws JsonProcessingException {
+        return benefitService.updateBenefit(userPrincipal, updateBenefitReq);
     }
 }
