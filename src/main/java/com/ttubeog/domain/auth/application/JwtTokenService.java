@@ -1,4 +1,4 @@
-package com.ttubeog.domain.auth.service;
+package com.ttubeog.domain.auth.application;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
