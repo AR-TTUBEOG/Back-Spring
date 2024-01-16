@@ -7,6 +7,7 @@ import com.ttubeog.domain.benefit.dto.response.CreateBenefitRes;
 import com.ttubeog.global.config.security.token.CurrentUser;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ErrorResponse;
+import com.ttubeog.global.payload.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -40,5 +41,20 @@ public class BenefitController {
             @Valid @RequestBody CreateBenefitReq createBenefitReq
     ) throws JsonProcessingException {
         return benefitService.createBenefit(userPrincipal, createBenefitReq);
+    }
+
+    //혜택 삭제
+    @Operation(summary = "혜택 삭제", description = "매장의 혜택을 삭제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "혜택 삭제 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = Message.class) ) } ),
+            @ApiResponse(responseCode = "400", description = "혜택 삭제 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
+    })
+    @DeleteMapping("/{benefitId}")
+    public ResponseEntity<?> deleteBenefit(
+            @Parameter(description = "Accesstoken을 입력해주세요.", required = true)
+            @CurrentUser UserPrincipal userPrincipal,
+            @PathVariable(value = "benefitId") Long benefitId
+    ) throws JsonProcessingException {
+        return benefitService.deleteBenefit(userPrincipal, benefitId);
     }
 }

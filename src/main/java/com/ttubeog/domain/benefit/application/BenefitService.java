@@ -12,6 +12,7 @@ import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
+import com.ttubeog.global.payload.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -32,9 +33,8 @@ public class BenefitService {
     @Transactional
     public ResponseEntity<?> createBenefit(UserPrincipal userPrincipal, CreateBenefitReq createBenefitReq) throws JsonProcessingException {
 
-        Optional<Member> userOptional = memberRepository.findById(userPrincipal.getId());
-        DefaultAssert.isOptionalPresent(userOptional);
-        Member member = userOptional.get();
+        Optional<Member> memberOptional = memberRepository.findById(userPrincipal.getId());
+        DefaultAssert.isOptionalPresent(memberOptional);
 
 //        Optional<Store> storeOptional = storeRepository.findById(createBenefitReq.getStoreId());
 //        Store store;
@@ -63,4 +63,27 @@ public class BenefitService {
 
         return ResponseEntity.ok(apiResponse);
     }
+
+    // 혜택 삭제
+    @Transactional
+    public ResponseEntity<?> deleteBenefit(UserPrincipal userPrincipal, Long benefitId) throws JsonProcessingException {
+
+        Optional<Member> userOptional = memberRepository.findById(userPrincipal.getId());
+        DefaultAssert.isOptionalPresent(userOptional);
+
+        Optional<Benefit> benefitOptional = benefitRepository.findById(benefitId);
+        DefaultAssert.isTrue(benefitOptional.isPresent(), "존재하지 않는 혜택입니다.");
+        Benefit benefit = benefitOptional.get();
+
+        benefitRepository.delete(benefit);
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(Message.builder().message("혜택을 삭제했습니다.").build())
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+
 }
