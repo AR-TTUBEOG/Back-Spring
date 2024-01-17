@@ -1,11 +1,14 @@
 package com.ttubeog.domain.auth.application;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -70,6 +73,18 @@ public class JwtTokenService implements InitializingBean {
         return createToken(newPayload, refreshTokenExpirationInSeconds);
     }
 
+    public String getPayload(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+        } catch (ExpiredJwtException e) {
+            return e.getClaims().getSubject();
+        }
+    }
 
 
     private String encodeBase64SecretKey(String secretKey) {
@@ -82,5 +97,15 @@ public class JwtTokenService implements InitializingBean {
         Key key = Keys.hmacShaKeyFor(keyBytes);
 
         return key;
+    }
+
+    // 클라이언트 쿠키에 리프레시 토큰을 저장
+    public void addRefreshTokenToCookie(String refreshToken, HttpServletResponse response) {
+        Long age = refreshTokenExpirationInSeconds;
+        Cookie cookie = new Cookie("refresh_token", refreshToken);
+        cookie.setPath("/");
+        cookie.setMaxAge(age.intValue());
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
     }
 }
