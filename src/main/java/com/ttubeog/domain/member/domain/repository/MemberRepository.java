@@ -1,7 +1,6 @@
 package com.ttubeog.domain.member.domain.repository;
 
 import com.ttubeog.domain.member.domain.Member;
-import com.ttubeog.domain.member.dto.MemberDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
