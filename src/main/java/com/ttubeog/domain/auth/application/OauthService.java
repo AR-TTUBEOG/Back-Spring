@@ -1,13 +1,10 @@
 package com.ttubeog.domain.auth.application;
 
 import com.ttubeog.domain.member.application.MemberService;
-import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.dto.MemberDto;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -32,5 +29,16 @@ public class OauthService {
         memberService.updateRefreshToken(memberDto);
 
         return accessToken;
+    }
+
+    // 리프레시 토큰을 액세스 토큰으로 갱신
+    public String refreshToAccessToken(String refreshToken) {
+        MemberDto memberDto = memberService.findByRefreshToken(refreshToken);
+
+        if(memberDto == null) {
+
+        }
+
+        return jwtTokenService.createAccessToken(memberDto.getId().toString());
     }
 }

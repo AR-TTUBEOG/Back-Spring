@@ -4,7 +4,6 @@ package com.ttubeog.domain.auth.application;
 import com.ttubeog.domain.auth.dto.KakaoInfoDto;
 import com.ttubeog.domain.member.application.MemberService;
 import com.ttubeog.domain.member.dto.MemberDto;
-import com.ttubeog.domain.member.dto.response.MemberDetailRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;

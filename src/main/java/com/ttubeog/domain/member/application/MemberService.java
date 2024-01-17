@@ -42,11 +42,15 @@ public class MemberService {
     }
 
     public MemberDto findById(Long id) {
-        Optional<Member> optionalMember = memberRepository.findById(id);
+        Optional<Member> member = memberRepository.findById(id);
 
-        return optionalMember.map(MemberDto::toEntity).orElse(null);
+        return member.map(MemberDto::toEntity).orElse(null);
     }
 
+    public MemberDto findByRefreshToken(String refreshToken) {
+        Optional<Member> member = memberRepository.findByRefreshToken(refreshToken);
+        return member.map(MemberDto::toEntity).orElse(null);
+    }
 
     public void save(MemberDto memberDetailRes) {
 
