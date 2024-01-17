@@ -3,6 +3,7 @@ package com.ttubeog.domain.auth.application;
 
 import com.ttubeog.domain.auth.dto.KakaoInfoDto;
 import com.ttubeog.domain.member.application.MemberService;
+import com.ttubeog.domain.member.dto.MemberDto;
 import com.ttubeog.domain.member.dto.response.MemberDetailRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
@@ -30,19 +31,20 @@ public class KakaoOauthService {
 
 
     // 카카오 API에서 가져온 멤버 정보를 DB 저장, 업데이트
-    public MemberDetailRes getMemberProfileByToken(String accessToken) {
+    public MemberDto getMemberProfileByToken(String accessToken) {
         Map<String, Object> memberInfoByToken = getMemberInfoByToken(accessToken);
         KakaoInfoDto kakaoInfoDto = new KakaoInfoDto(memberInfoByToken);
-        MemberDetailRes memberDetailRes = MemberDetailRes.builder()
+        MemberDto memberDto = MemberDto.builder()
                 .id(kakaoInfoDto.getId())
                 .email(kakaoInfoDto.getEmail())
+                .platform("kakao")
                 .build();
 
-        if(memberService.findById(memberDetailRes.getId()).isPresent()) {
-            memberService.update(memberDetailRes);
+        if(memberService.findById(memberDto.getId()) != null) {
+            memberService.update(memberDto);
         } else {
-            memberService.save(memberDetailRes);
+            memberService.save(memberDto);
         }
-        return memberDetailRes;
+        return memberDto;
     }
 }

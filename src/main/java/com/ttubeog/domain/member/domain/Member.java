@@ -33,8 +33,10 @@ public class Member extends BaseEntity {
 
     private String providerId;
 
+    private String platform;
+
     @Builder
-    public Member(Long id, String name, String email, String imageUrl, Boolean emailVerified, String password, Provider provider, Role role, String providerId) {
+    public Member(Long id, String name, String email, String imageUrl, Boolean emailVerified, String password, Provider provider, Role role, String providerId, String platform) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -43,6 +45,7 @@ public class Member extends BaseEntity {
         this.provider = provider;
         this.role = role;
         this.providerId = providerId;
+        this.platform = platform;
     }
 
     public void updateName(String name){

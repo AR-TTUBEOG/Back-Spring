@@ -1,5 +1,6 @@
 package com.ttubeog.domain.member.application;
 
+import com.ttubeog.domain.member.dto.MemberDto;
 import com.ttubeog.domain.member.dto.response.MemberDetailRes;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
@@ -40,16 +41,22 @@ public class MemberService {
         return ResponseEntity.ok(apiResponse);
     }
 
-    public Optional<Member> findById(Long id) {
-        return memberRepository.findById(id);
+    public MemberDto findById(Long id) {
+        Optional<Member> optionalMember = memberRepository.findById(id);
+
+        return optionalMember.map(MemberDto::toEntity).orElse(null);
     }
 
-    public void update(MemberDetailRes memberDetailRes) {
+
+    public void save(MemberDto memberDetailRes) {
 
     }
 
-    public void save(MemberDetailRes memberDetailRes) {
+    public void update(MemberDto memberDetailRes) {
 
+    }
+
+    public void updateRefreshToken(MemberDto memberDetailRes) {
     }
 
 }
