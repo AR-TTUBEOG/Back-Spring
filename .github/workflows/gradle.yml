@@ -45,7 +45,8 @@ jobs:
         OCCUPY_DB_SECRET_DIR_FILE_NAME: application-database.yml
         OCCUPY_OAUTH_SECRET_DIR_FILE_NAME: application-oauth2.yml
         OCCUPY_swagger_SECRET_DIR_FILE_NAME: application-springdoc.yml
-      run: echo $OCCUPY_SECRET | base64 --decode > $OCCUPY_SECRET_DIR/$OCCUPY_SECRET_DIR_FILE_NAME &&
+      run:
+          echo $OCCUPY_SECRET | base64 --decode > $OCCUPY_SECRET_DIR/$OCCUPY_SECRET_DIR_FILE_NAME &&
           echo $OCCUPY_DB_SECRET | base64 --decode > $OCCUPY_DB_SECRET_DIR/$OCCUPY_DB_SECRET_DIR_FILE_NAME &&
           echo $OCCUPY_OAUTH_SECRET | base64 --decode > $OCCUPY_OAUTH_SECRET_DIR/$OCCUPY_OAUTH_SECRET_DIR_FILE_NAME &&
           echo $OCCUPY_SWAGGER_SECRET | base64 --decode > $OCCUPY_SWAGGER_SECRET_DIR/$OCCUPY_SWAGGER_SECRET_DIR_FILE_NAME
