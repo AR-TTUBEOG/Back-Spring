@@ -1,0 +1,27 @@
+# logging 설정
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            sql: debug
+
+# console 색상
+spring:
+  output:
+    ansi:
+      enabled: always
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+
+# 오류 처리
+server:
+  error:
+    include-exception: true
+    include-stacktrace: always
+
+  #port 설정
+  port: 8080
