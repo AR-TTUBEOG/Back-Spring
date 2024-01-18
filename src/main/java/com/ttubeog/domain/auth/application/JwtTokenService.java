@@ -1,9 +1,6 @@
 package com.ttubeog.domain.auth.application;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
@@ -83,6 +80,18 @@ public class JwtTokenService implements InitializingBean {
                     .getSubject();
         } catch (ExpiredJwtException e) {
             return e.getClaims().getSubject();
+        }
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jws<Claims> claimsJws = Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
+            return !claimsJws.getBody().getExpiration().before(new Date());
+        } catch (JwtException | IllegalArgumentException exception) {
+            return false;
         }
     }
 
