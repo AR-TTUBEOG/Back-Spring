@@ -7,7 +7,9 @@ import lombok.*;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Table(name = "comment")
 public class Comment extends BaseEntity {
 
@@ -27,12 +29,4 @@ public class Comment extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
-
-    @Builder
-    public Comment(Long id, String content, Float latitude, Float longitude) {
-        this.id = id;
-        this.content = content;
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
 }
