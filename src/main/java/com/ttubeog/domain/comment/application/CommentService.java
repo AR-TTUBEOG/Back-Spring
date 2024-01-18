@@ -12,6 +12,7 @@ import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.error.DefaultException;
 import com.ttubeog.global.payload.ApiResponse;
+import com.ttubeog.global.payload.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -85,6 +86,27 @@ public class CommentService {
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
                 .information(commentUpdateRes)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    // 댓글 삭제
+    @Transactional
+    public ResponseEntity<?> deleteComment(UserPrincipal userPrincipal, Long commentId) {
+
+        Optional<Member> optionalMember = memberRepository.findById(userPrincipal.getId());
+        DefaultAssert.isOptionalPresent(optionalMember);
+
+        Optional<Comment> optionalComment = commentRepository.findById(commentId);
+        DefaultAssert.isOptionalPresent(optionalComment);
+        Comment comment = optionalComment.get();
+
+        commentRepository.delete(comment);
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(Message.builder().message("댓글이 정상적으로 삭제되었습니다.").build())
                 .build();
 
         return ResponseEntity.ok(apiResponse);
