@@ -2,12 +2,15 @@ package com.ttubeog.domain.comment.application;
 
 import com.ttubeog.domain.comment.domain.Comment;
 import com.ttubeog.domain.comment.domain.repository.CommentRepository;
+import com.ttubeog.domain.comment.dto.request.CommentUpdateReq;
 import com.ttubeog.domain.comment.dto.request.CommentWriteReq;
+import com.ttubeog.domain.comment.dto.response.CommentUpdateRes;
 import com.ttubeog.domain.comment.dto.response.CommentWriteRes;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.config.security.token.UserPrincipal;
+import com.ttubeog.global.error.DefaultException;
 import com.ttubeog.global.payload.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -57,4 +60,33 @@ public class CommentService {
         return ResponseEntity.ok(apiResponse);
     }
 
+    // 댓글 수정
+    @Transactional
+    public ResponseEntity<?> updateComment(UserPrincipal userPrincipal, CommentUpdateReq commentUpdateReq) {
+
+        Optional<Member> optionalMember = memberRepository.findById(userPrincipal.getId());
+        DefaultAssert.isOptionalPresent(optionalMember);
+
+        Optional<Comment> optionalComment = commentRepository.findById(commentUpdateReq.getCommentId());
+        DefaultAssert.isOptionalPresent(optionalComment);
+        Comment comment = optionalComment.get();
+
+        Member commentWriter = comment.getMember();
+        if (commentWriter.getId() != optionalMember.get().getId()) {
+            DefaultAssert.isTrue(true, "해당 댓글의 작성자만 수정할 수 있습니다.");
+        }
+
+        comment.updateContent(commentUpdateReq.getContent());
+        CommentUpdateRes commentUpdateRes = CommentUpdateRes.builder()
+                .commentId(comment.getId())
+                .content(comment.getContent())
+                .build();
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(commentUpdateRes)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
 }
