@@ -17,11 +17,11 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @RequiredArgsConstructor
 @Configuration
-public class SecurityConfig {
+public class SecurityDomainConfig {
     private final JwtTokenService jwtTokenService;
     private final MemberService memberService;
 
-    @Bean
+    @Bean(name = "domainAuth")
     public AuthenticationManager authenticationManager(
             final AuthenticationConfiguration authenticationConfiguration
             ) throws Exception {

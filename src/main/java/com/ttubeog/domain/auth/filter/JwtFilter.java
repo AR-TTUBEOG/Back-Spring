@@ -2,23 +2,16 @@ package com.ttubeog.domain.auth.filter;
 
 import com.ttubeog.domain.auth.application.JwtTokenService;
 import com.ttubeog.domain.member.application.MemberService;
-import com.ttubeog.domain.member.domain.Member;
-import com.ttubeog.domain.member.dto.MemberDto;
-import com.ttubeog.domain.member.dto.response.MemberDetailRes;
-import com.ttubeog.global.config.security.token.MemberPrincipal;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
-import java.nio.file.attribute.UserPrincipal;
 
 @RequiredArgsConstructor
 public class JwtFilter extends GenericFilterBean {

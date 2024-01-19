@@ -5,7 +5,7 @@ import com.ttubeog.domain.member.dto.response.MemberDetailRes;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.global.DefaultAssert;
-import com.ttubeog.global.config.security.token.MemberPrincipal;
+import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +21,8 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     // 현재 유저 조회
-    public ResponseEntity<?> getCurrentUser(MemberPrincipal memberPrincipal){
-        Optional<Member> checkUser = memberRepository.findById(memberPrincipal.getId());
+    public ResponseEntity<?> getCurrentUser(UserPrincipal userPrincipal){
+        Optional<Member> checkUser = memberRepository.findById(userPrincipal.getId());
         DefaultAssert.isOptionalPresent(checkUser);
         Member member = checkUser.get();
 

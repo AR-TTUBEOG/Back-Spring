@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 @Getter
-public class MemberPrincipal implements OAuth2User, UserDetails{
+public class UserPrincipal implements OAuth2User, UserDetails{
 
     private final Member member;
 
@@ -23,7 +23,7 @@ public class MemberPrincipal implements OAuth2User, UserDetails{
     private final Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
 
-    public MemberPrincipal(Member member, Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(Member member, Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
         this.member = member;
         this.id = id;
         this.email = email;
@@ -31,9 +31,9 @@ public class MemberPrincipal implements OAuth2User, UserDetails{
         this.authorities = authorities;
     }
 
-    public static MemberPrincipal create(final Member member) {
+    public static UserPrincipal create(final Member member) {
         List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(member.getRole().getValue()));
-        return new MemberPrincipal(
+        return new UserPrincipal(
                 member,
                 member.getId(),
                 member.getEmail(),
@@ -42,10 +42,10 @@ public class MemberPrincipal implements OAuth2User, UserDetails{
         );
     }
 
-    public static MemberPrincipal create(Member member, Map<String, Object> attributes) {
-        MemberPrincipal memberPrincipal = MemberPrincipal.create(member);
-        memberPrincipal.setAttributes(attributes);
-        return memberPrincipal;
+    public static UserPrincipal create(Member member, Map<String, Object> attributes) {
+        UserPrincipal userPrincipal = UserPrincipal.create(member);
+        userPrincipal.setAttributes(attributes);
+        return userPrincipal;
     }
 
     public void setAttributes(Map<String, Object> attributes) {

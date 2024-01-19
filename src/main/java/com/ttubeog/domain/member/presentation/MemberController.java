@@ -2,8 +2,8 @@ package com.ttubeog.domain.member.presentation;
 
 import com.ttubeog.domain.member.application.MemberService;
 import com.ttubeog.domain.member.dto.response.MemberDetailRes;
-import com.ttubeog.global.config.security.token.CurrentMember;
-import com.ttubeog.global.config.security.token.MemberPrincipal;
+import com.ttubeog.global.config.security.token.CurrentUser;
+import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,9 +33,9 @@ public class MemberController {
     })
     @GetMapping
     public ResponseEntity<?> getCurrentMember(
-            @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentMember MemberPrincipal memberPrincipal
+            @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
     ) {
-        return memberService.getCurrentUser(memberPrincipal);
+        return memberService.getCurrentUser(userPrincipal);
     }
 
 }

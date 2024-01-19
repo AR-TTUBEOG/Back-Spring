@@ -22,4 +22,6 @@ public abstract class OAuth2UserInfo {
     public abstract String getEmail();
 
     public abstract String getImageUrl();
+
+    public abstract String getRefreshToken();
 }

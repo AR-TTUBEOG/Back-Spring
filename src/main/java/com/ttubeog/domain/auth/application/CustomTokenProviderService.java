@@ -2,7 +2,7 @@ package com.ttubeog.domain.auth.application;
 
 import com.ttubeog.domain.auth.dto.TokenMapping;
 import com.ttubeog.global.config.security.OAuth2Config;
-import com.ttubeog.global.config.security.token.MemberPrincipal;
+import com.ttubeog.global.config.security.token.UserPrincipal;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -27,7 +27,7 @@ public class CustomTokenProviderService {
     private CustomMemberDetailsService customMemberDetailsService;
 
     public TokenMapping refreshToken(Authentication authentication, String refreshToken) {
-        MemberPrincipal memberPrincipal = (MemberPrincipal) authentication.getPrincipal();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         Date now = new Date();
 
         Date accessTokenExpiresIn = new Date(now.getTime() + oAuth2Config.getAuth().getAccessTokenExpirationMsec());
@@ -37,21 +37,21 @@ public class CustomTokenProviderService {
         Key key = Keys.hmacShaKeyFor(keyBytes);
 
         String accessToken = Jwts.builder()
-                                .setSubject(Long.toString(memberPrincipal.getId()))
+                                .setSubject(Long.toString(userPrincipal.getId()))
                                 .setIssuedAt(new Date())
                                 .setExpiration(accessTokenExpiresIn)
                                 .signWith(key, SignatureAlgorithm.HS512)
                                 .compact();
 
         return TokenMapping.builder()
-                        .userEmail(memberPrincipal.getEmail())
+                        .userEmail(userPrincipal.getEmail())
                         .accessToken(accessToken)
                         .refreshToken(refreshToken)
                         .build();
     }
 
     public TokenMapping createToken(Authentication authentication) {
-        MemberPrincipal memberPrincipal = (MemberPrincipal) authentication.getPrincipal();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
 
         Date now = new Date();
 
@@ -64,7 +64,7 @@ public class CustomTokenProviderService {
         Key key = Keys.hmacShaKeyFor(keyBytes);
 
         String accessToken = Jwts.builder()
-                                .setSubject(Long.toString(memberPrincipal.getId()))
+                                .setSubject(Long.toString(userPrincipal.getId()))
                                 .setIssuedAt(new Date())
                                 .setExpiration(accessTokenExpiresIn)
                                 .signWith(key, SignatureAlgorithm.HS512)
@@ -76,7 +76,7 @@ public class CustomTokenProviderService {
                                 .compact();
 
         return TokenMapping.builder()
-                    .userEmail(memberPrincipal.getEmail())
+                    .userEmail(userPrincipal.getEmail())
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .build();
