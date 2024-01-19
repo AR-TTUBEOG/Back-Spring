@@ -38,7 +38,7 @@ jobs:
       uses: actions/setup-java@v3
       with:
         java-version: '17'
-        distribution: 'temurin'
+        distribution: 'zulu'
 
     # git ignore한 yml 파일들 github secret에서 복사해 오기
     - name: Copy secret
@@ -75,6 +75,13 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew clean build -x test
       shell: bash
+
+    - name: Upload Build artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: build-artifacts
+        path: |
+          build/libs/*.jar
 
 
   deploy:
