@@ -76,7 +76,13 @@ jobs:
       run: ./gradlew clean build -x test
       shell: bash
 
-    # (6) AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
+
+  deploy:
+    name: CD with SSH
+    needs: build
+    runs-on: ubuntu-22.04
+    steps:
+      # (6) AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -94,10 +100,37 @@ jobs:
           --source .
 
     # (8) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
-    - name: Deploy to AWS EC2 from S3
-      run: |
-        aws deploy create-deployment \
-          --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
-          --deployment-config-name CodeDeployDefault.AllAtOnce \
-          --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
-          --s3-location bucket=$S3_BUCKET_NAME,key=$GITHUB_SHA.zip,bundleType=zip
+#    - name: Deploy to AWS EC2 from S3
+#      run: |
+#        aws deploy create-deployment \
+#          --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+#          --deployment-config-name CodeDeployDefault.AllAtOnce \
+#          --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
+#          --s3-location bucket=$S3_BUCKET_NAME,key=$GITHUB_SHA.zip,bundleType=zip
+    - name: Download build artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: build-artifacts
+
+    # JAR 파일을 EC2에 배포하는 step
+    - name: SCP JAR to EC2
+      uses: appleboy/scp-action@master
+      with:
+        key: ${{ secrets.EC2_KEY }}
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        source: "*.jar"
+        target: "/home/ubuntu/app"
+
+    # EC2에 SSH로 배포 커맨드를 입력하는 step
+    - name: Deploy SSH
+      uses: appleboy/ssh-action@master
+      with:
+        key: ${{ secrets.EC2_KEY }}
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        # 기존 실행 중인 서버 종료 후 jar 파일 실행
+        script: |
+          sudo fuser -k -n tcp 8080
+          sleep 15
+          sudo nohup java -jar /home/ubuntu/app/*.jar > ./nohup.out 2>&1 &
