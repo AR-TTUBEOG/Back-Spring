@@ -10,9 +10,11 @@ import com.ttubeog.domain.benefit.dto.request.UpdateBenefitReq;
 import com.ttubeog.domain.benefit.dto.response.CreateBenefitRes;
 import com.ttubeog.domain.benefit.dto.response.SaveBenefitRes;
 import com.ttubeog.domain.benefit.dto.response.UpdateBenefitRes;
+import com.ttubeog.domain.benefit.exception.NonExistentBenefitException;
 import com.ttubeog.domain.benefit.exception.OverlappingBenefitException;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
+import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.global.DefaultAssert;
@@ -26,7 +28,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -42,13 +43,9 @@ public class BenefitService {
     @Transactional
     public ResponseEntity<?> createBenefit(UserPrincipal userPrincipal, CreateBenefitReq createBenefitReq) throws JsonProcessingException {
 
-        Optional<Member> memberOptional = memberRepository.findById(userPrincipal.getId());
-        DefaultAssert.isOptionalPresent(memberOptional);
+        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
 
-//        Optional<Store> storeOptional = storeRepository.findById(createBenefitReq.getStoreId());
-//        Store store;
-//        DefaultAssert.isOptionalPresent(storeOptional);
-//        store = storeOptional.get();
+//        Store store = storeRepository.findById(createBenefitReq.getStoreId()).orElseThrow(에러::new);
 
         Benefit benefit = Benefit.builder()
                 .content(createBenefitReq.getContent())
@@ -77,12 +74,8 @@ public class BenefitService {
     @Transactional
     public ResponseEntity<?> deleteBenefit(UserPrincipal userPrincipal, Long benefitId) throws JsonProcessingException {
 
-        Optional<Member> memberOptional = memberRepository.findById(userPrincipal.getId());
-        DefaultAssert.isOptionalPresent(memberOptional);
-
-        Optional<Benefit> benefitOptional = benefitRepository.findById(benefitId);
-        DefaultAssert.isTrue(benefitOptional.isPresent(), "존재하지 않는 혜택입니다.");
-        Benefit benefit = benefitOptional.get();
+        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Benefit benefit = benefitRepository.findById(benefitId).orElseThrow(NonExistentBenefitException::new);
 
         benefitRepository.delete(benefit);
 
@@ -98,12 +91,8 @@ public class BenefitService {
     @Transactional
     public ResponseEntity<?> updateBenefit(UserPrincipal userPrincipal, UpdateBenefitReq updateBenefitReq) throws JsonProcessingException {
 
-        Optional<Member> memberOptional = memberRepository.findById(userPrincipal.getId());
-        DefaultAssert.isOptionalPresent(memberOptional);
-
-        Optional<Benefit> benefitOptional = benefitRepository.findById(updateBenefitReq.getBenefitId());
-        DefaultAssert.isTrue(benefitOptional.isPresent(), "존재하지 않는 혜택입니다.");
-        Benefit benefit = benefitOptional.get();
+        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Benefit benefit = benefitRepository.findById(updateBenefitReq.getBenefitId()).orElseThrow(NonExistentBenefitException::new);
 
         //TODO userOptional과 benefit의 userId가 일치하는지 확인
 
@@ -128,13 +117,8 @@ public class BenefitService {
     @Transactional
     public ResponseEntity<?> saveBenefit(UserPrincipal userPrincipal, Long benefitId) throws JsonProcessingException {
 
-        Optional<Member> memberOptional = memberRepository.findById(userPrincipal.getId());
-        DefaultAssert.isOptionalPresent(memberOptional);
-        Member member = memberOptional.get();
-
-        Optional<Benefit> benefitOptional = benefitRepository.findById(benefitId);
-        DefaultAssert.isTrue(benefitOptional.isPresent(), "존재하지 않는 혜택입니다.");
-        Benefit benefit = benefitOptional.get();
+        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Benefit benefit = benefitRepository.findById(benefitId).orElseThrow(NonExistentBenefitException::new);
 
         //유저에게 이미 있는 benefit인지 확인
         List<MemberBenefit> memberBenefitList = memberBenefitRepository.findAllByBenefitAndCreatedAtIsAfter(benefit, LocalDateTime.now().minusMonths(1));
