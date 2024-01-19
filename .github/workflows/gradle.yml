@@ -23,14 +23,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    # 작업 엑세스 가능하게 $GITHUB_WORKSPACE에서 저장소를 체크아웃
+    - name: Checkout branch
+      uses: actions/checkout@v3
 
+    # java 버전 세팅
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
         java-version: '17'
         distribution: 'temurin'
 
+    # git ignore한 yml 파일들 github secret에서 복사해 오기
     - name: Copy secret
       env:
         OCCUPY_SECRET: ${{ secrets.OCCUPY_SECRET }}
@@ -56,11 +60,13 @@ jobs:
         echo "$OCCUPY_DB_SECRET" > $OCCUPY_DB_SECRET_DIR/$OCCUPY_DB_SECRET_DIR_FILE_NAME
         echo "$OCCUPY_OAUTH_SECRET" > $OCCUPY_OAUTH_SECRET_DIR/$OCCUPY_OAUTH_SECRET_DIR_FILE_NAME
         
-
+    # gradlew 실행 권한 부여
     - name: Run chmod to make gradlew executable
       run: chmod +x ./gradlew
       shell: bash
 
+    # Build -> jar 파일 생성
     - name: Build with Gradle
       run: ./gradlew clean build -x test
       shell: bash
+
