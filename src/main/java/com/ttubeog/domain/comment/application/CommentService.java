@@ -2,15 +2,14 @@ package com.ttubeog.domain.comment.application;
 
 import com.ttubeog.domain.comment.domain.Comment;
 import com.ttubeog.domain.comment.domain.repository.CommentRepository;
-import com.ttubeog.domain.comment.dto.request.CommentUpdateReq;
-import com.ttubeog.domain.comment.dto.request.CommentWriteReq;
-import com.ttubeog.domain.comment.dto.response.CommentUpdateRes;
-import com.ttubeog.domain.comment.dto.response.CommentWriteRes;
+import com.ttubeog.domain.comment.dto.request.UpdateCommentReq;
+import com.ttubeog.domain.comment.dto.request.WriteCommentReq;
+import com.ttubeog.domain.comment.dto.response.UpdateCommentRes;
+import com.ttubeog.domain.comment.dto.response.WriteCommentRes;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.config.security.token.UserPrincipal;
-import com.ttubeog.global.error.DefaultException;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
 import lombok.RequiredArgsConstructor;
@@ -30,22 +29,22 @@ public class CommentService {
 
     // 댓글 작성
     @Transactional
-    public ResponseEntity<?> writeComment(UserPrincipal userPrincipal, CommentWriteReq commentWriteReq) {
+    public ResponseEntity<?> writeComment(UserPrincipal userPrincipal, WriteCommentReq writeCommentReq) {
 
-        Optional<Member> optionalMember = memberRepository.findById(userPrincipal.getId());
-        DefaultAssert.isOptionalPresent(optionalMember);
-        Member member = optionalMember.get();
+        Optional<Member> memberOptional = memberRepository.findById(userPrincipal.getId());
+        DefaultAssert.isOptionalPresent(memberOptional);
+        Member member = memberOptional.get();
 
         Comment comment = Comment.builder()
-                .content(commentWriteReq.getContent())
-                .latitude(commentWriteReq.getLatitude())
-                .longitude(commentWriteReq.getLongitude())
+                .content(writeCommentReq.getContent())
+                .latitude(writeCommentReq.getLatitude())
+                .longitude(writeCommentReq.getLongitude())
                 .member(member)
                 .build();
 
         commentRepository.save(comment);
 
-        CommentWriteRes commentWriteRes = CommentWriteRes.builder()
+        WriteCommentRes writeCommentRes = WriteCommentRes.builder()
                 .commentId(comment.getId())
                 .memberId(member.getId())
                 .content(comment.getContent())
@@ -55,7 +54,7 @@ public class CommentService {
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
-                .information(commentWriteRes)
+                .information(writeCommentRes)
                 .build();
 
         return ResponseEntity.ok(apiResponse);
@@ -63,29 +62,29 @@ public class CommentService {
 
     // 댓글 수정
     @Transactional
-    public ResponseEntity<?> updateComment(UserPrincipal userPrincipal, CommentUpdateReq commentUpdateReq) {
+    public ResponseEntity<?> updateComment(UserPrincipal userPrincipal, UpdateCommentReq updateCommentReq) {
 
-        Optional<Member> optionalMember = memberRepository.findById(userPrincipal.getId());
-        DefaultAssert.isOptionalPresent(optionalMember);
+        Optional<Member> memberOptional = memberRepository.findById(userPrincipal.getId());
+        DefaultAssert.isOptionalPresent(memberOptional);
 
-        Optional<Comment> optionalComment = commentRepository.findById(commentUpdateReq.getCommentId());
-        DefaultAssert.isOptionalPresent(optionalComment);
-        Comment comment = optionalComment.get();
+        Optional<Comment> commentOptional = commentRepository.findById(updateCommentReq.getCommentId());
+        DefaultAssert.isOptionalPresent(commentOptional);
+        Comment comment = commentOptional.get();
 
         Member commentWriter = comment.getMember();
-        if (commentWriter.getId() != optionalMember.get().getId()) {
+        if (commentWriter.getId() != memberOptional.get().getId()) {
             DefaultAssert.isTrue(true, "해당 댓글의 작성자만 수정할 수 있습니다.");
         }
 
-        comment.updateContent(commentUpdateReq.getContent());
-        CommentUpdateRes commentUpdateRes = CommentUpdateRes.builder()
+        comment.updateContent(updateCommentReq.getContent());
+        UpdateCommentRes updateCommentRes = UpdateCommentRes.builder()
                 .commentId(comment.getId())
                 .content(comment.getContent())
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
-                .information(commentUpdateRes)
+                .information(updateCommentRes)
                 .build();
 
         return ResponseEntity.ok(apiResponse);
@@ -95,12 +94,12 @@ public class CommentService {
     @Transactional
     public ResponseEntity<?> deleteComment(UserPrincipal userPrincipal, Long commentId) {
 
-        Optional<Member> optionalMember = memberRepository.findById(userPrincipal.getId());
-        DefaultAssert.isOptionalPresent(optionalMember);
+        Optional<Member> memberOptional = memberRepository.findById(userPrincipal.getId());
+        DefaultAssert.isOptionalPresent(memberOptional);
 
-        Optional<Comment> optionalComment = commentRepository.findById(commentId);
-        DefaultAssert.isOptionalPresent(optionalComment);
-        Comment comment = optionalComment.get();
+        Optional<Comment> commentOptional = commentRepository.findById(commentId);
+        DefaultAssert.isOptionalPresent(commentOptional);
+        Comment comment = commentOptional.get();
 
         commentRepository.delete(comment);
 
@@ -111,4 +110,7 @@ public class CommentService {
 
         return ResponseEntity.ok(apiResponse);
     }
+
+    // 댓글 조회
+
 }

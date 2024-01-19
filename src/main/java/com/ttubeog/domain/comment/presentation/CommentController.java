@@ -1,10 +1,10 @@
 package com.ttubeog.domain.comment.presentation;
 
 import com.ttubeog.domain.comment.application.CommentService;
-import com.ttubeog.domain.comment.dto.request.CommentUpdateReq;
-import com.ttubeog.domain.comment.dto.request.CommentWriteReq;
-import com.ttubeog.domain.comment.dto.response.CommentUpdateRes;
-import com.ttubeog.domain.comment.dto.response.CommentWriteRes;
+import com.ttubeog.domain.comment.dto.request.UpdateCommentReq;
+import com.ttubeog.domain.comment.dto.request.WriteCommentReq;
+import com.ttubeog.domain.comment.dto.response.UpdateCommentRes;
+import com.ttubeog.domain.comment.dto.response.WriteCommentRes;
 import com.ttubeog.global.config.security.token.CurrentUser;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ErrorResponse;
@@ -32,29 +32,29 @@ public class CommentController {
     // 댓글 작성
     @Operation(summary = "댓글 작성", description = "댓글을 작성합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "댓글 작성 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CommentWriteRes.class) ) } ),
+            @ApiResponse(responseCode = "200", description = "댓글 작성 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = WriteCommentRes.class) ) } ),
             @ApiResponse(responseCode = "400", description = "댓글 작성 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } )
     })
     @PostMapping
     public ResponseEntity<?> writeComment(
             @Parameter(description = "AccessToken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
-            @Valid @RequestBody CommentWriteReq commentWriteReq
+            @Valid @RequestBody WriteCommentReq writeCommentReq
     ) {
-        return commentService.writeComment(userPrincipal, commentWriteReq);
+        return commentService.writeComment(userPrincipal, writeCommentReq);
     }
 
     // 댓글 수정
     @Operation(summary = "댓글 수정", description = "댓글 내용을 수정합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "댓글 수정 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CommentUpdateRes.class) ) } ),
+            @ApiResponse(responseCode = "200", description = "댓글 수정 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = UpdateCommentRes.class) ) } ),
             @ApiResponse(responseCode = "400", description = "댓글 수정 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } )
     })
     @PatchMapping
     public ResponseEntity<?> updateComment(
             @Parameter(description = "AccessToken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
-            @Valid @RequestBody CommentUpdateReq commentUpdateReq
+            @Valid @RequestBody UpdateCommentReq updateCommentReq
     ) {
-        return commentService.updateComment(userPrincipal, commentUpdateReq);
+        return commentService.updateComment(userPrincipal, updateCommentReq);
     }
 
     // 댓글 삭제
@@ -70,4 +70,6 @@ public class CommentController {
     ) {
         return commentService.deleteComment(userPrincipal, commentId);
     }
+
+    // 댓글 조회
 }

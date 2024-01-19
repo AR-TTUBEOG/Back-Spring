@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class CommentUpdateRes {
+public class UpdateCommentRes {
 
     @Schema(description = "댓글 ID")
     private Long commentId;
@@ -14,7 +14,7 @@ public class CommentUpdateRes {
     private String content;
 
     @Builder
-    public CommentUpdateRes(Long commentId, String content) {
+    public UpdateCommentRes(Long commentId, String content) {
         this.commentId = commentId;
         this.content = content;
     }

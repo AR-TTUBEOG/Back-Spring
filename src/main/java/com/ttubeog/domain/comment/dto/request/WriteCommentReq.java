@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Schema(description = "댓글 작성 Request")
-public class CommentWriteReq {
+public class WriteCommentReq {
 
     @Schema(description = "댓글 내용")
     private String content;

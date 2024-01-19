@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 @Data
-public class CommentUpdateReq {
+public class UpdateCommentReq {
 
     @Schema(description = "댓글 ID")
     private Long commentId;

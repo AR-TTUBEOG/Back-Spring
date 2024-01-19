@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class CommentWriteRes {
+public class WriteCommentRes {
 
     @Schema(description = "댓글 ID")
     private Long commentId;
@@ -23,7 +23,7 @@ public class CommentWriteRes {
     private Float longitude;
 
     @Builder
-    public CommentWriteRes(Long commentId, Long memberId, String content, Float latitude, Float longitude) {
+    public WriteCommentRes(Long commentId, Long memberId, String content, Float latitude, Float longitude) {
         this.commentId = commentId;
         this.memberId = memberId;
         this.content = content;
