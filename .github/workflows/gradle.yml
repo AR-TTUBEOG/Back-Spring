@@ -37,9 +37,9 @@ jobs:
         OCCUPY_DB_SECRET: ${{ secrets.OCCUPY_DB_SECRET }}
         OCCUPY_OAUTH_SECRET: ${{ secrets.OCCUPY_OAUTH_SECRET }}
 
-        OCCUPY_SECRET_DIR: ./src/main/resources
-        OCCUPY_DB_SECRET_DIR: ./src/main/resources/database
-        OCCUPY_OAUTH_SECRET_DIR: ./src/main/resources/oauth2
+        OCCUPY_SECRET_DIR: src/main/resources
+        OCCUPY_DB_SECRET_DIR: src/main/resources/database
+        OCCUPY_OAUTH_SECRET_DIR: src/main/resources/oauth2
 
         OCCUPY_SECRET_DIR_FILE_NAME: application.yml
         OCCUPY_DB_SECRET_DIR_FILE_NAME: application-database.yml
