@@ -137,7 +137,7 @@ public class BenefitService {
         Benefit benefit = benefitOptional.get();
 
         //유저에게 이미 있는 benefit인지 확인
-        List<MemberBenefit> memberBenefitList = memberBenefitRepository.findAllByBenefitAndCreatedDateIsAfter(benefit, LocalDateTime.now().minusMonths(1));
+        List<MemberBenefit> memberBenefitList = memberBenefitRepository.findAllByBenefitAndCreatedAtIsAfter(benefit, LocalDateTime.now().minusMonths(1));
         //같은 benefit이고, 저장한지 한달이 지나지 않았으면 에러 호출
         if (memberBenefitList.size() > 0) {
             throw new OverlappingBenefitException();
@@ -160,7 +160,7 @@ public class BenefitService {
                 .type(benefit.getType())
                 .isUsed(memberBenefit.getIs_used())
                 .hasExpried(memberBenefit.getHas_expired())
-                .createdAt(memberBenefit.getCreatedDate())
+                .createdAt(memberBenefit.getCreatedAt())
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()

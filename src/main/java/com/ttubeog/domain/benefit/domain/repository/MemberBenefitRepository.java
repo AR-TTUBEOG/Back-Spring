@@ -11,6 +11,6 @@ import java.util.List;
 @Repository
 public interface MemberBenefitRepository extends JpaRepository<MemberBenefit, Long> {
 
-    List<MemberBenefit> findAllByBenefitAndCreatedDateIsAfter(Benefit benefit, LocalDateTime createdDate);
+    List<MemberBenefit> findAllByBenefitAndCreatedAtIsAfter(Benefit benefit, LocalDateTime createdAt);
 
 }
