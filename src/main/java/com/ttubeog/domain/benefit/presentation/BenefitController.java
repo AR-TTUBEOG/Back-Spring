@@ -90,4 +90,19 @@ public class BenefitController {
     ) throws JsonProcessingException {
         return benefitService.saveBenefit(userPrincipal, benefitId);
     }
+
+    //혜택 사용
+    @Operation(summary = "혜택 사용", description = "멤버가 보유 중인 혜택을 사용합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "혜택 사용 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = SaveBenefitRes.class) ) } ),
+            @ApiResponse(responseCode = "400", description = "혜택 사용 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
+    })
+    @PatchMapping("{benefitId}/use")
+    public ResponseEntity<?> useBenefit(
+            @Parameter(description = "Accesstoken을 입력해주세요.", required = true)
+            @CurrentUser UserPrincipal userPrincipal,
+            @PathVariable(value = "benefitId") Long benefitId
+    ) throws JsonProcessingException {
+        return benefitService.useBenefit(userPrincipal, benefitId);
+    }
 }

@@ -10,6 +10,8 @@ import com.ttubeog.domain.benefit.dto.request.UpdateBenefitReq;
 import com.ttubeog.domain.benefit.dto.response.CreateBenefitRes;
 import com.ttubeog.domain.benefit.dto.response.SaveBenefitRes;
 import com.ttubeog.domain.benefit.dto.response.UpdateBenefitRes;
+import com.ttubeog.domain.benefit.exception.AlreadyUsedBenefitException;
+import com.ttubeog.domain.benefit.exception.InvalidMemberBenefitException;
 import com.ttubeog.domain.benefit.exception.NonExistentBenefitException;
 import com.ttubeog.domain.benefit.exception.OverlappingBenefitException;
 import com.ttubeog.domain.member.domain.Member;
@@ -130,8 +132,8 @@ public class BenefitService {
         MemberBenefit memberBenefit = MemberBenefit.builder()
                 .member(member)
                 .benefit(benefit)
-                .is_used(false)
-                .has_expired(false)
+                .used(false)
+                .expired(false)
                 .build();
 
         memberBenefitRepository.save(memberBenefit);
@@ -142,8 +144,8 @@ public class BenefitService {
 //                .storeId(memberBenefit.getBenefit().getStore().getId())
                 .content(benefit.getContent())
                 .type(benefit.getType())
-                .isUsed(memberBenefit.getIs_used())
-                .hasExpried(memberBenefit.getHas_expired())
+                .used(memberBenefit.getUsed())
+                .expried(memberBenefit.getExpired())
                 .createdAt(memberBenefit.getCreatedAt())
                 .build();
 
@@ -155,4 +157,43 @@ public class BenefitService {
         return ResponseEntity.ok(apiResponse);
     }
 
+
+    //혜택 사용
+    @Transactional
+    public ResponseEntity<?> useBenefit(UserPrincipal userPrincipal, Long benefitId) throws JsonProcessingException {
+
+        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Benefit benefit = benefitRepository.findById(benefitId).orElseThrow(NonExistentBenefitException::new);
+
+        //만료기간 안에 혜택은 오직 한개
+        MemberBenefit memberBenefit = memberBenefitRepository.findByBenefitAndMemberAndExpiredIsFalse(benefit, member)
+                .orElseThrow(InvalidMemberBenefitException::new);
+
+        //이미 사용한 혜택인지 확인
+        if (memberBenefit.getUsed()) {
+            throw new AlreadyUsedBenefitException();
+        }
+
+        memberBenefit.useBenefit();
+
+        SaveBenefitRes saveBenefitRes = SaveBenefitRes.builder()
+                .id(memberBenefit.getId())
+                .benefitId(benefit.getId())
+//                .store(memberBenefit.store.getId())
+                .used(memberBenefit.getUsed())
+                .expried(memberBenefit.getExpired())
+                .createdAt(memberBenefit.getCreatedAt())
+                .content(benefit.getContent())
+                .type(benefit.getType())
+                .build();
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(saveBenefitRes)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    //TODO 한달지나면 has_expired true로 만들기
 }

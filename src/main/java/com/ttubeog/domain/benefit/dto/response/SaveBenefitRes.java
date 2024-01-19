@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Data
 public class SaveBenefitRes {
 
-    @Schema(description = "ID", example = "1")
+    @Schema(description = "멤버-혜택ID", example = "1")
     private Long id;
 
     @Schema(description = "혜택 ID", example = "1")
@@ -26,24 +26,24 @@ public class SaveBenefitRes {
     private BenefitType type;
 
     @Schema(description = "사용 여부", example = "false")
-    private Boolean isUsed;
+    private Boolean used;
 
     @Schema(description = "만료 여부", example = "false")
-    private Boolean hasExpried;
+    private Boolean expried;
 
     @Schema(description = "혜택 저장 시간", example = "2024-01-12 09:30:50")
     private LocalDateTime createdAt;
 
     @Builder
-//    public SaveBenefitRes(Long id, Long benefitId, Long storeId, String content, BenefitType type, Boolean isUsed, Boolean hasExpried, LocalDateTime createdAt) {
-    public SaveBenefitRes(Long id, Long benefitId, String content, BenefitType type, Boolean isUsed, Boolean hasExpried, LocalDateTime createdAt) {
+//    public SaveBenefitRes(Long id, Long benefitId, Long storeId, String content, BenefitType type, Boolean isUsed, Boolean expried, LocalDateTime createdAt) {
+    public SaveBenefitRes(Long id, Long benefitId, String content, BenefitType type, Boolean used, Boolean expried, LocalDateTime createdAt) {
         this.id = id;
         this.benefitId = benefitId;
 //        this.storeId = storeId;
         this.content = content;
         this.type = type;
-        this.isUsed = isUsed;
-        this.hasExpried = hasExpried;
+        this.used = used;
+        this.expried = expried;
         this.createdAt = createdAt;
     }
 }
