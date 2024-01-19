@@ -3,6 +3,7 @@ package com.ttubeog.domain.benefit.application;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttubeog.domain.benefit.domain.Benefit;
 import com.ttubeog.domain.benefit.domain.repository.BenefitRepository;
+import com.ttubeog.domain.benefit.domain.repository.MemberBenefitRepository;
 import com.ttubeog.domain.benefit.dto.request.CreateBenefitReq;
 import com.ttubeog.domain.benefit.dto.request.UpdateBenefitReq;
 import com.ttubeog.domain.benefit.dto.response.CreateBenefitRes;
@@ -70,8 +71,8 @@ public class BenefitService {
     @Transactional
     public ResponseEntity<?> deleteBenefit(UserPrincipal userPrincipal, Long benefitId) throws JsonProcessingException {
 
-        Optional<Member> userOptional = memberRepository.findById(userPrincipal.getId());
-        DefaultAssert.isOptionalPresent(userOptional);
+        Optional<Member> memberOptional = memberRepository.findById(userPrincipal.getId());
+        DefaultAssert.isOptionalPresent(memberOptional);
 
         Optional<Benefit> benefitOptional = benefitRepository.findById(benefitId);
         DefaultAssert.isTrue(benefitOptional.isPresent(), "존재하지 않는 혜택입니다.");
@@ -91,8 +92,8 @@ public class BenefitService {
     @Transactional
     public ResponseEntity<?> updateBenefit(UserPrincipal userPrincipal, UpdateBenefitReq updateBenefitReq) throws JsonProcessingException {
 
-        Optional<Member> userOptional = memberRepository.findById(userPrincipal.getId());
-        DefaultAssert.isOptionalPresent(userOptional);
+        Optional<Member> memberOptional = memberRepository.findById(userPrincipal.getId());
+        DefaultAssert.isOptionalPresent(memberOptional);
 
         Optional<Benefit> benefitOptional = benefitRepository.findById(updateBenefitReq.getBenefitId());
         DefaultAssert.isTrue(benefitOptional.isPresent(), "존재하지 않는 혜택입니다.");
