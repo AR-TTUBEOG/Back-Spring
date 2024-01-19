@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-public class CustomUserDetailsService implements UserDetailsService{
+public class CustomMemberDetailsService implements UserDetailsService{
 
     private final MemberRepository memberRepository;
 
@@ -24,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService{
         
         Member member = memberRepository.findByEmail(email)
                 .orElseThrow(() ->
-                        new UsernameNotFoundException("유저 정보를 찾을 수 없습니다.")
+                        new UsernameNotFoundException("멤버 정보를 찾을 수 없습니다.")
         );
 
         return UserPrincipal.create(member);

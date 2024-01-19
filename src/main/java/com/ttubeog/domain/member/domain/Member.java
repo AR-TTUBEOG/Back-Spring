@@ -13,7 +13,8 @@ import lombok.NoArgsConstructor;
 @Getter
 public class Member extends BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -33,8 +34,11 @@ public class Member extends BaseEntity {
 
     private String providerId;
 
+    private String platform;
+    private String refreshToken;
+
     @Builder
-    public Member(Long id, String name, String email, String imageUrl, Boolean emailVerified, String password, Provider provider, Role role, String providerId) {
+    public Member(Long id, String name, String email, String imageUrl, String password, Provider provider, Role role, String providerId, String platform, String refreshToken) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -43,13 +47,17 @@ public class Member extends BaseEntity {
         this.provider = provider;
         this.role = role;
         this.providerId = providerId;
+        this.platform = platform;
+        this.refreshToken = refreshToken;
     }
 
-    public void updateName(String name){
+
+
+    public void updateName(String name) {
         this.name = name;
     }
 
-    public void updateImageUrl(String imageUrl){
+    public void updateImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
 }

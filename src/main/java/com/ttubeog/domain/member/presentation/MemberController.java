@@ -26,13 +26,13 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @Operation(summary = "유저 정보 확인", description = "현재 접속된 유저정보를 확인합니다.")
+    @Operation(summary = "멤버 정보 확인", description = "현재 접속된 멤버 정보를 확인합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "유저 확인 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = MemberDetailRes.class) ) } ),
-            @ApiResponse(responseCode = "400", description = "유저 확인 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
+            @ApiResponse(responseCode = "200", description = "멤버 확인 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = MemberDetailRes.class) ) } ),
+            @ApiResponse(responseCode = "400", description = "멤버 확인 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @GetMapping
-    public ResponseEntity<?> getCurrentUser(
+    public ResponseEntity<?> getCurrentMember(
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
     ) {
         return memberService.getCurrentUser(userPrincipal);

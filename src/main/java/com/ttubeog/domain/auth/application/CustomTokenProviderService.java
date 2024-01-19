@@ -24,7 +24,7 @@ public class CustomTokenProviderService {
     private OAuth2Config oAuth2Config;
 
     @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private CustomMemberDetailsService customMemberDetailsService;
 
     public TokenMapping refreshToken(Authentication authentication, String refreshToken) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
@@ -94,13 +94,13 @@ public class CustomTokenProviderService {
 
     public UsernamePasswordAuthenticationToken getAuthenticationById(String token){
         Long userId = getUserIdFromToken(token);
-        UserDetails userDetails = customUserDetailsService.loadUserById(userId);
+        UserDetails userDetails = customMemberDetailsService.loadUserById(userId);
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         return authentication;
     }
 
     public UsernamePasswordAuthenticationToken getAuthenticationByEmail(String email){
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+        UserDetails userDetails = customMemberDetailsService.loadUserByUsername(email);
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         return authentication;
     }
