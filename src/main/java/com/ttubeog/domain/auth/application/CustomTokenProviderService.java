@@ -23,8 +23,8 @@ public class CustomTokenProviderService {
     @Autowired
     private OAuth2Config oAuth2Config;
 
-    @Autowired
-    private CustomMemberDetailsService customMemberDetailsService;
+//    @Autowired
+//    private CustomMemberDetailsService customMemberDetailsService;
 
     public TokenMapping refreshToken(Authentication authentication, String refreshToken) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
@@ -92,18 +92,18 @@ public class CustomTokenProviderService {
         return Long.parseLong(claims.getSubject());
     }
 
-    public UsernamePasswordAuthenticationToken getAuthenticationById(String token){
-        Long userId = getUserIdFromToken(token);
-        UserDetails userDetails = customMemberDetailsService.loadUserById(userId);
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        return authentication;
-    }
-
-    public UsernamePasswordAuthenticationToken getAuthenticationByEmail(String email){
-        UserDetails userDetails = customMemberDetailsService.loadUserByUsername(email);
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-        return authentication;
-    }
+//    public UsernamePasswordAuthenticationToken getAuthenticationById(String token){
+//        Long userId = getUserIdFromToken(token);
+//        UserDetails userDetails = customMemberDetailsService.loadUserById(userId);
+//        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+//        return authentication;
+//    }
+//
+//    public UsernamePasswordAuthenticationToken getAuthenticationByEmail(String email){
+//        UserDetails userDetails = customMemberDetailsService.loadUserByUsername(email);
+//        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+//        return authentication;
+//    }
 
     public Long getExpiration(String token) {
         // accessToken 남은 유효시간

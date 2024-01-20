@@ -1,6 +1,7 @@
 package com.ttubeog.global.config.security.token;
 
-import com.ttubeog.domain.member.domain.Member;
+import com.ttubeog.domain.member.domain.MemberRole;
+import com.ttubeog.domain.member.dto.MemberDto;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,15 +16,16 @@ import java.util.Map;
 @Getter
 public class UserPrincipal implements OAuth2User, UserDetails{
 
-    private final Member member;
+    private final MemberDto member;
 
     private final Long id;
     private final String email;
     private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
+    @Getter
     private Map<String, Object> attributes;
 
-    public UserPrincipal(Member member, Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(MemberDto member, Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
         this.member = member;
         this.id = id;
         this.email = email;
@@ -31,8 +33,8 @@ public class UserPrincipal implements OAuth2User, UserDetails{
         this.authorities = authorities;
     }
 
-    public static UserPrincipal create(final Member member) {
-        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(member.getRole().getValue()));
+    public static UserPrincipal create(MemberDto member) {
+        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(MemberRole.USER.getRole()));
         return new UserPrincipal(
                 member,
                 member.getId(),
@@ -42,11 +44,6 @@ public class UserPrincipal implements OAuth2User, UserDetails{
         );
     }
 
-    public static UserPrincipal create(Member member, Map<String, Object> attributes) {
-        UserPrincipal userPrincipal = UserPrincipal.create(member);
-        userPrincipal.setAttributes(attributes);
-        return userPrincipal;
-    }
 
     public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
@@ -61,6 +58,11 @@ public class UserPrincipal implements OAuth2User, UserDetails{
     }
 
     @Override
+    public <A> A getAttribute(String name) {
+        return OAuth2User.super.getAttribute(name);
+    }
+
+    @Override
     public Map<String, Object> getAttributes() {
         return attributes;
     }
@@ -71,13 +73,13 @@ public class UserPrincipal implements OAuth2User, UserDetails{
     }
 
     @Override
-    public String getName() {
-        return String.valueOf(id);
+    public String getPassword() {
+        return null;
     }
 
     @Override
-    public String getPassword() {
-        return password;
+    public String getName() {
+        return String.valueOf(id);
     }
 
     @Override

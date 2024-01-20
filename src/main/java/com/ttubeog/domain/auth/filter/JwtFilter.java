@@ -3,12 +3,19 @@ package com.ttubeog.domain.auth.filter;
 import com.ttubeog.domain.auth.application.JwtTokenService;
 import com.ttubeog.domain.member.application.MemberService;
 import com.ttubeog.domain.member.dto.MemberDto;
+import com.ttubeog.domain.member.dto.response.MemberDetailRes;
+import com.ttubeog.global.config.security.token.UserPrincipal;
+import com.ttubeog.global.error.DefaultException;
+import com.ttubeog.global.payload.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -29,7 +36,18 @@ public class JwtFilter extends GenericFilterBean {
 
         if (StringUtils.hasText(jwt) && jwtTokenService.validateToken(jwt)) {
             Long memberId = Long.valueOf(jwtTokenService.getPayload(jwt));
+            MemberDto member = memberService.findById(memberId);
+            if (member == null) {
+                throw new DefaultException(ErrorCode.INVALID_CHECK);
+            }
+            UserDetails memberDetails = UserPrincipal.create(member);
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(memberDetails, null, memberDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        } else {
+            throw new DefaultException(ErrorCode.INVALID_OPTIONAL_ISPRESENT);
         }
+
+        filterChain.doFilter(servletRequest, servletResponse);
     }
 
     // 헤더에서 액세스 토큰 가져오는 코드
