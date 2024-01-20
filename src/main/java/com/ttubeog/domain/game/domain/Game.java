@@ -1,15 +1,22 @@
 package com.ttubeog.domain.game.domain;
 
 import com.ttubeog.domain.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 @Entity
-public class Game extends BaseEntity {
+@Table(name = "game")
+public abstract class Game extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private GameType type;
 }
