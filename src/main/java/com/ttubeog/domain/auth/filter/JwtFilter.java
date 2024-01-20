@@ -1,9 +1,8 @@
 package com.ttubeog.domain.auth.filter;
 
-import com.ttubeog.domain.auth.application.JwtTokenService;
+import com.ttubeog.domain.auth.service.JwtTokenService;
 import com.ttubeog.domain.member.application.MemberService;
 import com.ttubeog.domain.member.dto.MemberDto;
-import com.ttubeog.domain.member.dto.response.MemberDetailRes;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.error.DefaultException;
 import com.ttubeog.global.payload.ErrorCode;

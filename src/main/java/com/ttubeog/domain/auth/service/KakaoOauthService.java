@@ -1,4 +1,4 @@
-package com.ttubeog.domain.auth.application;
+package com.ttubeog.domain.auth.service;
 
 
 import com.ttubeog.domain.auth.dto.KakaoInfoDto;

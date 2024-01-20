@@ -1,11 +1,10 @@
 package com.ttubeog.domain.auth.controller;
 
-import com.ttubeog.domain.auth.application.OauthService;
+import com.ttubeog.domain.auth.service.OauthService;
 import com.ttubeog.domain.auth.dto.OauthRequestDto;
 import com.ttubeog.domain.auth.dto.OauthResponseDto;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationResponse;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;

@@ -1,6 +1,6 @@
 package com.ttubeog.domain.auth.config;
 
-import com.ttubeog.domain.auth.application.JwtTokenService;
+import com.ttubeog.domain.auth.service.JwtTokenService;
 import com.ttubeog.domain.auth.filter.JwtFilter;
 import com.ttubeog.domain.member.application.MemberService;
 import lombok.RequiredArgsConstructor;
