@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -17,11 +18,11 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @RequiredArgsConstructor
 @Configuration
-public class SecurityDomainConfig {
+public class SecurityConfig {
     private final JwtTokenService jwtTokenService;
     private final MemberService memberService;
 
-    @Bean(name = "domainAuth")
+    @Bean
     public AuthenticationManager authenticationManager(
             final AuthenticationConfiguration authenticationConfiguration
             ) throws Exception {
@@ -33,12 +34,19 @@ public class SecurityDomainConfig {
         return httpSecurity.cors(withDefaults())
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/auth/login/**", "/token/refresh").permitAll()
+                        .requestMatchers("/auth/login/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.disable())    // 기본 로그인 폼 미사용
                 .httpBasic(httpSecurityHttpBasicConfigurer -> httpSecurityHttpBasicConfigurer.disable())    // 기본 http 미사용
                 .addFilterBefore(new JwtFilter(jwtTokenService, memberService), UsernamePasswordAuthenticationFilter.class) // JWT 필터 추가
                 .build();
+    }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer(){
+        return web ->
+                web.ignoring()
+                        .requestMatchers("/auth/login/**");
     }
 }

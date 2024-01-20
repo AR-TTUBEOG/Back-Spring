@@ -2,6 +2,7 @@ package com.ttubeog.domain.auth.filter;
 
 import com.ttubeog.domain.auth.application.JwtTokenService;
 import com.ttubeog.domain.member.application.MemberService;
+import com.ttubeog.domain.member.dto.MemberDto;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -25,6 +26,10 @@ public class JwtFilter extends GenericFilterBean {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         logger.info("[JwtFilter] : " + httpServletRequest.getRequestURL().toString());
         String jwt = resolveToken(httpServletRequest);
+
+        if (StringUtils.hasText(jwt) && jwtTokenService.validateToken(jwt)) {
+            Long memberId = Long.valueOf(jwtTokenService.getPayload(jwt));
+        }
     }
 
     // 헤더에서 액세스 토큰 가져오는 코드
