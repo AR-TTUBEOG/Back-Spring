@@ -24,6 +24,8 @@ import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -200,10 +202,38 @@ public class BenefitService {
         return ResponseEntity.ok(apiResponse);
     }
 
+    //혜택 조회(사용 가능, 사용 완료, 만료 혜택 모두 조회)
+    public ResponseEntity<?> findMyBenefit(UserPrincipal userPrincipal, Integer page) throws JsonProcessingException {
+
+        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+
+        Page<MemberBenefit> memberBenefitPage = memberBenefitRepository.findAllByMember(member, PageRequest.of(page, 10));
+
+        List<SaveBenefitRes> saveBenefitRes = memberBenefitPage.stream().map(
+                memberBenefit -> SaveBenefitRes.builder()
+                        .id(memberBenefit.getId())
+                        .benefitId(memberBenefit.getBenefit().getId())
+//                .store(memberBenefit.getStore().getId())
+                        .used(memberBenefit.getUsed())
+                        .expried(memberBenefit.getExpired())
+                        .createdAt(memberBenefit.getCreatedAt())
+                        .content(memberBenefit.getBenefit().getContent())
+                        .type(memberBenefit.getBenefit().getType())
+                        .build()
+        ).toList();
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(saveBenefitRes)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
     //한달지나면 expired true로 만들기
     @Transactional
     @Scheduled(fixedRate = 60*60000) //1시간마다 검사
-    public void autoCheckFrozen() {
+    public void autoCheckExpired() {
         System.out.println("혜택 유효기간 체크");
         List<MemberBenefit> memberBenefitList = memberBenefitRepository.findAllByExpiredFalse();
 

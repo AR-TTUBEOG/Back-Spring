@@ -13,6 +13,7 @@ import com.ttubeog.global.payload.ErrorResponse;
 import com.ttubeog.global.payload.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -104,5 +105,20 @@ public class BenefitController {
             @PathVariable(value = "benefitId") Long benefitId
     ) throws JsonProcessingException {
         return benefitService.useBenefit(userPrincipal, benefitId);
+    }
+
+    //혜택 조회
+    @Operation(summary = "혜택 조회", description = "멤버가 보유 중인 혜택을 모두 조회합니다. 페이지 번호 0번이 첫 번째 페이지 입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "혜택 조회 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = SaveBenefitRes.class) ) } ),
+            @ApiResponse(responseCode = "400", description = "혜택 조회 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
+    })
+    @GetMapping
+    public ResponseEntity<?> findMyBenefit(
+            @Parameter(description = "Accesstoken을 입력해주세요.", required = true)
+            @CurrentUser UserPrincipal userPrincipal,
+            @RequestParam(name = "page") Integer page
+    ) throws JsonProcessingException {
+        return benefitService.findMyBenefit(userPrincipal, page);
     }
 }
