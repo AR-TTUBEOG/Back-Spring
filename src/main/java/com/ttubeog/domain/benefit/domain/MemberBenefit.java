@@ -41,4 +41,8 @@ public class MemberBenefit extends BaseEntity {
     public void useBenefit() {
         this.used = true;
     }
+
+    public void terminateBenefit() {
+        this.expired = true;
+    }
 }

@@ -17,4 +17,5 @@ public interface MemberBenefitRepository extends JpaRepository<MemberBenefit, Lo
 
     Optional<MemberBenefit> findByBenefitAndMemberAndExpiredIsFalse(Benefit benefit, Member member);
 
+    List<MemberBenefit> findAllByExpiredFalse();
 }

@@ -25,6 +25,7 @@ import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +49,8 @@ public class BenefitService {
         memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
 
 //        Store store = storeRepository.findById(createBenefitReq.getStoreId()).orElseThrow(에러::new);
+
+        //TODO Store의 등록유저가 현재 멤버와 일치하는지 확인
 
         Benefit benefit = Benefit.builder()
                 .content(createBenefitReq.getContent())
@@ -79,6 +82,8 @@ public class BenefitService {
         Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
         Benefit benefit = benefitRepository.findById(benefitId).orElseThrow(NonExistentBenefitException::new);
 
+        //TODO Store의 등록유저가 현재 멤버와 일치하는지 확인
+
         benefitRepository.delete(benefit);
 
         ApiResponse apiResponse = ApiResponse.builder()
@@ -93,10 +98,10 @@ public class BenefitService {
     @Transactional
     public ResponseEntity<?> updateBenefit(UserPrincipal userPrincipal, UpdateBenefitReq updateBenefitReq) throws JsonProcessingException {
 
-        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
         Benefit benefit = benefitRepository.findById(updateBenefitReq.getBenefitId()).orElseThrow(NonExistentBenefitException::new);
 
-        //TODO userOptional과 benefit의 userId가 일치하는지 확인
+        //TODO Store의 등록유저가 현재 멤버와 일치하는지 확인
 
         benefit.updateContent(updateBenefitReq.getContent());
 
@@ -195,5 +200,19 @@ public class BenefitService {
         return ResponseEntity.ok(apiResponse);
     }
 
-    //TODO 한달지나면 has_expired true로 만들기
+    //한달지나면 expired true로 만들기
+    @Transactional
+    @Scheduled(fixedRate = 60*60000) //1시간마다 검사
+    public void autoCheckFrozen() {
+        System.out.println("혜택 유효기간 체크");
+        List<MemberBenefit> memberBenefitList = memberBenefitRepository.findAllByExpiredFalse();
+
+        if (!memberBenefitList.isEmpty()) {
+            for (MemberBenefit memberBenefit : memberBenefitList) {
+                if (memberBenefit.getCreatedAt().isBefore(LocalDateTime.now().minusMonths(1))) {
+                    memberBenefit.terminateBenefit();
+                }
+            }
+        }
+    }
 }
