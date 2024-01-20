@@ -30,7 +30,7 @@ public class Member extends BaseEntity {
     private Provider provider;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private MemberRole memberRole;
 
     private String providerId;
 
@@ -38,14 +38,14 @@ public class Member extends BaseEntity {
     private String refreshToken;
 
     @Builder
-    public Member(Long id, String name, String email, String imageUrl, String password, Provider provider, Role role, String providerId, String platform, String refreshToken) {
+    public Member(Long id, String name, String email, String imageUrl, String password, Provider provider, MemberRole memberRole, String providerId, String platform, String refreshToken) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.imageUrl = imageUrl;
         this.password = password;
         this.provider = provider;
-        this.role = role;
+        this.memberRole = memberRole;
         this.providerId = providerId;
         this.platform = platform;
         this.refreshToken = refreshToken;

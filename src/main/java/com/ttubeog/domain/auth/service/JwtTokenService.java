@@ -1,5 +1,7 @@
-package com.ttubeog.domain.auth.application;
+package com.ttubeog.domain.auth.service;
 
+import com.ttubeog.global.error.DefaultException;
+import com.ttubeog.global.payload.ErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
@@ -35,7 +37,7 @@ public class JwtTokenService implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         key = getKeyFromBase64EncodedKey(encodeBase64SecretKey(secretKey));
     }
 
@@ -80,6 +82,8 @@ public class JwtTokenService implements InitializingBean {
                     .getSubject();
         } catch (ExpiredJwtException e) {
             return e.getClaims().getSubject();
+        } catch (JwtException e) {
+            throw new DefaultException(ErrorCode.INVALID_AUTHENTICATION);
         }
     }
 

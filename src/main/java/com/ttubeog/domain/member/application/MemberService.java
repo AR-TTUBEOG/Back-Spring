@@ -4,6 +4,7 @@ import com.ttubeog.domain.member.dto.MemberDto;
 import com.ttubeog.domain.member.dto.response.MemberDetailRes;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
+import com.ttubeog.domain.member.mapper.MemberMapper;
 import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
@@ -19,6 +20,7 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final MemberMapper memberMapper;
 
     // 현재 유저 조회
     public ResponseEntity<?> getCurrentUser(UserPrincipal userPrincipal){
@@ -42,9 +44,7 @@ public class MemberService {
     }
 
     public MemberDto findById(Long id) {
-        Optional<Member> member = memberRepository.findById(id);
-
-        return member.map(MemberDto::toEntity).orElse(null);
+        return memberMapper.findById(id);
     }
 
     public MemberDto findByRefreshToken(String refreshToken) {
@@ -52,15 +52,16 @@ public class MemberService {
         return member.map(MemberDto::toEntity).orElse(null);
     }
 
-    public void save(MemberDto memberDetailRes) {
-
+    public void save(MemberDto memberDto) {
+        memberMapper.save(memberDto);
     }
 
-    public void update(MemberDto memberDetailRes) {
-
+    public void update(MemberDto memberDto) {
+        memberMapper.update(memberDto);
     }
 
-    public void updateRefreshToken(MemberDto memberDetailRes) {
+    public void updateRefreshToken(MemberDto memberDto) {
+        memberMapper.updateRefreshToken(memberDto);
     }
 
 }
