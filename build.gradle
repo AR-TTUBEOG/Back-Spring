@@ -10,6 +10,9 @@ sourceCompatibility = '17'
 
 repositories {
 	mavenCentral()
+
+	// discord log back
+	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -33,10 +36,12 @@ dependencies {
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
 	runtimeOnly 'com.mysql:mysql-connector-j'
-	implementation 'org.mariadb.jdbc:mariadb-java-client:2.6.2'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+
+	// discord log back
+	implementation 'com.github.napstr:logback-discord-appender:1.0.0'
 }
 
 tasks.named('test') {

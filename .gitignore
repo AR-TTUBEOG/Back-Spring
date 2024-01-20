@@ -45,6 +45,7 @@ out/
 **/resources/application.yml
 **/resources/database/
 **/resources/oauth2/
+**/resources/logback.xml
 Dockerfile
 docker-compose.yaml
 deploy_*.sh
