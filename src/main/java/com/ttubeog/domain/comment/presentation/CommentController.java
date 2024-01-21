@@ -1,6 +1,7 @@
 package com.ttubeog.domain.comment.presentation;
 
 import com.ttubeog.domain.comment.application.CommentService;
+import com.ttubeog.domain.comment.dto.request.GetCommentReq;
 import com.ttubeog.domain.comment.dto.request.UpdateCommentReq;
 import com.ttubeog.domain.comment.dto.request.WriteCommentReq;
 import com.ttubeog.domain.comment.dto.response.UpdateCommentRes;
@@ -21,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Tag(name = "Comment", description = "Comment API")
 @RestController
 @RequiredArgsConstructor
@@ -32,8 +35,8 @@ public class CommentController {
     // 댓글 작성
     @Operation(summary = "댓글 작성", description = "댓글을 작성합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "댓글 작성 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = WriteCommentRes.class) ) } ),
-            @ApiResponse(responseCode = "400", description = "댓글 작성 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } )
+            @ApiResponse(responseCode = "200", description = "댓글 작성 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = WriteCommentRes.class))}),
+            @ApiResponse(responseCode = "400", description = "댓글 작성 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PostMapping
     public ResponseEntity<?> writeComment(
@@ -46,8 +49,8 @@ public class CommentController {
     // 댓글 수정
     @Operation(summary = "댓글 수정", description = "댓글 내용을 수정합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "댓글 수정 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = UpdateCommentRes.class) ) } ),
-            @ApiResponse(responseCode = "400", description = "댓글 수정 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } )
+            @ApiResponse(responseCode = "200", description = "댓글 수정 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = UpdateCommentRes.class))}),
+            @ApiResponse(responseCode = "400", description = "댓글 수정 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PatchMapping
     public ResponseEntity<?> updateComment(
@@ -60,8 +63,8 @@ public class CommentController {
     // 댓글 삭제
     @Operation(summary = "댓글 삭제", description = "댓글을 삭제합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "댓글 삭제 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class) ) } ),
-            @ApiResponse(responseCode = "400", description = "댓글 삭제 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } )
+            @ApiResponse(responseCode = "200", description = "댓글 삭제 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}),
+            @ApiResponse(responseCode = "400", description = "댓글 삭제 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @DeleteMapping("/{commentId}")
     public ResponseEntity<?> deleteComment(
@@ -71,5 +74,16 @@ public class CommentController {
         return commentService.deleteComment(userPrincipal, commentId);
     }
 
-    // 댓글 조회
+    // AR뷰 댓글 조회 (반경 이용)
+    @Operation(summary = "댓글 조회", description = "반경 내의 댓글을 조회힙니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "댓글 조회 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
+            @ApiResponse(responseCode = "400", description = "댓글 조회 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @GetMapping
+    public ResponseEntity<?> getCommentForAR(
+            @Valid @RequestBody GetCommentReq getCommentReq
+    ) {
+        return commentService.getCommentForAR(getCommentReq);
+    }
 }

@@ -2,8 +2,10 @@ package com.ttubeog.domain.comment.application;
 
 import com.ttubeog.domain.comment.domain.Comment;
 import com.ttubeog.domain.comment.domain.repository.CommentRepository;
+import com.ttubeog.domain.comment.dto.request.GetCommentReq;
 import com.ttubeog.domain.comment.dto.request.UpdateCommentReq;
 import com.ttubeog.domain.comment.dto.request.WriteCommentReq;
+import com.ttubeog.domain.comment.dto.response.GetCommentRes;
 import com.ttubeog.domain.comment.dto.response.UpdateCommentRes;
 import com.ttubeog.domain.comment.dto.response.WriteCommentRes;
 import com.ttubeog.domain.member.domain.Member;
@@ -13,11 +15,16 @@ import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+
+import static java.lang.Math.abs;
 
 @RequiredArgsConstructor
 @Service
@@ -111,6 +118,60 @@ public class CommentService {
         return ResponseEntity.ok(apiResponse);
     }
 
-    // 댓글 조회
+    public List<Comment> getAllComments() {
+        return commentRepository.findAll();
+    }
 
+    // AR뷰를 위한 댓글 조회
+    public ResponseEntity<?> getCommentForAR(GetCommentReq getCommentReq) {
+
+        Float userLatitude = getCommentReq.getLatitude();
+        Float userLongitude = getCommentReq.getLongitude();
+
+        List<Comment> allComments = getAllComments();
+        Double radius = 20.0; // 반경값 확인 필요
+        List<GetCommentRes> showComments = new ArrayList<>();
+
+        for (Comment comment : allComments) {
+
+            Float commentLatitude = comment.getLatitude();
+            Float commentLongitude = comment.getLongitude();
+
+            double distance = calculateDistance(userLatitude, userLongitude, commentLatitude, commentLongitude);
+
+            if (distance < radius) {
+                GetCommentRes getCommentRes = GetCommentRes.builder()
+                        .commentId(comment.getId())
+                        .memberId(comment.getMember().getId())
+                        .content(comment.getContent())
+                        .distance(distance)
+                        .build();
+
+                showComments.add(getCommentRes);
+            }
+        }
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(showComments)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    // 거리 계산
+    private double calculateDistance(Float lat1, Float lon1, Float lat2, Float lon2) {
+        double R = 6371; // 지구 반지름
+
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); // 단위 km
+
+        return R * c;
+    }
 }
