@@ -1,11 +1,11 @@
 package com.ttubeog.domain.auth.filter;
 
+import com.ttubeog.domain.auth.exception.CustomException;
+import com.ttubeog.domain.auth.exception.ErrorCode;
 import com.ttubeog.domain.auth.service.JwtTokenService;
 import com.ttubeog.domain.member.application.MemberService;
 import com.ttubeog.domain.member.dto.MemberDto;
 import com.ttubeog.global.config.security.token.UserPrincipal;
-import com.ttubeog.global.error.DefaultException;
-import com.ttubeog.global.payload.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -31,19 +31,35 @@ public class JwtFilter extends GenericFilterBean {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
         logger.info("[JwtFilter] : " + httpServletRequest.getRequestURL().toString());
-        String jwt = resolveToken(httpServletRequest);
 
-        if (StringUtils.hasText(jwt) && jwtTokenService.validateToken(jwt)) {
-            Long memberId = Long.valueOf(jwtTokenService.getPayload(jwt));
-            MemberDto member = memberService.findById(memberId);
-            if (member == null) {
-                throw new DefaultException(ErrorCode.INVALID_CHECK);
+        try {
+            String jwt = resolveToken(httpServletRequest);
+
+            if (StringUtils.hasText(jwt) && jwtTokenService.validateToken(jwt)) {
+                Long userId = Long.valueOf(jwtTokenService.getPayload(jwt)); // 토큰에 있는 userId 가져오기
+                MemberDto user = memberService.findById(userId); // userId로
+                if (user == null) {
+                    throw new CustomException(ErrorCode.NOT_EXIST_USER);
+                }
+                UserDetails userDetails = UserPrincipal.create(user);
+                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            } else {
+                throw new CustomException(ErrorCode.INVALID_ACCESS_TOKEN);
             }
-            UserDetails memberDetails = UserPrincipal.create(member);
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(memberDetails, null, memberDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        } else {
-            throw new DefaultException(ErrorCode.INVALID_OPTIONAL_ISPRESENT);
+        } catch (CustomException ex) {
+            // 스웨거에 대한 예외 처리
+            if (httpServletRequest.getRequestURI().contains("/swagger") || httpServletRequest.getRequestURI().contains("/v2/api-docs")) {
+                // 여기에서 스웨거 예외 처리 로직을 추가
+                // 예를 들어, HttpServletResponse에 적절한 응답을 설정하거나 다른 방식으로 처리
+                // 아래는 예시 코드이므로 필요에 따라 수정이 필요합니다.
+                servletResponse.getWriter().write("Swagger access exception: " + ex.getMessage());
+                servletResponse.getWriter().flush();
+                servletResponse.getWriter().close();
+                return;
+            } else {
+                throw ex; // 스웨거 이외의 경우에는 예외를 다시 던집니다.
+            }
         }
 
         filterChain.doFilter(servletRequest, servletResponse);
@@ -57,6 +73,6 @@ public class JwtFilter extends GenericFilterBean {
             return bearerToken.substring(7);
         }
 
-        return null;
+        return "";
     }
 }
