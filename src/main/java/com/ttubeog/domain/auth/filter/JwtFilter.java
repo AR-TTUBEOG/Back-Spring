@@ -1,11 +1,11 @@
 package com.ttubeog.domain.auth.filter;
 
+import com.ttubeog.domain.auth.exception.CustomException;
+import com.ttubeog.domain.auth.exception.ErrorCode;
 import com.ttubeog.domain.auth.service.JwtTokenService;
 import com.ttubeog.domain.member.application.MemberService;
 import com.ttubeog.domain.member.dto.MemberDto;
 import com.ttubeog.global.config.security.token.UserPrincipal;
-import com.ttubeog.global.error.DefaultException;
-import com.ttubeog.global.payload.ErrorCode;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -26,37 +26,53 @@ public class JwtFilter extends GenericFilterBean {
     private final JwtTokenService jwtTokenService;
     private final MemberService memberService;
 
-    // 액세스 토큰이 유효한지 확인하고 SecurityContext에 계정 정보를 저장
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        logger.info("[JwtFilter] : " + httpServletRequest.getRequestURL().toString());
-        String jwt = resolveToken(httpServletRequest);
 
-        if (StringUtils.hasText(jwt) && jwtTokenService.validateToken(jwt)) {
-            Long memberId = Long.valueOf(jwtTokenService.getPayload(jwt));
-            MemberDto member = memberService.findById(memberId);
-            if (member == null) {
-                throw new DefaultException(ErrorCode.INVALID_CHECK);
+        // Swagger UI 및 관련 리소스 경로에 대한 요청인 경우 토큰 검증 생략
+        if (isSwaggerPath(httpServletRequest.getRequestURI())) {
+            filterChain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
+        try {
+            String jwt = resolveToken(httpServletRequest);
+            if (StringUtils.hasText(jwt) && jwtTokenService.validateToken(jwt)) {
+                authenticateWithJwtToken(jwt);
             }
-            UserDetails memberDetails = UserPrincipal.create(member);
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(memberDetails, null, memberDetails.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        } else {
-            throw new DefaultException(ErrorCode.INVALID_OPTIONAL_ISPRESENT);
+        } catch (CustomException ex) {
+            // JWT 검증 실패 시 예외 처리
+            throw ex;
         }
 
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
-    // 헤더에서 액세스 토큰 가져오는 코드
-    private String resolveToken(HttpServletRequest servletRequest) {
-        String bearerToken = servletRequest.getHeader(AUTHORIZATION_HEADER);
+    private boolean isSwaggerPath(String uri) {
+        return uri.contains("/swagger") ||
+                uri.contains("/v3/api-docs") ||
+                uri.contains("/swagger-resources") ||
+                uri.contains("/swagger-ui.html") ||
+                uri.contains("/webjars/");
+    }
 
+    private String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
-
         return null;
+    }
+
+    private void authenticateWithJwtToken(String jwt) {
+        Long userId = Long.valueOf(jwtTokenService.getPayload(jwt));
+        MemberDto user = memberService.findById(userId);
+        if (user == null) {
+            throw new CustomException(ErrorCode.NOT_EXIST_USER);
+        }
+        UserDetails userDetails = UserPrincipal.create(user);
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 }
