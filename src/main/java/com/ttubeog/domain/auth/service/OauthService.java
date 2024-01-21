@@ -34,18 +34,18 @@ public class OauthService {
         return accessToken;
     }
 
-//    // 리프레시 토큰을 액세스 토큰으로 갱신
-//    public String refreshToAccessToken(String refreshToken) {
-//        MemberDto memberDto = memberService.findByRefreshToken(refreshToken);
-//
-//        if(memberDto == null) {
-//            throw new DefaultException(ErrorCode.INVALID_OPTIONAL_ISPRESENT);
-//        }
-//
-//        if (!jwtTokenService.validateToken(refreshToken)) {
-//            throw new DefaultException(ErrorCode.INVALID_CHECK);
-//        }
-//
-//        return jwtTokenService.createAccessToken(memberDto.getId().toString());
-//    }
+    // 리프레시 토큰을 액세스 토큰으로 갱신
+    public String refreshToAccessToken(String refreshToken) {
+        MemberDto memberDto = memberService.findByRefreshToken(refreshToken);
+
+        if(memberDto == null) {
+            throw new DefaultException(ErrorCode.INVALID_OPTIONAL_ISPRESENT);
+        }
+
+        if (!jwtTokenService.validateToken(refreshToken)) {
+            throw new DefaultException(ErrorCode.INVALID_CHECK);
+        }
+
+        return jwtTokenService.createAccessToken(memberDto.getId().toString());
+    }
 }
