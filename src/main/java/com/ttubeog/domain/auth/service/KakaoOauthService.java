@@ -1,7 +1,7 @@
 package com.ttubeog.domain.auth.service;
 
 
-import com.ttubeog.domain.auth.dto.KakaoInfoDto;
+import com.ttubeog.domain.auth.dto.kakao.KakaoInfoDto;
 import com.ttubeog.domain.member.application.MemberService;
 import com.ttubeog.domain.member.dto.MemberDto;
 import lombok.RequiredArgsConstructor;

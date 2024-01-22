@@ -1,4 +1,4 @@
-package com.ttubeog.domain.auth.dto;
+package com.ttubeog.domain.auth.dto.kakao;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
