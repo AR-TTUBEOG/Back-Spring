@@ -39,7 +39,7 @@ public class KakaoOauthService {
                 .platform("kakao")
                 .build();
 
-        if(memberService.findById(memberDto.getId()) != null) {
+        if (memberService.findById(memberDto.getId()) != null) {
             memberService.update(memberDto);
         } else {
             memberService.save(memberDto);

@@ -12,8 +12,8 @@ public class KakaoInfoDto {
     private String email;
 
     public KakaoInfoDto(Map<String, Object> info) {
-        this.id = Long.valueOf(info.get("id").toString());
+        this.id = info.get("id") != null ? Long.valueOf(info.get("id").toString()) : null;
         this.email = info.get("email") != null
-                ? info.get(email).toString() : "";
+                ? info.get("email").toString() : "";
     }
 }
