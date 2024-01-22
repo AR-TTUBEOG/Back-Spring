@@ -1,9 +1,9 @@
 package com.ttubeog.domain.auth.service;
 
+import com.ttubeog.domain.auth.exception.CustomException;
+import com.ttubeog.domain.auth.exception.ErrorCode;
 import com.ttubeog.domain.member.application.MemberService;
 import com.ttubeog.domain.member.dto.MemberDto;
-import com.ttubeog.global.error.DefaultException;
-import com.ttubeog.global.payload.ErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,11 +39,11 @@ public class OauthService {
         MemberDto memberDto = memberService.findByRefreshToken(refreshToken);
 
         if(memberDto == null) {
-            throw new DefaultException(ErrorCode.INVALID_OPTIONAL_ISPRESENT);
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
         if (!jwtTokenService.validateToken(refreshToken)) {
-            throw new DefaultException(ErrorCode.INVALID_CHECK);
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
         return jwtTokenService.createAccessToken(memberDto.getId().toString());

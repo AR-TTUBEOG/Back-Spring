@@ -1,7 +1,7 @@
 package com.ttubeog.domain.auth.service;
 
-import com.ttubeog.global.error.DefaultException;
-import com.ttubeog.global.payload.ErrorCode;
+import com.ttubeog.domain.auth.exception.CustomException;
+import com.ttubeog.domain.auth.exception.ErrorCode;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.io.Encoders;
@@ -83,7 +83,7 @@ public class JwtTokenService implements InitializingBean {
         } catch (ExpiredJwtException e) {
             return e.getClaims().getSubject();
         } catch (JwtException e) {
-            throw new DefaultException(ErrorCode.INVALID_AUTHENTICATION);
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
     }
 

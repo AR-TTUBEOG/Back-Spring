@@ -3,9 +3,10 @@ package com.ttubeog.domain.auth.controller;
 import com.ttubeog.domain.auth.dto.OauthRequestDto;
 import com.ttubeog.domain.auth.dto.OauthResponseDto;
 import com.ttubeog.domain.auth.dto.RefreshTokenResponseDto;
+import com.ttubeog.domain.auth.exception.CustomException;
+import com.ttubeog.domain.auth.exception.ErrorCode;
 import com.ttubeog.domain.auth.service.OauthService;
 import com.ttubeog.global.error.DefaultException;
-import com.ttubeog.global.payload.ErrorCode;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -46,14 +47,14 @@ public class OauthController {
         Cookie[] list = request.getCookies();
 
         if (list == null) {
-            throw new DefaultException(ErrorCode.INVALID_CHECK);
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
         Cookie refreshTokenCookie = Arrays.stream(list).filter(cookie ->
                 cookie.getName().equals("refresh_token")).collect(Collectors.toList()).get(0);
 
         if (refreshTokenCookie == null) {
-            throw new DefaultException(ErrorCode.INVALID_CHECK);
+            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
         String accessToken = oauthService.refreshToAccessToken(refreshTokenCookie.getValue());
