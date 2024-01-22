@@ -6,6 +6,7 @@ import com.ttubeog.domain.auth.dto.RefreshTokenResponseDto;
 import com.ttubeog.domain.auth.service.OauthService;
 import com.ttubeog.global.error.DefaultException;
 import com.ttubeog.global.payload.ErrorCode;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+@Tag(name = "Oauth", description = "Oauth API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")

@@ -30,6 +30,7 @@ public class OauthService {
         memberDto.setRefreshToken(refreshToken);
         memberService.updateRefreshToken(memberDto);
 
+        jwtTokenService.addRefreshTokenToCookie(refreshToken, response);
         return accessToken;
     }
 

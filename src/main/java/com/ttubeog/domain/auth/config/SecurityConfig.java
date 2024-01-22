@@ -1,8 +1,10 @@
 package com.ttubeog.domain.auth.config;
 
+import com.ttubeog.domain.auth.exception.ExceptionHandlerFilter;
 import com.ttubeog.domain.auth.service.JwtTokenService;
 import com.ttubeog.domain.auth.filter.JwtFilter;
 import com.ttubeog.domain.member.application.MemberService;
+import com.ttubeog.domain.member.domain.MemberRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,11 +37,14 @@ public class SecurityConfig {
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/auth/login/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs", "/swagger-resources/**").permitAll()
+                        .requestMatchers("/user/**").hasAuthority(MemberRole.USER.getRole())
                         .anyRequest().authenticated())
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.disable())    // 기본 로그인 폼 미사용
                 .httpBasic(httpSecurityHttpBasicConfigurer -> httpSecurityHttpBasicConfigurer.disable())    // 기본 http 미사용
                 .addFilterBefore(new JwtFilter(jwtTokenService, memberService), UsernamePasswordAuthenticationFilter.class) // JWT 필터 추가
+                .addFilterBefore(new ExceptionHandlerFilter(), JwtFilter.class) // Security Filter 에서 CustomException 사용하기 위해 추가
                 .build();
     }
 
@@ -47,6 +52,7 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer(){
         return web ->
                 web.ignoring()
-                        .requestMatchers("/auth/login/**");
+                        .requestMatchers("/auth/login/**")
+                        .requestMatchers("/swagger-ui/**", "/v2/api-docs", "/swagger-resources/**");
     }
 }
