@@ -1,5 +1,7 @@
 package com.ttubeog.domain.auth.dto.apple;
 
+import com.ttubeog.domain.auth.exception.CustomException;
+import com.ttubeog.domain.auth.exception.ErrorCode;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,10 +16,10 @@ import java.util.List;
 public class ApplePublicKeyResponse {
     private List<ApplePublicKey> keys;
 
-    public ApplePublicKey getMatchedKey(String kid, String alg) throws AuthenticationException {
+    public ApplePublicKey getMatchedKey(String kid, String alg) {
         return keys.stream()
                 .filter(key -> key.getKid().equals(kid) && key.getAlg().equals(alg))
                 .findAny()
-                .orElseThrow(AuthenticationException::new);
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_JWT_ALG_KID));
     }
 }

@@ -4,6 +4,7 @@ import com.ttubeog.domain.auth.dto.apple.ApplePublicKey;
 import com.ttubeog.domain.auth.dto.apple.ApplePublicKeyResponse;
 import com.ttubeog.domain.auth.exception.CustomException;
 import com.ttubeog.domain.auth.exception.ErrorCode;
+import org.springframework.stereotype.Component;
 
 import javax.naming.AuthenticationException;
 import java.math.BigInteger;
@@ -15,6 +16,7 @@ import java.security.spec.RSAPublicKeySpec;
 import java.util.Base64;
 import java.util.Map;
 
+@Component
 public class PublicKeyGenerator {
 
     private static final String SIGN_ALGORITHM_HEADER_KEY = "alg";
@@ -22,7 +24,7 @@ public class PublicKeyGenerator {
     private static final int POSITIVE_SIGN_NUMBER = 1;
 
 
-    public PublicKey generatePublicKey(Map<String, String> headers, ApplePublicKeyResponse applePublicKeyResponse) throws AuthenticationException {
+    public PublicKey generatePublicKey(Map<String, String> headers, ApplePublicKeyResponse applePublicKeyResponse) {
         ApplePublicKey applePublicKey =
                 applePublicKeyResponse.getMatchedKey(headers.get(SIGN_ALGORITHM_HEADER_KEY), headers.get(KEY_ID_HEADER_KEY));
 

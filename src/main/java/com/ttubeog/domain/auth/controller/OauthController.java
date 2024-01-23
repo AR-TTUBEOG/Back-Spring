@@ -3,6 +3,7 @@ package com.ttubeog.domain.auth.controller;
 import com.ttubeog.domain.auth.dto.OauthRequestDto;
 import com.ttubeog.domain.auth.dto.OauthResponseDto;
 import com.ttubeog.domain.auth.dto.RefreshTokenResponseDto;
+import com.ttubeog.domain.auth.dto.apple.AppleLoginRequest;
 import com.ttubeog.domain.auth.exception.CustomException;
 import com.ttubeog.domain.auth.exception.ErrorCode;
 import com.ttubeog.domain.auth.service.OauthService;
@@ -39,6 +40,13 @@ public class OauthController {
         oauthResponseDto.setAccessToken(accessToken);
         return oauthResponseDto;
     }
+
+    // 애플 로그인
+//    @PostMapping("/login/apple")
+//    public OauthResponseDto loginWithApple(
+//            @RequestBody AppleLoginRequest request) {
+//        OauthResponseDto responseDto = oauthService.loginWithApple()
+//    }
 
     // 리프레시 토큰으로 액세스토큰 재발급
     @PostMapping("/token/refresh")

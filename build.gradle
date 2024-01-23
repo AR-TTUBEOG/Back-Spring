@@ -51,7 +51,8 @@ dependencies {
 	// discord log back
 	implementation 'com.github.napstr:logback-discord-appender:1.0.0'
 
-	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+	implementation platform("org.springframework.cloud:spring-cloud-dependencies:2022.0.3")
+	implementation "org.springframework.cloud:spring-cloud-starter-openfeign"
 }
 
 tasks.named('test') {

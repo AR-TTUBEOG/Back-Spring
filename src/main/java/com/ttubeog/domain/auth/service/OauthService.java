@@ -1,5 +1,8 @@
 package com.ttubeog.domain.auth.service;
 
+import com.ttubeog.domain.auth.controller.AppleOAtuhUserProvider;
+import com.ttubeog.domain.auth.dto.OAuthPlatformMemberResponse;
+import com.ttubeog.domain.auth.dto.apple.AppleLoginRequest;
 import com.ttubeog.domain.auth.exception.CustomException;
 import com.ttubeog.domain.auth.exception.ErrorCode;
 import com.ttubeog.domain.member.application.MemberService;
@@ -14,12 +17,20 @@ public class OauthService {
     private final MemberService memberService;
     private final JwtTokenService jwtTokenService;
     private final KakaoOauthService kakaoOauthService;
+    private final AppleOAtuhUserProvider appleOAtuhUserProvider;
 
     // 카카오 로그인
     public String loginWithKakao(String accessToken, HttpServletResponse response) {
         MemberDto memberDto = kakaoOauthService.getMemberProfileByToken(accessToken);
         return getTokens(memberDto.getId(), response);
     }
+
+//    // 애플 로그인
+//    public String loginWithApple(AppleLoginRequest request, HttpServletResponse response) {
+//        OAuthPlatformMemberResponse applePlatformMember =
+//                appleOAtuhUserProvider.getApplePlatformMember(request.getToken());
+//        return getTokens(applePlatformMember.getEmail(), response);
+//    }
 
     // 액세스, 리프레시 토큰 생성
     public String getTokens(Long id, HttpServletResponse response) {
