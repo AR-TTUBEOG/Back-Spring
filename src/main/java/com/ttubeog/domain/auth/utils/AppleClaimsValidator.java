@@ -1,4 +1,4 @@
-package com.ttubeog.domain.auth.service;
+package com.ttubeog.domain.auth.utils;
 
 import com.ttubeog.domain.auth.utils.EncryptUtils;
 import io.jsonwebtoken.Claims;
@@ -15,9 +15,9 @@ public class AppleClaimsValidator {
 
 
     public AppleClaimsValidator(
-            @Value("${}") String iss,   // 애플 api 요청 경로
-            @Value("${}") String clientId,  // apple developer에 생성된 Bundle ID 값
-            @Value("${}") String nonce  // csrf 공격 방지를 위한 임의의 문자열
+            @Value("https://appleid.apple.com/") String iss,   // 애플 api 요청 경로
+            @Value("1234") String clientId,  // apple developer에 생성된 Bundle ID 값
+            @Value("1234") String nonce  // csrf 공격 방지를 위한 임의의 문자열
     ) {
         this.iss = iss;
         this.clientId = clientId;

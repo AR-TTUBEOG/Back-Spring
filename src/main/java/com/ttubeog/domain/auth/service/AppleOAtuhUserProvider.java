@@ -1,13 +1,15 @@
-package com.ttubeog.domain.auth.controller;
+package com.ttubeog.domain.auth.service;
 
 import com.ttubeog.domain.auth.dto.OAuthPlatformMemberResponse;
 import com.ttubeog.domain.auth.dto.apple.ApplePublicKeyResponse;
+import com.ttubeog.domain.auth.dto.kakao.KakaoInfoDto;
 import com.ttubeog.domain.auth.exception.CustomException;
 import com.ttubeog.domain.auth.exception.ErrorCode;
 import com.ttubeog.domain.auth.feign.AppleAuthClient;
-import com.ttubeog.domain.auth.service.AppleClaimsValidator;
+import com.ttubeog.domain.auth.utils.AppleClaimsValidator;
 import com.ttubeog.domain.auth.service.PublicKeyGenerator;
 import com.ttubeog.domain.auth.utils.AppleJwtParser;
+import com.ttubeog.domain.member.dto.MemberDto;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -24,7 +26,7 @@ public class AppleOAtuhUserProvider {
     private final AppleClaimsValidator appleClaimsValidator;
 
 
-    public OAuthPlatformMemberResponse getApplePlatformMember(String identityToken) {
+    public MemberDto getApplePlatformMember(String identityToken) {
         Map<String, String > headers = appleJwtParser.parseHeaders(identityToken);
         ApplePublicKeyResponse applePublicKeyResponse = appleAuthClient.getAppleAuthPublicKey();
 
@@ -32,7 +34,7 @@ public class AppleOAtuhUserProvider {
 
         Claims claims = appleJwtParser.parsePublicKeyAndGetClaims(identityToken, publicKey);
         validateClaims(claims);
-        return new OAuthPlatformMemberResponse(claims.getSubject(), claims.get("email", String.class));
+        return new MemberDto(claims.getSubject(), claims.get("email", String.class));
     }
 
     private void validateClaims(Claims claims) {

@@ -9,5 +9,5 @@ import lombok.*;
 @ToString
 public class AppleLoginRequest {
     @NotBlank(message = "1012: 공백일 수 없습니다.")
-    private String token;
+    private String accessToken;
 }
