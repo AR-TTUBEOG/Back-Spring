@@ -15,8 +15,8 @@ public class AppleClaimsValidator {
 
 
     public AppleClaimsValidator(
-            @Value("https://appleid.apple.com/") String iss,   // 애플 api 요청 경로
-            @Value("1234") String clientId,  // apple developer에 생성된 Bundle ID 값
+            @Value("${apple.iss}") String iss,   // 애플 api 요청 경로
+            @Value("${apple.bundle}") String clientId,  // apple developer에 생성된 Bundle ID 값
             @Value("1234") String nonce  // csrf 공격 방지를 위한 임의의 문자열
     ) {
         this.iss = iss;
