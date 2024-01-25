@@ -14,6 +14,7 @@ import com.ttubeog.domain.store.exception.NonExistentStoreException;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.global.payload.ApiResponse;
+import com.ttubeog.global.payload.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -101,6 +102,22 @@ public class StoreService {
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
                 .information(updateStoreRes)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    // 매장 삭제
+    @Transactional
+    public ResponseEntity<?> deleteStore(UserPrincipal userPrincipal, Long storeId) {
+
+        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Store store = storeRepository.findById(storeId).orElseThrow(NonExistentStoreException::new);
+        storeRepository.delete(store);
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(Message.builder().message("매장 정보가 정상적으로 삭제되었습니다.").build())
                 .build();
 
         return ResponseEntity.ok(apiResponse);
