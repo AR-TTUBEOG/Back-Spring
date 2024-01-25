@@ -1,4 +1,4 @@
-package com.ttubeog.domain.auth.config;
+package com.ttubeog.global.config;
 
 import com.ttubeog.TtubeogApplication;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;

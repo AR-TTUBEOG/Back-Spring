@@ -1,5 +1,7 @@
 package com.ttubeog.domain.member.domain;
 
+import com.ttubeog.domain.auth.domain.Platform;
+import com.ttubeog.domain.auth.domain.Status;
 import com.ttubeog.domain.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -32,13 +34,19 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private MemberRole memberRole;
 
-    private String providerId;
+    private String platformId;
 
-    private String platform;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "platform")
+    private Platform platform;
+
     private String refreshToken;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private Status status;
     @Builder
-    public Member(Long id, String name, String email, String imageUrl, String password, Provider provider, MemberRole memberRole, String providerId, String platform, String refreshToken) {
+    public Member(Long id, String name, String email, String imageUrl, String password, Provider provider, MemberRole memberRole, String platformId, Platform platform, String refreshToken) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -46,12 +54,17 @@ public class Member extends BaseEntity {
         this.password = password;
         this.provider = provider;
         this.memberRole = memberRole;
-        this.providerId = providerId;
+        this.platformId = platformId;
         this.platform = platform;
         this.refreshToken = refreshToken;
     }
 
-
+    public Member(String email, Platform platform, String platformId, Status status) {
+        this.email = email;
+        this.platform = platform;
+        this.platformId = platformId;
+        this.status = status;
+    }
 
     public void updateName(String name) {
         this.name = name;
