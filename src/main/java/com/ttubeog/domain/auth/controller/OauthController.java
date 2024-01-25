@@ -50,7 +50,7 @@ public class OauthController {
             HttpServletResponse response
     ) {
         OauthResponseDto oauthResponseDto = new OauthResponseDto();
-        String accessToken = oauthService.loginWithApple(request.getAccessToken(), response);
+        String accessToken = oauthService.loginWithApple(request.getIdentityToken(), response);
         oauthResponseDto.setAccessToken(accessToken);
         return oauthResponseDto;
     }
