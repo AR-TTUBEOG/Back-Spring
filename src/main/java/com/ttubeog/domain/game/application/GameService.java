@@ -11,6 +11,7 @@ import com.ttubeog.domain.game.domain.repository.GameRepository;
 import com.ttubeog.domain.game.domain.repository.GiftGameRepository;
 import com.ttubeog.domain.game.dto.request.CreateGiftReq;
 import com.ttubeog.domain.game.dto.response.CreateGiftRes;
+import com.ttubeog.domain.game.exception.OverlappingGameException;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.global.config.security.token.UserPrincipal;
@@ -38,7 +39,9 @@ public class GameService {
         ).orElseThrow(NonExistentBenefitException::new);
 
         //하나의 혜택에 같은 종류 Game이 들어갈 수 없음
-
+        if (gameRepository.existsByBenefit(benefit)) {
+            throw new OverlappingGameException();
+        }
 
         Game game = Game.builder()
                 .benefit(benefit)
