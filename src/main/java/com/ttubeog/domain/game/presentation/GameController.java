@@ -40,7 +40,6 @@ public class GameController {
     })
     @PostMapping
     public ResponseEntity<?> createBenefit(
-            @Parameter(description = "Accesstoken을 입력해주세요.", required = true)
             @CurrentUser UserPrincipal userPrincipal,
             @Valid @RequestBody CreateGiftReq createGiftReq
     ) throws JsonProcessingException {

@@ -30,8 +30,7 @@ public class MemberBenefit extends BaseEntity {
     private Boolean expired = false; // 만료 여부
 
     @Builder
-    public MemberBenefit(Long id, Member member, Benefit benefit, Boolean used, Boolean expired) {
-        this.id = id;
+    public MemberBenefit(Member member, Benefit benefit, Boolean used, Boolean expired) {
         this.member = member;
         this.benefit = benefit;
         this.used = used;

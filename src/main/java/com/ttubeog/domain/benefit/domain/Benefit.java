@@ -27,8 +27,7 @@ public class Benefit extends BaseEntity {
     private Store store;
 
     @Builder
-    public Benefit(Long id, String content, BenefitType type, Store store) {
-        this.id = id;
+    public Benefit(String content, BenefitType type, Store store) {
         this.content = content;
         this.type = type;
         this.store = store;

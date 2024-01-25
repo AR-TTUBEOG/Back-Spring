@@ -12,8 +12,6 @@ import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ErrorResponse;
 import com.ttubeog.global.payload.Message;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -40,7 +38,6 @@ public class BenefitController {
     })
     @PostMapping
     public ResponseEntity<?> createBenefit(
-//            @Parameter(description = "Accesstoken을 입력해주세요.", required = true)
             @CurrentUser UserPrincipal userPrincipal,
             @Valid @RequestBody CreateBenefitReq createBenefitReq
     ) throws JsonProcessingException {
@@ -55,7 +52,6 @@ public class BenefitController {
     })
     @DeleteMapping("/{benefitId}")
     public ResponseEntity<?> deleteBenefit(
-//            @Parameter(description = "Accesstoken을 입력해주세요.", required = true)
             @CurrentUser UserPrincipal userPrincipal,
             @PathVariable(value = "benefitId") Long benefitId
     ) throws JsonProcessingException {
@@ -70,7 +66,6 @@ public class BenefitController {
     })
     @PatchMapping
     public ResponseEntity<?> updateBenefit(
-//            @Parameter(description = "Accesstoken을 입력해주세요.", required = true)
             @CurrentUser UserPrincipal userPrincipal,
             @Valid @RequestBody UpdateBenefitReq updateBenefitReq
             ) throws JsonProcessingException {
@@ -85,7 +80,6 @@ public class BenefitController {
     })
     @PatchMapping("/{benefitId}")
     public ResponseEntity<?> saveBenefit(
-//            @Parameter(description = "Accesstoken을 입력해주세요.", required = true)
             @CurrentUser UserPrincipal userPrincipal,
             @PathVariable(value = "benefitId") Long benefitId
     ) throws JsonProcessingException {
@@ -100,7 +94,6 @@ public class BenefitController {
     })
     @PatchMapping("{benefitId}/use")
     public ResponseEntity<?> useBenefit(
-//            @Parameter(description = "Accesstoken을 입력해주세요.", required = true)
             @CurrentUser UserPrincipal userPrincipal,
             @PathVariable(value = "benefitId") Long benefitId
     ) throws JsonProcessingException {
@@ -115,7 +108,6 @@ public class BenefitController {
     })
     @GetMapping
     public ResponseEntity<?> findMyBenefit(
-//            @Parameter(description = "Accesstoken을 입력해주세요.", required = true)
             @CurrentUser UserPrincipal userPrincipal,
             @RequestParam(name = "page") Integer page
     ) throws JsonProcessingException {
