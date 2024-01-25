@@ -53,6 +53,11 @@ public class SecurityConfig {
         return web ->
                 web.ignoring()
                         .requestMatchers("/auth/login/**")
-                        .requestMatchers("/swagger-ui/**", "/v2/api-docs", "/swagger-resources/**");
+                        .requestMatchers("/swagger-ui/**",
+                                "/v2/api-docs",
+                                "/swagger-resources/**",
+                                "/h2-console/**",
+                                "/favicon.ico",
+                                "/v3/api-docs/**");
     }
 }
