@@ -7,7 +7,7 @@ import lombok.Data;
 import java.time.LocalTime;
 
 @Data
-public class CreateGiftRes {
+public class CreateBasketballRes {
 
     @Schema(description = "게임 ID", example = "1")
     private Long gameId;
@@ -18,14 +18,18 @@ public class CreateGiftRes {
     @Schema(description = "시간제한", example = "00:01:30")
     private LocalTime timeLimit;
 
-    @Schema(description = "선물개수", example = "3")
-    private Integer giftCount;
+    @Schema(description = "공 개수", example = "10")
+    private Integer ballCount;
+
+    @Schema(description = "성공 개수", example = "4")
+    private Integer successCount;
 
     @Builder
-    public CreateGiftRes(Long benefitId, Long gameId, LocalTime timeLimit, Integer giftCount) {
-        this.benefitId = benefitId;
+    public CreateBasketballRes(Long gameId, Long benefitId, LocalTime timeLimit, Integer ballCount, Integer successCount) {
         this.gameId = gameId;
+        this.benefitId = benefitId;
         this.timeLimit = timeLimit;
-        this.giftCount = giftCount;
+        this.ballCount = ballCount;
+        this.successCount = successCount;
     }
 }

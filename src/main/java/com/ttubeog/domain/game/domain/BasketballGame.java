@@ -7,7 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -25,7 +25,7 @@ public class BasketballGame extends BaseEntity {
     private Game game;
 
     @Column(name = "time_limit")
-    private LocalDateTime timeLimit;
+    private LocalTime timeLimit;
 
     @Column(name = "ball_count")
     private Integer ballCount;
@@ -34,7 +34,7 @@ public class BasketballGame extends BaseEntity {
     private Integer successCount;
 
     @Builder
-    public BasketballGame(Game game, LocalDateTime timeLimit, Integer ballCount, Integer successCount) {
+    public BasketballGame(Game game, LocalTime timeLimit, Integer ballCount, Integer successCount) {
         this.game = game;
         this.timeLimit = timeLimit;
         this.ballCount = ballCount;
