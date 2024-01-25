@@ -52,4 +52,32 @@ public class Store extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateInfo(String info) {
+        this.info = info;
+    }
+
+    public void updateDetailAddress(String detailAddress) {
+        this.detailAddress = detailAddress;
+    }
+
+    public void updateLatitude(Float latitude) {
+        this.latitude = latitude;
+    }
+
+    public void updateLongitude(Float longitude) {
+        this.longitude = longitude;
+    }
+
+    public void updateImage(String image) {
+        this.image = image;
+    }
+
+    public void updateType(StoreType type) {
+        this.type = type;
+    }
 }

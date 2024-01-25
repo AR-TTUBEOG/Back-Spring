@@ -2,7 +2,9 @@ package com.ttubeog.domain.store.presentation;
 
 import com.ttubeog.domain.store.application.StoreService;
 import com.ttubeog.domain.store.dto.request.RegisterStoreReq;
+import com.ttubeog.domain.store.dto.request.UpdateStoreReq;
 import com.ttubeog.domain.store.dto.response.RegisterStoreRes;
+import com.ttubeog.domain.store.dto.response.UpdateStoreRes;
 import com.ttubeog.global.config.security.token.CurrentUser;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,4 +42,17 @@ public class StoreController {
         return storeService.registerStore(userPrincipal, registerStoreReq);
     }
 
+    // 매장 수정
+    @Operation(summary = "매장 수정", description = "매장 정보를 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "매장 수정 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = UpdateStoreRes.class))}),
+            @ApiResponse(responseCode = "400", description = "매장 수정 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @PatchMapping
+    public ResponseEntity<?> updateStore(
+            @Parameter(description = "AccessToken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
+            @Valid @RequestBody UpdateStoreReq updateStoreReq
+    ) {
+        return storeService.updateStore(userPrincipal, updateStoreReq);
+    }
 }
