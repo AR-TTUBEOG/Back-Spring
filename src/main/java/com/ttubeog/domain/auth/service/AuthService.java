@@ -39,7 +39,7 @@ public class AuthService {
                     return new OAuthTokenResponse(accessToken);
                 })
                 .orElseGet(() -> {
-                    Member oauthMember = new Member(email, platform, platformId, Status.ACTIVE);
+                    Member oauthMember = new Member(email, platform, Status.ACTIVE);
                     Member savedMember = memberRepository.save(oauthMember);
                     String accessToken = issueAccessToken(savedMember);
 

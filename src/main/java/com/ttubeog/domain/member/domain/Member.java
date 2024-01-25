@@ -59,7 +59,7 @@ public class Member extends BaseEntity {
         this.refreshToken = refreshToken;
     }
 
-    public Member(String email, Platform platform, String platformId, Status status) {
+    public Member(String email, Platform platform, Status status) {
         this.email = email;
         this.platform = platform;
         this.platformId = platformId;
