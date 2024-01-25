@@ -6,7 +6,11 @@ import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.domain.store.dto.request.RegisterStoreReq;
+import com.ttubeog.domain.store.dto.request.UpdateStoreReq;
 import com.ttubeog.domain.store.dto.response.RegisterStoreRes;
+import com.ttubeog.domain.store.dto.response.UpdateStoreRes;
+import com.ttubeog.domain.store.exception.UnathorizedMemberException;
+import com.ttubeog.domain.store.exception.NonExistentStoreException;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.global.payload.ApiResponse;
@@ -63,4 +67,42 @@ public class StoreService {
         return ResponseEntity.ok(apiResponse);
     }
 
+    // 매장 수정
+    @Transactional
+    public ResponseEntity<?> updateStore(UserPrincipal userPrincipal, UpdateStoreReq updateStoreReq) {
+
+        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Store store = storeRepository.findById(updateStoreReq.getStoreId()).orElseThrow(NonExistentStoreException::new);
+
+        Member storeOwner = store.getMember();
+        if (storeOwner.getId() != member.getId()) {
+            throw new UnathorizedMemberException();
+        }
+
+        store.updateName(updateStoreReq.getName());
+        store.updateInfo(updateStoreReq.getInfo());
+        store.updateDetailAddress(updateStoreReq.getDetailAddress());
+        store.updateLatitude(updateStoreReq.getLatitude());
+        store.updateLongitude(updateStoreReq.getLongitude());
+        store.updateImage(updateStoreReq.getImage());
+        store.updateType(updateStoreReq.getType());
+
+        UpdateStoreRes updateStoreRes = UpdateStoreRes.builder()
+                .storeId(store.getId())
+                .name(store.getName())
+                .info(store.getInfo())
+                .detailAddress(store.getDetailAddress())
+                .latitude(store.getLatitude())
+                .longitude(store.getLongitude())
+                .image(store.getImage())
+                .type(store.getType())
+                .build();
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(updateStoreRes)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
 }
