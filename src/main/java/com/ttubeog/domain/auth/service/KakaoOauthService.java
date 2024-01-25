@@ -1,7 +1,7 @@
 package com.ttubeog.domain.auth.service;
 
 
-import com.ttubeog.domain.auth.dto.KakaoInfoDto;
+import com.ttubeog.domain.auth.dto.kakao.KakaoInfoDto;
 import com.ttubeog.domain.member.application.MemberService;
 import com.ttubeog.domain.member.dto.MemberDto;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +39,7 @@ public class KakaoOauthService {
                 .platform("kakao")
                 .build();
 
-        if(memberService.findById(memberDto.getId()) != null) {
+        if (memberService.findById(memberDto.getId()) != null) {
             memberService.update(memberDto);
         } else {
             memberService.save(memberDto);

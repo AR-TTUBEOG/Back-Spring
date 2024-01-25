@@ -7,7 +7,15 @@ public enum ErrorCode {
     INVALID_ACCESS_TOKEN("유효하지 않은 액세스 토큰입니다.", HttpStatus.UNAUTHORIZED),
     INVALID_REFRESH_TOKEN("유효하지 않은 리프레시 토큰입니다.", HttpStatus.UNAUTHORIZED),
     BAD_REQUEST("잘못된 요청입니다.", HttpStatus.BAD_REQUEST),
-    NOT_EXIST_USER("존재하지 않는 유저입니다.", HttpStatus.UNAUTHORIZED);
+    NOT_EXIST_USER("존재하지 않는 유저입니다.", HttpStatus.UNAUTHORIZED),
+    INVALID_APPLE_OAUTH_TOKEN("Apple OAuth Identity Token 값이 올바르지 않습니다.", HttpStatus.UNAUTHORIZED),
+    PUBLIC_KEY_GENERATION_ERROR("Apple OAuth 로그인 중 public key 생성에 문제가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    APPLE_OAUTH_TOKEN_EXPIRED("Apple OAuth 로그인 중 Identity Token 유효기간이 만료됐습니다.", HttpStatus.UNAUTHORIZED),
+    APPLE_OAUTH_COMMUNICATION_ERROR("Apple OAuth 통신 암호화 과정 중 문제가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR),
+    INVALID_ACCESS_TOKEN_CLAIMS("Apple OAuth Claims 값이 올바르지 않습니다.", HttpStatus.UNAUTHORIZED),
+    INVALID_JWT_ALG_KID("Apple JWT 값의 alg, kid 정보가 올바르지 않습니다.", HttpStatus.BAD_REQUEST);
+
+
 
     private final String message;
     private final HttpStatus httpStatus;

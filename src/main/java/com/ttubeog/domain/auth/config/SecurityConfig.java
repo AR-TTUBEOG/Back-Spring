@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -20,6 +21,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @RequiredArgsConstructor
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
     private final JwtTokenService jwtTokenService;
     private final MemberService memberService;
@@ -53,6 +55,11 @@ public class SecurityConfig {
         return web ->
                 web.ignoring()
                         .requestMatchers("/auth/login/**")
-                        .requestMatchers("/swagger-ui/**", "/v2/api-docs", "/swagger-resources/**");
+                        .requestMatchers("/swagger-ui/**",
+                                "/v2/api-docs",
+                                "/swagger-resources/**",
+                                "/h2-console/**",
+                                "/favicon.ico",
+                                "/v3/api-docs/**");
     }
 }
