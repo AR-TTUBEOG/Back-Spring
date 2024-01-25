@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @Table(name = "game")
-public abstract class Game extends BaseEntity {
+public class Game extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,9 +26,18 @@ public abstract class Game extends BaseEntity {
     @JoinColumn(name = "benefit_id")
     private Benefit benefit;
 
+    @OneToOne(mappedBy = "game", cascade = CascadeType.ALL)
+    private GiftGame giftGame;
+
+    @OneToOne(mappedBy = "game", cascade = CascadeType.ALL)
+    private BasketballGame basketballGame;
+
+    @OneToOne(mappedBy = "game", cascade = CascadeType.ALL)
+    private RouletteGame rouletteGame;
+
+
     @Builder
-    public Game(Long id, GameType type, Benefit benefit) {
-        this.id = id;
+    public Game(GameType type, Benefit benefit) {
         this.type = type;
         this.benefit = benefit;
     }
