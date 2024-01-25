@@ -4,17 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttubeog.domain.benefit.domain.Benefit;
 import com.ttubeog.domain.benefit.domain.repository.BenefitRepository;
 import com.ttubeog.domain.benefit.exception.NonExistentBenefitException;
-import com.ttubeog.domain.game.domain.BasketballGame;
-import com.ttubeog.domain.game.domain.Game;
-import com.ttubeog.domain.game.domain.GameType;
-import com.ttubeog.domain.game.domain.GiftGame;
-import com.ttubeog.domain.game.domain.repository.BasketBallRespository;
-import com.ttubeog.domain.game.domain.repository.GameRepository;
-import com.ttubeog.domain.game.domain.repository.GiftGameRepository;
+import com.ttubeog.domain.game.domain.*;
+import com.ttubeog.domain.game.domain.repository.*;
 import com.ttubeog.domain.game.dto.request.CreateBasketballReq;
 import com.ttubeog.domain.game.dto.request.CreateGiftReq;
+import com.ttubeog.domain.game.dto.request.CreateRouletteReq;
 import com.ttubeog.domain.game.dto.response.CreateBasketballRes;
 import com.ttubeog.domain.game.dto.response.CreateGiftRes;
+import com.ttubeog.domain.game.dto.response.CreateRouletteRes;
 import com.ttubeog.domain.game.exception.OverlappingGameException;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
@@ -25,6 +22,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
@@ -34,7 +34,9 @@ public class GameService {
     private final MemberRepository memberRepository;
     private final BenefitRepository benefitRepository;
     private final GiftGameRepository giftGameRepository;
-    private final BasketBallRespository basketBallRespository;
+    private final BasketBallRepository basketBallRepository;
+    private final RouletteRepository rouletteRepository;
+    private final RouletteOptionRepository rouletteOptionRepository;
 
     // 선물게임 생성
     @Transactional
@@ -106,7 +108,7 @@ public class GameService {
                 .successCount(createBasketballReq.getSuccessCount())
                 .build();
 
-        basketBallRespository.save(basketballGame);
+        basketBallRepository.save(basketballGame);
 
         CreateBasketballRes createBasketballRes = CreateBasketballRes.builder()
                 .gameId(game.getId())
@@ -119,6 +121,55 @@ public class GameService {
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
                 .information(createBasketballRes)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    //돌림판 게임 생성
+    @Transactional
+    public ResponseEntity<?> createRoulette(UserPrincipal userPrincipal, CreateRouletteReq createRouletteReq) throws JsonProcessingException {
+
+        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Benefit benefit = benefitRepository.findById(createRouletteReq.getBenefitId()
+        ).orElseThrow(NonExistentBenefitException::new);
+
+        //하나의 혜택에 같은 종류 Game이 들어갈 수 없음
+        if (gameRepository.existsByBenefitAndType(benefit, GameType.roulette)) {
+            throw new OverlappingGameException();
+        }
+
+        Game game = Game.builder()
+                .benefit(benefit)
+                .type(GameType.roulette)
+                .build();
+        gameRepository.save(game);
+
+        RouletteGame rouletteGame = RouletteGame.builder()
+                .game(game)
+                .optionCount(createRouletteReq.getOption())
+                .build();
+        rouletteRepository.save(rouletteGame);
+
+        List<String> contents = Arrays.asList(createRouletteReq.getContents());
+        List<RouletteOption> rouletteOptionList = contents.stream().map(
+                content -> RouletteOption.builder()
+                        .content(content)
+                        .rouletteGame(rouletteGame)
+                        .build()
+        ).toList();
+        rouletteOptionRepository.saveAll(rouletteOptionList);
+
+        CreateRouletteRes createRouletteRes = CreateRouletteRes.builder()
+                .gameId(rouletteGame.getId())
+                .benefitId(benefit.getId())
+                .option(rouletteGame.getOptionCount())
+                .contents(contents)
+                .build();
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(createRouletteRes)
                 .build();
 
         return ResponseEntity.ok(apiResponse);

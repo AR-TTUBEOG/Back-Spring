@@ -6,7 +6,9 @@ import com.ttubeog.domain.benefit.dto.response.CreateBenefitRes;
 import com.ttubeog.domain.game.application.GameService;
 import com.ttubeog.domain.game.dto.request.CreateBasketballReq;
 import com.ttubeog.domain.game.dto.request.CreateGiftReq;
+import com.ttubeog.domain.game.dto.request.CreateRouletteReq;
 import com.ttubeog.domain.game.dto.response.CreateGiftRes;
+import com.ttubeog.domain.game.dto.response.CreateRouletteRes;
 import com.ttubeog.global.config.security.token.CurrentUser;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ErrorResponse;
@@ -59,6 +61,20 @@ public class GameController {
             @Valid @RequestBody CreateBasketballReq createBasketballReq
             ) throws JsonProcessingException {
         return gameService.createBasketBall(userPrincipal, createBasketballReq);
+    }
+
+    //돌림판 게임 생성
+    @Operation(summary = "돌림판 게임 생성", description = "돌림판 게임을 생성합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "돌림판 게임 생성 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = CreateRouletteRes.class) ) } ),
+            @ApiResponse(responseCode = "400", description = "돌림판 게임 생성 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
+    })
+    @PostMapping("/roulette")
+    public ResponseEntity<?> createRoulette(
+            @CurrentUser UserPrincipal userPrincipal,
+            @Valid @RequestBody CreateRouletteReq createRouletteReq
+            ) throws JsonProcessingException {
+        return gameService.createRoulette(userPrincipal, createRouletteReq);
     }
 
 }

@@ -14,6 +14,7 @@ import java.util.List;
 @Entity
 @Table(name = "roulette_game")
 public class RouletteGame extends BaseEntity {
+
     @Id
     @Column(name = "game_id", nullable = false)
     private Long id;
@@ -25,6 +26,9 @@ public class RouletteGame extends BaseEntity {
 
     @Column(name = "option_count")
     private int optionCount;
+
+    @OneToMany(mappedBy = "rouletteGame", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RouletteOption> rouletteOptionList;
 
     @Builder
     public RouletteGame(Game game, int optionCount) {

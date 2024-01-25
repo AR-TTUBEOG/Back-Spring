@@ -26,15 +26,14 @@ public class Game extends BaseEntity {
     @JoinColumn(name = "benefit_id")
     private Benefit benefit;
 
-    @OneToOne(mappedBy = "game", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private GiftGame giftGame;
 
-    @OneToOne(mappedBy = "game", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private BasketballGame basketballGame;
 
-    @OneToOne(mappedBy = "game", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private RouletteGame rouletteGame;
-
 
     @Builder
     public Game(GameType type, Benefit benefit) {
