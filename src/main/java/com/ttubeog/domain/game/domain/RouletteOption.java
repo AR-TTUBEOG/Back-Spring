@@ -1,7 +1,9 @@
 package com.ttubeog.domain.game.domain;
 
+import com.ttubeog.domain.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @Table(name = "roulette_option")
-public class RouletteOption {
+public class RouletteOption extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,4 +23,10 @@ public class RouletteOption {
 
     private String content;
 
+    @Builder
+    public RouletteOption(Long optionId, RouletteGame rouletteGame, String content) {
+        this.optionId = optionId;
+        this.rouletteGame = rouletteGame;
+        this.content = content;
+    }
 }

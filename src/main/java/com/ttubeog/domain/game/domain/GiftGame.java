@@ -1,7 +1,9 @@
 package com.ttubeog.domain.game.domain;
 
+import com.ttubeog.domain.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Entity
 @Table(name = "gift_game")
-public class GiftGame {
+public class GiftGame extends BaseEntity {
 
     @Id
     @OneToOne
@@ -23,4 +25,10 @@ public class GiftGame {
 
     private Integer giftCount;
 
+    @Builder
+    public GiftGame(Game game, LocalDateTime timeLimit, Integer giftCount) {
+        this.game = game;
+        this.timeLimit = timeLimit;
+        this.giftCount = giftCount;
+    }
 }

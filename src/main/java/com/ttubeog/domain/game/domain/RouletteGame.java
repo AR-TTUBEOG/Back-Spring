@@ -1,7 +1,9 @@
 package com.ttubeog.domain.game.domain;
 
+import com.ttubeog.domain.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +13,7 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name = "roulette_game")
-public class RouletteGame {
+public class RouletteGame extends BaseEntity {
 
     @Id
     @OneToOne
@@ -21,8 +23,9 @@ public class RouletteGame {
 
     private int optionCount;
 
-    // 연관 관계 매핑
-    @OneToMany(mappedBy = "rouletteGame")
-    private List<RouletteOption> options;
-
+    @Builder
+    public RouletteGame(Game game, int optionCount) {
+        this.game = game;
+        this.optionCount = optionCount;
+    }
 }
