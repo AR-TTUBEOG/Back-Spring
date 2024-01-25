@@ -7,6 +7,4 @@ import lombok.Setter;
 @Setter
 public class OauthResponseDto {
     private String accessToken;
-    private String refreshToken;
-    private boolean early;
 }

@@ -1,11 +1,9 @@
 package com.ttubeog.domain.auth.service;
 
-import com.ttubeog.domain.auth.dto.apple.AppleLoginRequest;
-import com.ttubeog.domain.auth.exception.CustomException;
-import com.ttubeog.domain.auth.exception.ErrorCode;
 import com.ttubeog.domain.member.application.MemberService;
-import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.dto.MemberDto;
+import com.ttubeog.global.error.DefaultException;
+import com.ttubeog.global.payload.ErrorCode;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,20 +12,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class OauthService {
     private final MemberService memberService;
-    private final MemberRepository memberRepository;
     private final JwtTokenService jwtTokenService;
     private final KakaoOauthService kakaoOauthService;
-    private final AppleOAtuhUserProvider appleOAtuhUserProvider;
 
     // 카카오 로그인
     public String loginWithKakao(String accessToken, HttpServletResponse response) {
         MemberDto memberDto = kakaoOauthService.getMemberProfileByToken(accessToken);
-        return getTokens(memberDto.getId(), response);
-    }
-
-    // 애플 로그인
-    public String loginWithApple(String accessToken, HttpServletResponse response) {
-        MemberDto memberDto = appleOAtuhUserProvider.getApplePlatformMember(accessToken);
         return getTokens(memberDto.getId(), response);
     }
 
@@ -49,14 +39,13 @@ public class OauthService {
         MemberDto memberDto = memberService.findByRefreshToken(refreshToken);
 
         if(memberDto == null) {
-            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+            throw new DefaultException(ErrorCode.INVALID_OPTIONAL_ISPRESENT);
         }
 
         if (!jwtTokenService.validateToken(refreshToken)) {
-            throw new CustomException(ErrorCode.INVALID_REFRESH_TOKEN);
+            throw new DefaultException(ErrorCode.INVALID_CHECK);
         }
 
         return jwtTokenService.createAccessToken(memberDto.getId().toString());
     }
-
 }

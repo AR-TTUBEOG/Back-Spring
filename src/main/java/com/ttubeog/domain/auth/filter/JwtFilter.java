@@ -29,7 +29,6 @@ public class JwtFilter extends GenericFilterBean {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) servletRequest;
-        logger.info("[JwtFilter] : " + httpServletRequest.getRequestURL().toString());
 
         // Swagger UI 및 관련 리소스 경로에 대한 요청인 경우 토큰 검증 생략
         if (isSwaggerPath(httpServletRequest.getRequestURI())) {
@@ -43,7 +42,8 @@ public class JwtFilter extends GenericFilterBean {
                 authenticateWithJwtToken(jwt);
             }
         } catch (CustomException ex) {
-            throw new CustomException(ErrorCode.INVALID_ACCESS_TOKEN);
+            // JWT 검증 실패 시 예외 처리
+            throw ex;
         }
 
         filterChain.doFilter(servletRequest, servletResponse);

@@ -1,8 +1,8 @@
 package com.ttubeog.domain.auth.utils;
 
-import com.ttubeog.domain.auth.exception.CustomException;
-import com.ttubeog.domain.auth.exception.ErrorCode;
 import com.ttubeog.global.config.security.token.UserPrincipal;
+import com.ttubeog.global.error.DefaultException;
+import com.ttubeog.global.payload.ErrorCode;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -13,7 +13,7 @@ public class SecurityUtil {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED);
+            throw new DefaultException(ErrorCode.INVALID_CHECK);
         }
 
         long memberId;
@@ -21,7 +21,7 @@ public class SecurityUtil {
         if (authentication.getPrincipal() instanceof UserPrincipal userPrincipal) {
             memberId = userPrincipal.getId();
         } else {
-            throw new CustomException(ErrorCode.BAD_REQUEST);
+            throw new DefaultException(ErrorCode.INVALID_PARAMETER);
         }
         return memberId;
     }
