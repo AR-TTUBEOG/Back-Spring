@@ -39,7 +39,7 @@ public class GameController {
             @ApiResponse(responseCode = "400", description = "선물 게임 생성 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @PostMapping
-    public ResponseEntity<?> createBenefit(
+    public ResponseEntity<?> createGift(
             @CurrentUser UserPrincipal userPrincipal,
             @Valid @RequestBody CreateGiftReq createGiftReq
     ) throws JsonProcessingException {

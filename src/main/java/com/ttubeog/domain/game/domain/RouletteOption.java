@@ -21,11 +21,11 @@ public class RouletteOption extends BaseEntity {
     @JoinColumn(name = "roulette_game_id")
     private RouletteGame rouletteGame;
 
+    @Column(name = "content")
     private String content;
 
     @Builder
-    public RouletteOption(Long optionId, RouletteGame rouletteGame, String content) {
-        this.optionId = optionId;
+    public RouletteOption(RouletteGame rouletteGame, String content) {
         this.rouletteGame = rouletteGame;
         this.content = content;
     }

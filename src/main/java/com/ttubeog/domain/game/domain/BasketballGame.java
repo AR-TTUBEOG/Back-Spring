@@ -16,15 +16,21 @@ import java.time.LocalDateTime;
 public class BasketballGame extends BaseEntity {
 
     @Id
-    @OneToOne
+    @Column(name = "game_id", nullable = false)
+    private Long id;
+
+    @OneToOne(fetch = FetchType.EAGER)
     @MapsId
     @JoinColumn(name = "game_id")
     private Game game;
 
+    @Column(name = "time_limit")
     private LocalDateTime timeLimit;
 
+    @Column(name = "ball_count")
     private Integer ballCount;
 
+    @Column(name = "success_count")
     private Integer successCount;
 
     @Builder

@@ -14,13 +14,16 @@ import java.util.List;
 @Entity
 @Table(name = "roulette_game")
 public class RouletteGame extends BaseEntity {
-
     @Id
-    @OneToOne
+    @Column(name = "game_id", nullable = false)
+    private Long id;
+
+    @OneToOne(fetch = FetchType.EAGER)
     @MapsId
     @JoinColumn(name = "game_id")
     private Game game;
 
+    @Column(name = "option_count")
     private int optionCount;
 
     @Builder

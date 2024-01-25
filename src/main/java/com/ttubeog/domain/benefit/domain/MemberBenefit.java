@@ -25,8 +25,10 @@ public class MemberBenefit extends BaseEntity {
     @JoinColumn(name = "benefit_id")
     private Benefit benefit;
 
+    @Column(name = "used")
     private Boolean used = false; // 사용 여부
 
+    @Column(name = "expired")
     private Boolean expired = false; // 만료 여부
 
     @Builder

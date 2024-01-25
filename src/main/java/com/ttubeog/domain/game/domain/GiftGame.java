@@ -20,7 +20,7 @@ public class GiftGame extends BaseEntity {
     private Long id;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @MapsId //@MapsId 는 @id로 지정한 컬럼에 @OneToOne 이나 @ManyToOne 관계를 매핑시키는 역할
+    @MapsId
     @JoinColumn(name = "game_id")
     private Game game;
 
