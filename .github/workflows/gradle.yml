@@ -56,7 +56,7 @@ jobs:
           OCCUPY_SECRET_DIR_FILE_NAME: application.yml
           OCCUPY_DB_SECRET_DIR_FILE_NAME: application-database.yml
           OCCUPY_OAUTH_SECRET_DIR_FILE_NAME: application-oauth2.yml
-          OCCUPY_LOGBACK_SECRET_DIR_FILE_NAME: logback.xml
+          OCCUPY_LOGBACK_SECRET_DIR_FILE_NAME: logback-test.xml
         run: |
           mkdir $OCCUPY_DB_SECRET_DIR
           mkdir $OCCUPY_OAUTH_SECRET_DIR
