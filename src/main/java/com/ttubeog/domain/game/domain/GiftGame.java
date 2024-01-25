@@ -36,4 +36,12 @@ public class GiftGame extends BaseEntity {
         this.timeLimit = timeLimit;
         this.giftCount = giftCount;
     }
+
+    public void updateTimeLimit(LocalTime timeLimit) {
+        this.timeLimit = timeLimit;
+    }
+
+    public void updateGiftCount(Integer giftCount) {
+        this.giftCount = giftCount;
+    }
 }

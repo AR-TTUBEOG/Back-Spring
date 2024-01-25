@@ -9,9 +9,12 @@ import com.ttubeog.domain.game.domain.repository.*;
 import com.ttubeog.domain.game.dto.request.CreateBasketballReq;
 import com.ttubeog.domain.game.dto.request.CreateGiftReq;
 import com.ttubeog.domain.game.dto.request.CreateRouletteReq;
+import com.ttubeog.domain.game.dto.request.UpdateGiftReq;
 import com.ttubeog.domain.game.dto.response.CreateBasketballRes;
 import com.ttubeog.domain.game.dto.response.CreateGiftRes;
 import com.ttubeog.domain.game.dto.response.CreateRouletteRes;
+import com.ttubeog.domain.game.dto.response.UpdateGiftRes;
+import com.ttubeog.domain.game.exception.NonExistentException;
 import com.ttubeog.domain.game.exception.OverlappingGameException;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
@@ -170,6 +173,30 @@ public class GameService {
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
                 .information(createRouletteRes)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    //선물게임 수정
+    @Transactional
+    public ResponseEntity<?> updateGift(UserPrincipal userPrincipal, UpdateGiftReq updateGiftReq) throws JsonProcessingException {
+
+        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        GiftGame giftGame = giftGameRepository.findById(updateGiftReq.getGameId()).orElseThrow(NonExistentException::new);
+
+        giftGame.updateTimeLimit(updateGiftReq.getTimeLimit());
+        giftGame.updateGiftCount(updateGiftReq.getGiftCount());
+
+        UpdateGiftRes updateGiftRes = UpdateGiftRes.builder()
+                .gameId(giftGame.getId())
+                .giftCount(giftGame.getGiftCount())
+                .timeLimit(giftGame.getTimeLimit())
+                .build();
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(updateGiftRes)
                 .build();
 
         return ResponseEntity.ok(apiResponse);
