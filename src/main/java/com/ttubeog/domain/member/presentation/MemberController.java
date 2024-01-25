@@ -1,10 +1,6 @@
 package com.ttubeog.domain.member.presentation;
 
-import com.ttubeog.domain.auth.exception.CustomException;
-import com.ttubeog.domain.auth.exception.ErrorCode;
-import com.ttubeog.domain.auth.utils.SecurityUtil;
 import com.ttubeog.domain.member.application.MemberService;
-import com.ttubeog.domain.member.dto.MemberDto;
 import com.ttubeog.domain.member.dto.response.MemberDetailRes;
 import com.ttubeog.global.config.security.token.CurrentUser;
 import com.ttubeog.global.config.security.token.UserPrincipal;
@@ -35,15 +31,11 @@ public class MemberController {
             @ApiResponse(responseCode = "200", description = "멤버 확인 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = MemberDetailRes.class) ) } ),
             @ApiResponse(responseCode = "400", description = "멤버 확인 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
-    @GetMapping("")
-    public MemberDto getCurrentMember(
+    @GetMapping
+    public ResponseEntity<?> getCurrentMember(
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
     ) {
-        final long memberId = SecurityUtil.getCurrentMemeberId();
-        MemberDto userDto = memberService.findById(memberId);
-        if(userDto == null) {
-            throw new CustomException(ErrorCode.NOT_EXIST_USER);
-        }
-        return userDto;    }
+        return memberService.getCurrentUser(userPrincipal);
+    }
 
 }

@@ -1,4 +1,4 @@
-package com.ttubeog.domain.auth.dto.kakao;
+package com.ttubeog.domain.auth.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,8 +12,8 @@ public class KakaoInfoDto {
     private String email;
 
     public KakaoInfoDto(Map<String, Object> info) {
-        this.id = info.get("id") != null ? Long.valueOf(info.get("id").toString()) : null;
+        this.id = Long.valueOf(info.get("id").toString());
         this.email = info.get("email") != null
-                ? info.get("email").toString() : "";
+                ? info.get(email).toString() : "";
     }
 }
