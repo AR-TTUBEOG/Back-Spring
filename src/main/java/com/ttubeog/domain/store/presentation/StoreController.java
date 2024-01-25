@@ -7,6 +7,7 @@ import com.ttubeog.domain.store.dto.response.RegisterStoreRes;
 import com.ttubeog.domain.store.dto.response.UpdateStoreRes;
 import com.ttubeog.global.config.security.token.CurrentUser;
 import com.ttubeog.global.config.security.token.UserPrincipal;
+import com.ttubeog.global.payload.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -54,5 +55,19 @@ public class StoreController {
             @Valid @RequestBody UpdateStoreReq updateStoreReq
     ) {
         return storeService.updateStore(userPrincipal, updateStoreReq);
+    }
+
+    // 매장 삭제
+    @Operation(summary = "매장 삭제", description = "매장 정보를 삭제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "매장 삭제 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}),
+            @ApiResponse(responseCode = "400", description = "매장 삭제 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @DeleteMapping("/{storeId}")
+    public ResponseEntity<?> deleteStore(
+            @Parameter(description = "AccessToken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
+            @PathVariable Long storeId
+    ) {
+        return storeService.deleteStore(userPrincipal, storeId);
     }
 }
