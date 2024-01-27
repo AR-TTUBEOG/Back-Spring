@@ -40,4 +40,16 @@ public class BasketballGame extends BaseEntity {
         this.ballCount = ballCount;
         this.successCount = successCount;
     }
+
+    public void updateTimeLimit(LocalTime timeLimit) {
+        this.timeLimit = timeLimit;
+    }
+
+    public void updateBallCount(Integer ballCount) {
+        this.ballCount = ballCount;
+    }
+
+    public void updateSuccessCount(Integer successCount) {
+        this.successCount = successCount;
+    }
 }

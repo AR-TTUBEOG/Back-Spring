@@ -2,14 +2,8 @@ package com.ttubeog.domain.game.presentation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttubeog.domain.game.application.GameService;
-import com.ttubeog.domain.game.dto.request.CreateBasketballReq;
-import com.ttubeog.domain.game.dto.request.CreateGiftReq;
-import com.ttubeog.domain.game.dto.request.CreateRouletteReq;
-import com.ttubeog.domain.game.dto.request.UpdateGiftReq;
-import com.ttubeog.domain.game.dto.response.CreateBasketballRes;
-import com.ttubeog.domain.game.dto.response.CreateGiftRes;
-import com.ttubeog.domain.game.dto.response.CreateRouletteRes;
-import com.ttubeog.domain.game.dto.response.UpdateGiftRes;
+import com.ttubeog.domain.game.dto.request.*;
+import com.ttubeog.domain.game.dto.response.*;
 import com.ttubeog.global.config.security.token.CurrentUser;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ErrorResponse;
@@ -87,6 +81,20 @@ public class GameController {
             @Valid @RequestBody UpdateGiftReq updateGiftReq
             ) throws JsonProcessingException {
         return gameService.updateGift(userPrincipal, updateGiftReq);
+    }
+
+    //농구 게임 생성
+    @Operation(summary = "농구 게임 수정", description = "농구 게임을 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "농구 게임 수정 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = UpdateBasketballRes.class) ) } ),
+            @ApiResponse(responseCode = "400", description = "농구 게임 수정 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
+    })
+    @PatchMapping("/basketball")
+    public ResponseEntity<?> updateBasketball(
+            @CurrentUser UserPrincipal userPrincipal,
+            @Valid @RequestBody UpdateBasketballReq updateBasketballReq
+            ) throws JsonProcessingException {
+        return gameService.updateBasketball(userPrincipal, updateBasketballReq);
     }
 
 }

@@ -6,14 +6,8 @@ import com.ttubeog.domain.benefit.domain.repository.BenefitRepository;
 import com.ttubeog.domain.benefit.exception.NonExistentBenefitException;
 import com.ttubeog.domain.game.domain.*;
 import com.ttubeog.domain.game.domain.repository.*;
-import com.ttubeog.domain.game.dto.request.CreateBasketballReq;
-import com.ttubeog.domain.game.dto.request.CreateGiftReq;
-import com.ttubeog.domain.game.dto.request.CreateRouletteReq;
-import com.ttubeog.domain.game.dto.request.UpdateGiftReq;
-import com.ttubeog.domain.game.dto.response.CreateBasketballRes;
-import com.ttubeog.domain.game.dto.response.CreateGiftRes;
-import com.ttubeog.domain.game.dto.response.CreateRouletteRes;
-import com.ttubeog.domain.game.dto.response.UpdateGiftRes;
+import com.ttubeog.domain.game.dto.request.*;
+import com.ttubeog.domain.game.dto.response.*;
 import com.ttubeog.domain.game.exception.NonExistentException;
 import com.ttubeog.domain.game.exception.OverlappingGameException;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
@@ -197,6 +191,32 @@ public class GameService {
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
                 .information(updateGiftRes)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    //농구게임 수정
+    @Transactional
+    public ResponseEntity<?> updateBasketball(UserPrincipal userPrincipal, UpdateBasketballReq updateBasketballReq) throws JsonProcessingException {
+
+        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        BasketballGame basketballGame = basketBallRepository.findById(updateBasketballReq.getGameId()).orElseThrow(NonExistentException::new);
+
+        basketballGame.updateBallCount(updateBasketballReq.getBallCount());
+        basketballGame.updateSuccessCount(updateBasketballReq.getSuccessCount());
+        basketballGame.updateTimeLimit(updateBasketballReq.getTimeLimit());
+
+        UpdateBasketballRes updateBasketballRes = UpdateBasketballRes.builder()
+                .gameId(basketballGame.getId())
+                .ballCount(basketballGame.getBallCount())
+                .timeLimit(basketballGame.getTimeLimit())
+                .successCount(basketballGame.getSuccessCount())
+                .build();
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(updateBasketballRes)
                 .build();
 
         return ResponseEntity.ok(apiResponse);
