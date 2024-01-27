@@ -19,9 +19,6 @@ public class MemberDto {
     private Platform platform;
     private String refreshToken;
 
-    public MemberDto(String subject, String email) {
-    }
-
     public static MemberDto toEntity(Member member) {
         return MemberDto.builder()
                 .id(member.getId())
