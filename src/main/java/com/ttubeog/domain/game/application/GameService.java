@@ -16,6 +16,7 @@ import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -234,6 +235,7 @@ public class GameService {
     //게임 삭제
     @Transactional
     public ResponseEntity<?> deleteGame(UserPrincipal userPrincipal, Long gameId) throws JsonProcessingException {
+
         memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
         Game game = gameRepository.findById(gameId).orElseThrow(NonExistentBenefitException::new);
 
@@ -242,6 +244,39 @@ public class GameService {
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
                 .information(Message.builder().message("게임을 삭제했습니다.").build())
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    //게임 조회
+    @Transactional
+    public ResponseEntity<?> findGame(UserPrincipal userPrincipal, Long gameId) throws JsonProcessingException {
+
+        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Game game = gameRepository.findById(gameId).orElseThrow(NonExistentBenefitException::new);
+
+        FindGameRes.FindGameResBuilder builder = FindGameRes.builder()
+                .gameId(game.getId())
+                .type(game.getType());
+
+        if (game.getType() == GameType.basketball) {
+            builder.timeLimit(game.getBasketballGame().getTimeLimit())
+                    .ballCount(game.getBasketballGame().getBallCount())
+                    .successCount(game.getBasketballGame().getSuccessCount());
+        } else if (game.getType() == GameType.gift) {
+            builder.timeLimit(game.getGiftGame().getTimeLimit())
+                    .giftCount(game.getGiftGame().getGiftCount());
+        } else if (game.getType() == GameType.roulette) {
+            Hibernate.initialize(game.getRouletteGame().getOptions()); // 명시적 초기화
+            builder.options(game.getRouletteGame().getOptions());
+        }
+
+        FindGameRes findGameRes = builder.build();
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(findGameRes)
                 .build();
 
         return ResponseEntity.ok(apiResponse);
