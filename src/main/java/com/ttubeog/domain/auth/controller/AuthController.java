@@ -1,5 +1,6 @@
 package com.ttubeog.domain.auth.controller;
 
+import com.ttubeog.domain.auth.dto.request.AppleLoginRequest;
 import com.ttubeog.domain.auth.dto.request.KakaoLoginRequest;
 import com.ttubeog.domain.auth.dto.response.OAuthTokenResponse;
 import com.ttubeog.domain.auth.service.AuthService;
@@ -24,6 +25,13 @@ public class AuthController {
     @PostMapping("/login/kakao")
     public ResponseEntity<OAuthTokenResponse> loginKakao(@RequestBody @Valid KakaoLoginRequest request) {
         OAuthTokenResponse response = authService.kakaoOAuthLogin(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(summary = "애플 OAuth 로그인")
+    @PostMapping("/login/apple")
+    public ResponseEntity<OAuthTokenResponse> loginApple(@RequestBody @Valid AppleLoginRequest request) {
+        OAuthTokenResponse response = authService.appleOAuthLogin(request);
         return ResponseEntity.ok(response);
     }
 }

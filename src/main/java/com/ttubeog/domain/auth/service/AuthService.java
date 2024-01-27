@@ -1,8 +1,10 @@
 package com.ttubeog.domain.auth.service;
 
+import com.ttubeog.domain.auth.apple.AppleOAuthMemberProvider;
 import com.ttubeog.domain.auth.domain.Platform;
 import com.ttubeog.domain.auth.domain.Status;
 import com.ttubeog.domain.auth.domain.Token;
+import com.ttubeog.domain.auth.dto.request.AppleLoginRequest;
 import com.ttubeog.domain.auth.dto.request.KakaoLoginRequest;
 import com.ttubeog.domain.auth.dto.response.OAuthTokenResponse;
 import com.ttubeog.domain.auth.exception.NotFoundMemberException;
@@ -22,7 +24,17 @@ public class AuthService {
     private final RefreshTokenService refreshTokenService;
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
+    private final AppleOAuthMemberProvider appleOAuthMemberProvider;
 
+    public OAuthTokenResponse appleOAuthLogin(AppleLoginRequest request) {
+        OAuthPlatformMemberResponse applePlatformMember =
+                appleOAuthMemberProvider.getApplePlatformMember(request.getToken());
+        return generateOAuthTokenResponse(
+                Platform.APPLE,
+                applePlatformMember.getEmail(),
+                applePlatformMember.getPlatformId()
+        );
+    }
 
     public OAuthTokenResponse kakaoOAuthLogin(KakaoLoginRequest request) {
 
