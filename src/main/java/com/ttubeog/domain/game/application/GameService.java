@@ -8,12 +8,13 @@ import com.ttubeog.domain.game.domain.*;
 import com.ttubeog.domain.game.domain.repository.*;
 import com.ttubeog.domain.game.dto.request.*;
 import com.ttubeog.domain.game.dto.response.*;
-import com.ttubeog.domain.game.exception.NonExistentException;
+import com.ttubeog.domain.game.exception.NonExistentGameException;
 import com.ttubeog.domain.game.exception.OverlappingGameException;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
+import com.ttubeog.global.payload.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -177,7 +178,7 @@ public class GameService {
     public ResponseEntity<?> updateGift(UserPrincipal userPrincipal, UpdateGiftReq updateGiftReq) throws JsonProcessingException {
 
         memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
-        GiftGame giftGame = giftGameRepository.findById(updateGiftReq.getGameId()).orElseThrow(NonExistentException::new);
+        GiftGame giftGame = giftGameRepository.findById(updateGiftReq.getGameId()).orElseThrow(NonExistentGameException::new);
 
         giftGame.updateTimeLimit(updateGiftReq.getTimeLimit());
         giftGame.updateGiftCount(updateGiftReq.getGiftCount());
@@ -201,7 +202,7 @@ public class GameService {
     public ResponseEntity<?> updateBasketball(UserPrincipal userPrincipal, UpdateBasketballReq updateBasketballReq) throws JsonProcessingException {
 
         memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
-        BasketballGame basketballGame = basketBallRepository.findById(updateBasketballReq.getGameId()).orElseThrow(NonExistentException::new);
+        BasketballGame basketballGame = basketBallRepository.findById(updateBasketballReq.getGameId()).orElseThrow(NonExistentGameException::new);
 
         basketballGame.updateBallCount(updateBasketballReq.getBallCount());
         basketballGame.updateSuccessCount(updateBasketballReq.getSuccessCount());
@@ -221,4 +222,21 @@ public class GameService {
 
         return ResponseEntity.ok(apiResponse);
     }
+
+    //게임 삭제
+    @Transactional
+    public ResponseEntity<?> deleteGame(UserPrincipal userPrincipal, Long gameId) throws JsonProcessingException {
+        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Game game = gameRepository.findById(gameId).orElseThrow(NonExistentBenefitException::new);
+
+        gameRepository.delete(game);
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(Message.builder().message("게임을 삭제했습니다.").build())
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
 }

@@ -7,6 +7,7 @@ import com.ttubeog.domain.game.dto.response.*;
 import com.ttubeog.global.config.security.token.CurrentUser;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ErrorResponse;
+import com.ttubeog.global.payload.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -95,6 +96,20 @@ public class GameController {
             @Valid @RequestBody UpdateBasketballReq updateBasketballReq
             ) throws JsonProcessingException {
         return gameService.updateBasketball(userPrincipal, updateBasketballReq);
+    }
+
+    //게임 삭제
+    @Operation(summary = "게임 삭제", description = "게임을 삭제합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "삭제 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = Message.class) ) } ),
+            @ApiResponse(responseCode = "400", description = "삭제 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
+    })
+    @DeleteMapping("/{gameId}")
+    public ResponseEntity<?> deleteGame(
+            @CurrentUser UserPrincipal userPrincipal,
+            @PathVariable(value = "gameId") Long gameId
+    ) throws JsonProcessingException {
+        return gameService.deleteGame(userPrincipal, gameId);
     }
 
 }
