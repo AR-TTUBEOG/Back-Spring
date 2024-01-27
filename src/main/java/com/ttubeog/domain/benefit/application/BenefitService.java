@@ -14,16 +14,20 @@ import com.ttubeog.domain.benefit.exception.AlreadyUsedBenefitException;
 import com.ttubeog.domain.benefit.exception.InvalidMemberBenefitException;
 import com.ttubeog.domain.benefit.exception.NonExistentBenefitException;
 import com.ttubeog.domain.benefit.exception.OverlappingBenefitException;
+import com.ttubeog.domain.game.domain.Game;
+import com.ttubeog.domain.game.domain.GameType;
+import com.ttubeog.domain.game.domain.repository.GameRepository;
+import com.ttubeog.domain.game.dto.response.FindGameRes;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
-import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -43,6 +48,7 @@ public class BenefitService {
     private final BenefitRepository benefitRepository;
     private final StoreRepository storeRepository;
     private final MemberBenefitRepository memberBenefitRepository;
+    private final GameRepository gameRepository;
 
     // 혜택 생성
     @Transactional
@@ -223,6 +229,42 @@ public class BenefitService {
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
                 .information(saveBenefitRes)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    //혜택ID로 게임 조회
+    public ResponseEntity<?> findGames(UserPrincipal userPrincipal, Long benefitId) throws JsonProcessingException {
+
+        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Benefit benefit = benefitRepository.findById(benefitId).orElseThrow(NonExistentBenefitException::new);
+        List<Game> games = gameRepository.findAllByBenefit(benefit);
+
+        List<FindGameRes> findGameResList = new ArrayList<>();
+        for (Game game : games) {
+            FindGameRes.FindGameResBuilder builder = FindGameRes.builder()
+                    .gameId(game.getId())
+                    .type(game.getType());
+
+            if (game.getType() == GameType.basketball) {
+                builder.timeLimit(game.getBasketballGame().getTimeLimit())
+                        .ballCount(game.getBasketballGame().getBallCount())
+                        .successCount(game.getBasketballGame().getSuccessCount());
+            } else if (game.getType() == GameType.gift) {
+                builder.timeLimit(game.getGiftGame().getTimeLimit())
+                        .giftCount(game.getGiftGame().getGiftCount());
+            } else if (game.getType() == GameType.roulette) {
+                Hibernate.initialize(game.getRouletteGame().getOptions()); // 명시적 초기화
+                builder.options(game.getRouletteGame().getOptions());
+            }
+
+            findGameResList.add(builder.build());
+        }
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(findGameResList)
                 .build();
 
         return ResponseEntity.ok(apiResponse);

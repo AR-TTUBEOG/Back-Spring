@@ -9,7 +9,6 @@ import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ErrorResponse;
 import com.ttubeog.global.payload.Message;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

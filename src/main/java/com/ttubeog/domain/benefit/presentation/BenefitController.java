@@ -7,6 +7,7 @@ import com.ttubeog.domain.benefit.dto.request.UpdateBenefitReq;
 import com.ttubeog.domain.benefit.dto.response.CreateBenefitRes;
 import com.ttubeog.domain.benefit.dto.response.SaveBenefitRes;
 import com.ttubeog.domain.benefit.dto.response.UpdateBenefitRes;
+import com.ttubeog.domain.game.dto.response.FindGameRes;
 import com.ttubeog.global.config.security.token.CurrentUser;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ErrorResponse;
@@ -112,5 +113,19 @@ public class BenefitController {
             @RequestParam(name = "page") Integer page
     ) throws JsonProcessingException {
         return benefitService.findMyBenefit(userPrincipal, page);
+    }
+
+    //혜택으로 모든 게임 조회
+    @Operation(summary = "혜택으로 게임 조회", description = "혜택에 해당하는 게임을 모두 조회합니다. 최대 3개입니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "게임 조회 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = FindGameRes.class) ) } ),
+            @ApiResponse(responseCode = "400", description = "게임 조회 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
+    })
+    @GetMapping("/{benefitId}/game")
+    public ResponseEntity<?> findGames(
+            @CurrentUser UserPrincipal userPrincipal,
+            @PathVariable(value = "benefitId") Long benefitId
+    ) throws JsonProcessingException {
+        return benefitService.findGames(userPrincipal, benefitId);
     }
 }
