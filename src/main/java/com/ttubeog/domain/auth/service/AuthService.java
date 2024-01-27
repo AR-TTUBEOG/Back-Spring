@@ -9,6 +9,8 @@ import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.procedure.ParameterMisuseException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -17,6 +19,7 @@ public class AuthService {
 
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final PasswordEncoder passwordEncoder;
 
 
     public OAuthTokenResponse kakaoOAuthLogin(KakaoLoginRequest request) {

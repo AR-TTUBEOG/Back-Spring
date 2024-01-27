@@ -47,21 +47,4 @@ public class MemberService {
         return memberMapper.findById(id);
     }
 
-    public MemberDto findByRefreshToken(String refreshToken) {
-        Optional<Member> member = memberRepository.findByRefreshToken(refreshToken);
-        return member.map(MemberDto::toEntity).orElse(null);
-    }
-
-    public void save(MemberDto memberDto) {
-        memberMapper.save(memberDto);
-    }
-
-    public void update(MemberDto memberDto) {
-        memberMapper.update(memberDto);
-    }
-
-    public void updateRefreshToken(MemberDto memberDto) {
-        memberMapper.updateRefreshToken(memberDto);
-    }
-
 }
