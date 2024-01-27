@@ -24,15 +24,17 @@ public class RouletteGame extends BaseEntity {
     @JoinColumn(name = "game_id")
     private Game game;
 
-    @Column(name = "option_count")
-    private int optionCount;
-
-    @OneToMany(mappedBy = "rouletteGame", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<RouletteOption> rouletteOptionList;
+    @ElementCollection
+    @Column(name = "options")
+    private List<String> options;
 
     @Builder
-    public RouletteGame(Game game, int optionCount) {
+    public RouletteGame(Game game, List<String> options) {
         this.game = game;
-        this.optionCount = optionCount;
+        this.options = options;
+    }
+
+    public void updateOptions(List<String> options) {
+        this.options = options;
     }
 }

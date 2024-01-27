@@ -20,9 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-
 @RequiredArgsConstructor
 @Service
 @Transactional(readOnly = true)
@@ -34,7 +31,6 @@ public class GameService {
     private final GiftGameRepository giftGameRepository;
     private final BasketBallRepository basketBallRepository;
     private final RouletteRepository rouletteRepository;
-    private final RouletteOptionRepository rouletteOptionRepository;
 
     // 선물게임 생성
     @Transactional
@@ -145,24 +141,14 @@ public class GameService {
 
         RouletteGame rouletteGame = RouletteGame.builder()
                 .game(game)
-                .optionCount(createRouletteReq.getOption())
+                .options(createRouletteReq.getOptions())
                 .build();
         rouletteRepository.save(rouletteGame);
-
-        List<String> contents = Arrays.asList(createRouletteReq.getContents());
-        List<RouletteOption> rouletteOptionList = contents.stream().map(
-                content -> RouletteOption.builder()
-                        .content(content)
-                        .rouletteGame(rouletteGame)
-                        .build()
-        ).toList();
-        rouletteOptionRepository.saveAll(rouletteOptionList);
 
         CreateRouletteRes createRouletteRes = CreateRouletteRes.builder()
                 .gameId(rouletteGame.getId())
                 .benefitId(benefit.getId())
-                .option(rouletteGame.getOptionCount())
-                .contents(contents)
+                .options(rouletteGame.getOptions())
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()
@@ -218,6 +204,28 @@ public class GameService {
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
                 .information(updateBasketballRes)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    //돌림판 게임 수정
+    @Transactional
+    public ResponseEntity<?> updateRoulette(UserPrincipal userPrincipal, UpdateRouletteReq updateRouletteReq) throws JsonProcessingException {
+
+        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        RouletteGame rouletteGame = rouletteRepository.findById(updateRouletteReq.getGameId()).orElseThrow(NonExistentGameException::new);
+
+        rouletteGame.updateOptions(updateRouletteReq.getOptions());
+
+        UpdateRouletteRes updateRouletteRes = UpdateRouletteRes.builder()
+                .gameId(rouletteGame.getId())
+                .options(rouletteGame.getOptions())
+                .build();
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(updateRouletteRes)
                 .build();
 
         return ResponseEntity.ok(apiResponse);

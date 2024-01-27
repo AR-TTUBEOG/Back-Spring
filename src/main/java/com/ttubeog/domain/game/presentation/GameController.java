@@ -70,7 +70,7 @@ public class GameController {
         return gameService.createRoulette(userPrincipal, createRouletteReq);
     }
 
-    //선물 게임 생성
+    //선물 게임 수정
     @Operation(summary = "선물 게임 수정", description = "선물 게임을 수정합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "선물 게임 수정 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = UpdateGiftRes.class) ) } ),
@@ -84,7 +84,7 @@ public class GameController {
         return gameService.updateGift(userPrincipal, updateGiftReq);
     }
 
-    //농구 게임 생성
+    //농구 게임 수정
     @Operation(summary = "농구 게임 수정", description = "농구 게임을 수정합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "농구 게임 수정 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = UpdateBasketballRes.class) ) } ),
@@ -96,6 +96,20 @@ public class GameController {
             @Valid @RequestBody UpdateBasketballReq updateBasketballReq
             ) throws JsonProcessingException {
         return gameService.updateBasketball(userPrincipal, updateBasketballReq);
+    }
+
+    //돌림판 게임 수정
+    @Operation(summary = "돌림판 게임 수정", description = "돌림판 게임을 수정합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "돌림판 게임 수정 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = UpdateRouletteRes.class) ) } ),
+            @ApiResponse(responseCode = "400", description = "돌림판 게임 수정 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
+    })
+    @PatchMapping("/roulette")
+    public ResponseEntity<?> updateRoulette(
+            @CurrentUser UserPrincipal userPrincipal,
+            @Valid @RequestBody UpdateRouletteReq updateRouletteReq
+    ) throws JsonProcessingException {
+        return gameService.updateRoulette(userPrincipal, updateRouletteReq);
     }
 
     //게임 삭제
