@@ -45,8 +45,8 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
-    @Builder
-    public Member(Long id, String name, String email, String imageUrl, String password, Provider provider, MemberRole memberRole, String platformId, Platform platform, String refreshToken) {
+
+    public Member(Long id, String name, String email, String imageUrl, String password, Provider provider, MemberRole memberRole, String platformId, Platform platform, String refreshToken, Status status, int reportCount) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -57,6 +57,7 @@ public class Member extends BaseEntity {
         this.platformId = platformId;
         this.platform = platform;
         this.refreshToken = refreshToken;
+        this.status = status;
     }
 
     public Member(String email, Platform platform, Status status) {
@@ -64,6 +65,10 @@ public class Member extends BaseEntity {
         this.platform = platform;
         this.platformId = platformId;
         this.status = status;
+    }
+
+    public boolean isRegisteredOAuthMember() {
+        return name != null;
     }
 
     public void updateName(String name) {
