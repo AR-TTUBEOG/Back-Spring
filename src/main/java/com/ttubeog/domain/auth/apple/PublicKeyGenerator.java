@@ -1,7 +1,6 @@
 package com.ttubeog.domain.auth.apple;
 
 import org.springframework.stereotype.Component;
-import org.springframework.util.Base64Utils;
 
 import java.math.BigInteger;
 import java.security.KeyFactory;
@@ -28,8 +27,8 @@ public class PublicKeyGenerator {
     }
 
     private PublicKey generatePublicKeyWithApplePublicKey(ApplePublicKey publicKey) {
-        byte[] nBytes = Base64Utils.decodeFromUrlSafeString(publicKey.getN());
-        byte[] eBytes = Base64Utils.decodeFromUrlSafeString(publicKey.getE());
+        byte[] nBytes = Base64.getUrlDecoder().decode(publicKey.getN());
+        byte[] eBytes = Base64.getUrlDecoder().decode(publicKey.getE());
 
         BigInteger n = new BigInteger(POSITIVE_SIGN_NUMBER, nBytes);
         BigInteger e = new BigInteger(POSITIVE_SIGN_NUMBER, eBytes);
@@ -37,7 +36,7 @@ public class PublicKeyGenerator {
         RSAPublicKeySpec publicKeySpec = new RSAPublicKeySpec(n, e);
 
         try {
-            KeyFactory keyFactory = KeyFactory.getInstance(publicKey.getKty());
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             return keyFactory.generatePublic(publicKeySpec);
         } catch (NoSuchAlgorithmException | InvalidKeySpecException exception) {
             throw new IllegalStateException("Apple OAuth 로그인 중 public key 생성에 문제가 발생했습니다.");

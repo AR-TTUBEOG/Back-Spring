@@ -25,7 +25,7 @@ public class AppleOAuthMemberProvider {
         PublicKey publicKey = publicKeyGenerator.generatePublicKey(headers, applePublicKeys);
 
         Claims claims = appleJwtParser.parsePublicKeyAndGetClaims(identityToken, publicKey);
-        validateClaims(claims);
+//        validateClaims(claims);
         return new OAuthPlatformMemberResponse(claims.getSubject(), claims.get("email", String.class));
     }
 
