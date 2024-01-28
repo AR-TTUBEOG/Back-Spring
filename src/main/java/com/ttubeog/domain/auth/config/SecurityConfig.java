@@ -1,7 +1,5 @@
 package com.ttubeog.domain.auth.config;
 
-import com.ttubeog.domain.auth.service.JwtTokenProvider;
-import com.ttubeog.domain.member.application.MemberService;
 import com.ttubeog.domain.member.domain.MemberRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

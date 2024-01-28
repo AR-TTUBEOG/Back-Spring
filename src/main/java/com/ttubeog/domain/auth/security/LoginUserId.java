@@ -1,4 +1,4 @@
-package com.ttubeog.domain.auth.service;
+package com.ttubeog.domain.auth.security;
 
 import io.swagger.v3.oas.annotations.Hidden;
 

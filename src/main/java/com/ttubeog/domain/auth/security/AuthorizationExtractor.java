@@ -1,4 +1,4 @@
-package com.ttubeog.domain.auth.service;
+package com.ttubeog.domain.auth.security;
 
 import com.ttubeog.domain.auth.exception.BlankTokenException;
 import com.ttubeog.domain.auth.exception.InvalidBearerException;
@@ -10,7 +10,7 @@ import java.util.Enumeration;
 @NoArgsConstructor
 public class AuthorizationExtractor {
 
-    private static final String AUTHENTICATION_TYPE = "Bearer";
+    private static final String AUTHENTICATION_TYPE = "Bearer ";
     private static final String AUTHORIZATION_HEADER_KEY = "Authorization";
     private static final int START_TOKEN_INDEX = 6;
 

@@ -8,11 +8,12 @@ import com.ttubeog.domain.auth.dto.request.AppleLoginRequest;
 import com.ttubeog.domain.auth.dto.request.KakaoLoginRequest;
 import com.ttubeog.domain.auth.dto.response.OAuthTokenResponse;
 import com.ttubeog.domain.auth.exception.NotFoundMemberException;
+import com.ttubeog.domain.auth.security.JwtTokenProvider;
+import com.ttubeog.domain.auth.security.OAuthPlatformMemberResponse;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.procedure.ParameterMisuseException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -58,11 +59,9 @@ public class AuthService {
                     refreshTokenService.saveTokenInfo(findMember.getId(), refreshToken, accessToken);
 
                     if (!findMember.isRegisteredOAuthMember()) {
-                        return new OAuthTokenResponse(accessToken, refreshToken, findMember.getEmail(),
-                                false, platformId);
+                        return new OAuthTokenResponse(accessToken, refreshToken, false);
                     }
-                    return new OAuthTokenResponse(accessToken, refreshToken, findMember.getEmail(),
-                            true, platformId);
+                    return new OAuthTokenResponse(accessToken, refreshToken, true);
                 })
                 .orElseGet(() -> {
                     Member oauthMember = new Member(email, platform, Status.ACTIVE);
@@ -72,7 +71,7 @@ public class AuthService {
 
                     refreshTokenService.saveTokenInfo(savedMember.getId(), refreshToken, accessToken);
 
-                    return new OAuthTokenResponse(accessToken, refreshToken, email, false, platformId);
+                    return new OAuthTokenResponse(accessToken, refreshToken,false);
                 });
     }
 

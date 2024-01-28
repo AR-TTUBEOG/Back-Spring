@@ -10,7 +10,5 @@ public class OAuthTokenResponse {
 
     private String accessToken;
     private String refreshToken;
-    private String email;
     private Boolean isRegistered;
-    private String platformId;
 }

@@ -1,4 +1,4 @@
-package com.ttubeog.domain.auth.service;
+package com.ttubeog.domain.auth.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;

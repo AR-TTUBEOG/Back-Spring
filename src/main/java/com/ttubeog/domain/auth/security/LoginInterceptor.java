@@ -1,5 +1,7 @@
-package com.ttubeog.domain.auth.service;
+package com.ttubeog.domain.auth.security;
 
+import com.ttubeog.domain.auth.security.AuthorizationExtractor;
+import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpMethod;

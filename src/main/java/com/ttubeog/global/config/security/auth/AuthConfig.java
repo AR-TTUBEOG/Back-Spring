@@ -1,7 +1,7 @@
 package com.ttubeog.global.config.security.auth;
 
-import com.ttubeog.domain.auth.service.AuthenticationPrincipalArgumentResolver;
-import com.ttubeog.domain.auth.service.LoginInterceptor;
+import com.ttubeog.domain.auth.security.AuthenticationPrincipalArgumentResolver;
+import com.ttubeog.domain.auth.security.LoginInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;

@@ -1,7 +1,7 @@
 package com.ttubeog.domain.auth.apple;
 
 import com.ttubeog.domain.auth.exception.InvalidAccessTokenException;
-import com.ttubeog.domain.auth.service.OAuthPlatformMemberResponse;
+import com.ttubeog.domain.auth.security.OAuthPlatformMemberResponse;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

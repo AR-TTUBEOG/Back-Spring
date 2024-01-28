@@ -1,4 +1,4 @@
-package com.ttubeog.domain.auth.service;
+package com.ttubeog.domain.auth.security;
 
 import com.ttubeog.domain.auth.exception.AccessTokenExpiredException;
 import com.ttubeog.domain.auth.exception.InvalidAccessTokenException;
