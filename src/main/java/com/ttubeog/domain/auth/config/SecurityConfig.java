@@ -31,8 +31,8 @@ public class SecurityConfig {
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/auth/login/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs", "/swagger-resources/**").permitAll()
-                        .requestMatchers("/user/**").hasAuthority(MemberRole.USER.getRole())
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs", "/swagger-resources/**", "/api/**").permitAll()
+//                        .requestMatchers("/api/**").hasAuthority(MemberRole.USER.getRole())
                         .anyRequest().authenticated())
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.disable())    // 기본 로그인 폼 미사용

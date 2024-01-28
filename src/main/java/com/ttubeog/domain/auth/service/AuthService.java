@@ -24,7 +24,6 @@ public class AuthService {
     private final MemberRepository memberRepository;
     private final RefreshTokenService refreshTokenService;
     private final JwtTokenProvider jwtTokenProvider;
-    private final PasswordEncoder passwordEncoder;
     private final AppleOAuthMemberProvider appleOAuthMemberProvider;
 
     public OAuthTokenResponse appleOAuthLogin(AppleLoginRequest request) {

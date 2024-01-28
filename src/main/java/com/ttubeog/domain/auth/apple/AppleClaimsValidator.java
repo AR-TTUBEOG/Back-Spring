@@ -15,7 +15,7 @@ public class AppleClaimsValidator {
     public AppleClaimsValidator(
             @Value("${apple.iss}") String iss,
             @Value("${apple.bundle}") String clientId,
-            @Value("nonce") String nonce
+            @Value("${apple.aud}") String nonce
     ) {
         this.iss = iss;
         this.clientId = clientId;
