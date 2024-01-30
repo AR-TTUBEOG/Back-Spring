@@ -34,7 +34,7 @@ public class AuthService {
     private final RefreshTokenService refreshTokenService;
     private final JwtTokenProvider jwtTokenProvider;
     private final AppleOAuthMemberProvider appleOAuthMemberProvider;
-    public RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
 
 
     public OAuthTokenResponse appleOAuthLogin(AppleLoginRequest request) {
@@ -64,12 +64,12 @@ public class AuthService {
             memberRepository.save(member);
         }
 
-        Optional<Member> memberLoginData =  memberRepository.findByMemberNumber(String.valueOf(memberInfo.getId()));
+        Optional<Member> memberLoginData = memberRepository.findByMemberNumber(String.valueOf(memberInfo.getId()));
 
-        String refreshToken = "Bearer " + jwtTokenProvider.createRereshToken(memberLoginData.get().getId());
+        String refreshToken = jwtTokenProvider.createRereshToken(memberLoginData.get().getId());
 
         KakaoTokenResponse oAuthTokenResponse = KakaoTokenResponse.builder()
-                .accessToken("Bearer " + jwtTokenProvider.createAccessToken(
+                .accessToken(jwtTokenProvider.createAccessToken(
                         memberLoginData.get().getId()))
                 .refreshToken(refreshToken)
                 .isRegistered(false)
