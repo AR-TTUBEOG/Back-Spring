@@ -11,8 +11,5 @@ import lombok.NoArgsConstructor;
 @Getter
 public class KakaoLoginRequest {
     @NotBlank(message = "1012:공백일 수 없습니다.")
-    private String email;
-
-    @NotBlank(message = "1012:공백일 수 없습니다.")
-    private String platformId;
+    private String accessToken;
 }

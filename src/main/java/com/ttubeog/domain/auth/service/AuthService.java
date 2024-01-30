@@ -4,8 +4,10 @@ import com.ttubeog.domain.auth.apple.AppleOAuthMemberProvider;
 import com.ttubeog.domain.auth.domain.Platform;
 import com.ttubeog.domain.auth.domain.Status;
 import com.ttubeog.domain.auth.domain.Token;
+import com.ttubeog.domain.auth.dto.KakaoInfoDto;
 import com.ttubeog.domain.auth.dto.request.AppleLoginRequest;
 import com.ttubeog.domain.auth.dto.request.KakaoLoginRequest;
+import com.ttubeog.domain.auth.dto.response.KakaoTokenResponse;
 import com.ttubeog.domain.auth.dto.response.OAuthTokenResponse;
 import com.ttubeog.domain.auth.exception.NotFoundMemberException;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
@@ -14,8 +16,15 @@ import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +34,8 @@ public class AuthService {
     private final RefreshTokenService refreshTokenService;
     private final JwtTokenProvider jwtTokenProvider;
     private final AppleOAuthMemberProvider appleOAuthMemberProvider;
+    public RedisTemplate<String, String> redisTemplate;
+
 
     public OAuthTokenResponse appleOAuthLogin(AppleLoginRequest request) {
         OAuthPlatformMemberResponse applePlatformMember =
@@ -36,14 +47,37 @@ public class AuthService {
         );
     }
 
-    public OAuthTokenResponse kakaoOAuthLogin(KakaoLoginRequest request) {
+    public KakaoTokenResponse kakaoOAuthLogin(String accessToken) {
 
-        return generateOAuthTokenResponse(
-                Platform.KAKAO,
-                request.getEmail(),
-                request.getPlatformId()
-        );
+        Member member;
 
+        KakaoInfoDto memberInfo = getKakaoUserInfo(accessToken);
+
+        Optional<Member> memberData = memberRepository.findByMemberNumber(String.valueOf(memberInfo.getId()));
+
+        if (memberData.isEmpty()) {
+            member = Member.builder()
+                    .memberNumber(String.valueOf(memberInfo.getId()))
+                    .status(Status.ACTIVE)
+                    .build();
+
+            memberRepository.save(member);
+        }
+
+        Optional<Member> memberLoginData =  memberRepository.findByMemberNumber(String.valueOf(memberInfo.getId()));
+
+        String refreshToken = "Bearer " + jwtTokenProvider.createRereshToken(memberLoginData.get().getId());
+
+        KakaoTokenResponse oAuthTokenResponse = KakaoTokenResponse.builder()
+                .accessToken("Bearer " + jwtTokenProvider.createAccessToken(
+                        memberLoginData.get().getId()))
+                .refreshToken(refreshToken)
+                .isRegistered(false)
+                .build();
+
+        redisTemplate.opsForValue().set(String.valueOf(memberLoginData.get().getId()), refreshToken);
+
+        return oAuthTokenResponse;
     }
 
     private OAuthTokenResponse generateOAuthTokenResponse(Platform platform, String email, String platformId) {
@@ -70,7 +104,7 @@ public class AuthService {
 
                     refreshTokenService.saveTokenInfo(savedMember.getId(), refreshToken, accessToken);
 
-                    return new OAuthTokenResponse(accessToken, refreshToken,false);
+                    return new OAuthTokenResponse(accessToken, refreshToken, false);
                 });
     }
 
@@ -86,5 +120,16 @@ public class AuthService {
         if (findMember.getStatus() != Status.ACTIVE) {
             throw new InvalidMemberException();
         }
+    }
+
+    public KakaoInfoDto getKakaoUserInfo(String accessToken) {
+        return WebClient.create()
+                .get()
+                .uri("https://kapi.kakao.com/v2/user/me")
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(accessToken))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<KakaoInfoDto>() {
+                })
+                .block();
     }
 }
