@@ -1,6 +1,9 @@
 package com.ttubeog.domain.member.presentation;
 
+import com.ttubeog.domain.auth.config.SecurityUtil;
+import com.ttubeog.domain.auth.exception.NotFoundMemberException;
 import com.ttubeog.domain.member.application.MemberService;
+import com.ttubeog.domain.member.dto.MemberDto;
 import com.ttubeog.domain.member.dto.response.MemberDetailRes;
 import com.ttubeog.global.config.security.token.CurrentUser;
 import com.ttubeog.global.config.security.token.UserPrincipal;
@@ -13,7 +16,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,11 +33,16 @@ public class MemberController {
             @ApiResponse(responseCode = "200", description = "멤버 확인 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = MemberDetailRes.class) ) } ),
             @ApiResponse(responseCode = "400", description = "멤버 확인 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
-    @GetMapping
-    public ResponseEntity<?> getCurrentMember(
+    @GetMapping("")
+    public MemberDto getCurrentMember(
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
     ) {
-        return memberService.getCurrentUser(userPrincipal);
-    }
+        final long memberId = SecurityUtil.getCurrentMemeberId();
+        MemberDto userDto = memberService.findById(memberId);
+        if(userDto == null) {
+            throw new NotFoundMemberException();
+        }
+        return userDto;    }
+
 
 }

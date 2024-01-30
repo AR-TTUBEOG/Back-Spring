@@ -1,36 +1,35 @@
 package com.ttubeog.domain.auth.domain;
 
-import com.ttubeog.domain.common.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.redis.core.TimeToLive;
+
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @Getter
-@Table(name="token")
-@Entity
-public class Token extends BaseEntity {
-
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class Token {
     @Id
-    @Column(name = "user_email", length = 700 , nullable = false)
-    private String userEmail;
+    private Long id;
 
-    @Column(name = "refresh_token", length = 1024 , nullable = false)
     private String refreshToken;
 
-    public Token(){}
+    private String accessToken;
 
-    public Token updateRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-        return this;
+    @TimeToLive(unit = TimeUnit.MILLISECONDS)
+    private long expiration;
+
+    public void setAccessToken(String newAccessToken) {
+        this.accessToken = newAccessToken;
     }
 
-    @Builder
-    public Token(String userEmail, String refreshToken) {
-        this.userEmail = userEmail;
-        this.refreshToken = refreshToken;
+    public static String createRefreshToken() {
+        return UUID.randomUUID().toString();
     }
-
 }

@@ -1,9 +1,5 @@
 package com.ttubeog.domain.auth.config;
 
-import com.ttubeog.domain.auth.exception.ExceptionHandlerFilter;
-import com.ttubeog.domain.auth.service.JwtTokenService;
-import com.ttubeog.domain.auth.filter.JwtFilter;
-import com.ttubeog.domain.member.application.MemberService;
 import com.ttubeog.domain.member.domain.MemberRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -13,16 +9,14 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @RequiredArgsConstructor
 @Configuration
 public class SecurityConfig {
-    private final JwtTokenService jwtTokenService;
-    private final MemberService memberService;
 
     @Bean
     public AuthenticationManager authenticationManager(
@@ -37,15 +31,28 @@ public class SecurityConfig {
                 .csrf((csrf) -> csrf.disable())
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/auth/login/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs", "/swagger-resources/**").permitAll()
-                        .requestMatchers("/user/**").hasAuthority(MemberRole.USER.getRole())
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs", "/swagger-resources/**", "/api/**").permitAll()
+//                        .requestMatchers("/api/**").hasAuthority(MemberRole.USER.getRole())
                         .anyRequest().authenticated())
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.disable())    // 기본 로그인 폼 미사용
                 .httpBasic(httpSecurityHttpBasicConfigurer -> httpSecurityHttpBasicConfigurer.disable())    // 기본 http 미사용
-                .addFilterBefore(new JwtFilter(jwtTokenService, memberService), UsernamePasswordAuthenticationFilter.class) // JWT 필터 추가
-                .addFilterBefore(new ExceptionHandlerFilter(), JwtFilter.class) // Security Filter 에서 CustomException 사용하기 위해 추가
                 .build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new PasswordEncoder() {
+            @Override
+            public String encode(CharSequence rawPassword) {
+                return EncryptUtils.encrypt(rawPassword.toString());
+            }
+
+            @Override
+            public boolean matches(CharSequence rawPassword, String encodedPassword) {
+                return encodedPassword.equals(EncryptUtils.encrypt(rawPassword.toString()));
+            }
+        };
     }
 
     @Bean
