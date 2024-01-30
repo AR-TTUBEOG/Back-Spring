@@ -1,2 +1,4 @@
-package com.ttubeog.domain.guestbook.dto;public class CreateGuestBookRequestDto {
+package com.ttubeog.domain.guestbook.dto;
+
+public class CreateGuestBookRequestDto {
 }
