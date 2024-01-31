@@ -1,5 +1,6 @@
 package com.ttubeog.domain.member.dto;
 
+import com.ttubeog.domain.auth.domain.Platform;
 import com.ttubeog.domain.member.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,11 +16,8 @@ public class MemberDto {
     private String email;
     private String name;
     private String password;
-    private String platform;
+    private Platform platform;
     private String refreshToken;
-
-    public MemberDto(String subject, String email) {
-    }
 
     public static MemberDto toEntity(Member member) {
         return MemberDto.builder()

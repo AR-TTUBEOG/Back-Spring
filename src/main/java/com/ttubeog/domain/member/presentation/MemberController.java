@@ -1,8 +1,7 @@
 package com.ttubeog.domain.member.presentation;
 
-import com.ttubeog.domain.auth.exception.CustomException;
-import com.ttubeog.domain.auth.exception.ErrorCode;
-import com.ttubeog.domain.auth.utils.SecurityUtil;
+import com.ttubeog.domain.auth.config.SecurityUtil;
+import com.ttubeog.domain.auth.exception.NotFoundMemberException;
 import com.ttubeog.domain.member.application.MemberService;
 import com.ttubeog.domain.member.dto.MemberDto;
 import com.ttubeog.domain.member.dto.response.MemberDetailRes;
@@ -17,7 +16,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,8 +40,9 @@ public class MemberController {
         final long memberId = SecurityUtil.getCurrentMemeberId();
         MemberDto userDto = memberService.findById(memberId);
         if(userDto == null) {
-            throw new CustomException(ErrorCode.NOT_EXIST_USER);
+            throw new NotFoundMemberException();
         }
         return userDto;    }
+
 
 }
