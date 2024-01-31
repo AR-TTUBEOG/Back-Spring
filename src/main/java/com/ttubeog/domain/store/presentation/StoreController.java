@@ -3,6 +3,7 @@ package com.ttubeog.domain.store.presentation;
 import com.ttubeog.domain.store.application.StoreService;
 import com.ttubeog.domain.store.dto.request.RegisterStoreReq;
 import com.ttubeog.domain.store.dto.request.UpdateStoreReq;
+import com.ttubeog.domain.store.dto.response.GetStoreDetailRes;
 import com.ttubeog.domain.store.dto.response.RegisterStoreRes;
 import com.ttubeog.domain.store.dto.response.UpdateStoreRes;
 import com.ttubeog.global.config.security.token.CurrentUser;
@@ -69,5 +70,18 @@ public class StoreController {
             @PathVariable Long storeId
     ) {
         return storeService.deleteStore(userPrincipal, storeId);
+    }
+
+    // 매장 세부사항 조회
+    @Operation(summary = "매장 세부사항 조회", description = "매장 세부사항을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "매장 세부사항 조회 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = GetStoreDetailRes.class))}),
+            @ApiResponse(responseCode = "400", description = "매장 세부사항 조회 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @GetMapping("/{storeId}")
+    public ResponseEntity<?> getStoreDetails(
+            @PathVariable Long storeId
+    ) {
+        return storeService.getStoreDetails(storeId);
     }
 }
