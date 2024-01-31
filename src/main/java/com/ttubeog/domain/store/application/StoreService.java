@@ -7,6 +7,7 @@ import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.domain.store.dto.request.RegisterStoreReq;
 import com.ttubeog.domain.store.dto.request.UpdateStoreReq;
+import com.ttubeog.domain.store.dto.response.GetStoreDetailRes;
 import com.ttubeog.domain.store.dto.response.RegisterStoreRes;
 import com.ttubeog.domain.store.dto.response.UpdateStoreRes;
 import com.ttubeog.domain.store.exception.UnathorizedMemberException;
@@ -118,6 +119,40 @@ public class StoreService {
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
                 .information(Message.builder().message("매장 정보가 정상적으로 삭제되었습니다.").build())
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    // 매장 세부사항 조회
+    public ResponseEntity<?> getStoreDetails(Long storeId) {
+
+        Store store = storeRepository.findById(storeId).orElseThrow(NonExistentStoreException::new);
+
+        // List<BenefitType> storeBenefits = benefitRepository.findTypeByStoreId(storeId);
+        // Integer guestbookCount = guestBookRepository.countByStoreId(storeId);
+        // Integer likesCount = likesRepository.countByStoreId(storeId);
+
+        GetStoreDetailRes getStoreDetailRes = GetStoreDetailRes.builder()
+                .storeId(storeId)
+                .memberId(store.getMember().getId())
+                .name(store.getName())
+                .info(store.getInfo())
+                .dongAreaId(store.getDongArea().getId())
+                .detailAddress(store.getDetailAddress())
+                .latitude(store.getLatitude())
+                .longitude(store.getLongitude())
+                .image(store.getImage())
+                .stars(store.getStars())
+                .type(store.getType())
+                //.storeBenefits(storeBenefits.stream().map(BenefitType::getType).collect(Collectors.toList()))
+                //.guestbookCount(guestbookCount)
+                //.likesCount(likesCount)
+                .build();
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(getStoreDetailRes)
                 .build();
 
         return ResponseEntity.ok(apiResponse);
