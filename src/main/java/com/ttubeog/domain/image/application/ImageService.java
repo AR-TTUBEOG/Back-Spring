@@ -10,6 +10,7 @@ import com.ttubeog.domain.spot.domain.repository.SpotRepository;
 import com.ttubeog.domain.spot.exception.InvalidSpotIdException;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +40,7 @@ public class ImageService {
 
     @Transactional
     public ImageResponseDto createImage(CreateImageRequestDto createImageRequestDto) {
+
         Image image;
         ImageResponseDto imageResponseDto;
         if (createImageRequestDto.imageRequestType == SPOT) {
@@ -69,6 +71,7 @@ public class ImageService {
 
     @Transactional
     public ImageResponseDto updateImage(UpdateImageRequestDto updateImageRequestDto) {
+
         Image image = imageRepository.findById(updateImageRequestDto.getId()).orElseThrow(InvalidImageException::new);
         ImageResponseDto imageResponseDto;
 
@@ -89,5 +92,13 @@ public class ImageService {
         imageRepository.save(image);
 
         return imageResponseDto;
+    }
+
+    @Transactional
+    public void deleteImage(Long imageId) {
+
+        Image image = imageRepository.findById(imageId).orElseThrow(InvalidImageException::new);
+        imageRepository.delete(image);
+
     }
 }

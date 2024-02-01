@@ -7,6 +7,7 @@ import com.ttubeog.domain.image.domain.Image;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
 import com.ttubeog.domain.image.dto.request.CreateImageRequestDto;
 import com.ttubeog.domain.image.dto.request.ImageRequestType;
+import com.ttubeog.domain.image.dto.request.UpdateImageRequestDto;
 import com.ttubeog.domain.image.exception.InvalidImageException;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
@@ -156,12 +157,12 @@ public class SpotService {
         // 이미지 저장
         List<String> imageList = updateSpotRequestDto.getImage();
         for (String s : imageList) {
-            CreateImageRequestDto createImageRequestDto = CreateImageRequestDto.builder()
+            UpdateImageRequestDto updateImageRequestDto = UpdateImageRequestDto.builder()
                     .image(s)
                     .imageRequestType(ImageRequestType.SPOT)
                     .placeId(spot.getId())
                     .build();
-            imageService.createImage(createImageRequestDto);
+            imageService.updateImage(updateImageRequestDto);
         }
 
         return getResponseEntity(spot);
@@ -175,12 +176,12 @@ public class SpotService {
 
         Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidSpotIdException::new);
 
-        List<Image> imageList = spot.getImages();
-        for (Image image : imageList) {
-            imageRepository.delete(imageRepository.findById(image.getId()).orElseThrow(InvalidImageException::new));
-        }
-
         spotRepository.delete(spot);
+
+        List<Image> imageList = imageRepository.findBySpotId(spot.getId());
+        for (Image image : imageList) {
+            imageService.deleteImage(image.getId());
+        }
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
