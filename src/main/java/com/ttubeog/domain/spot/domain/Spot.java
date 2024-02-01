@@ -68,4 +68,19 @@ public class Spot extends BaseEntity {
         this.dongArea = dongArea;
         this.detailAddress = detailAddress;
     }
+
+    public void updateSpot(String name, String info, Float latitude, Float longitude, List<Image> images, DongArea dongArea, String detailAddress) {
+        this.name = name;
+        this.info = info;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.images = images;
+        this.dongArea = dongArea;
+        this.detailAddress = detailAddress;
+    }
+
+    public void updateStars(Float stars) {
+        this.stars = stars;
+    }
+
 }

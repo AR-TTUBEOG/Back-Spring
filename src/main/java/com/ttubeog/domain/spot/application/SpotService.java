@@ -11,14 +11,13 @@ import com.ttubeog.domain.spot.domain.Spot;
 import com.ttubeog.domain.spot.domain.repository.SpotRepository;
 import com.ttubeog.domain.spot.dto.request.CreateSpotRequestDto;
 import com.ttubeog.domain.spot.dto.request.UpdateSpotRequestDto;
-import com.ttubeog.domain.spot.dto.response.CreateSpotResponseDto;
+import com.ttubeog.domain.spot.dto.response.SpotResponseDto;
 import com.ttubeog.domain.spot.exception.AlreadyExistsSpotException;
 import com.ttubeog.domain.spot.exception.InvalidDongAreaException;
 import com.ttubeog.domain.spot.exception.InvalidImageListSizeException;
 import com.ttubeog.domain.spot.exception.InvalidSpotIdException;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
-import feign.Response;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -51,7 +49,7 @@ public class SpotService {
 
     @NotNull
     private ResponseEntity<?> getResponseEntity(Spot spot) {
-        CreateSpotResponseDto createSpotResponseDto = CreateSpotResponseDto.builder()
+        SpotResponseDto createSpotResponseDto = SpotResponseDto.builder()
                 .id(spot.getId())
                 .memberId(spot.getMember().getId())
                 .dongAreaId(spot.getDongArea().getId())
@@ -76,15 +74,12 @@ public class SpotService {
     public ResponseEntity<?> createSpot(UserPrincipal userPrincipal, CreateSpotRequestDto createSpotRequestDto) {
 
         // 유효한 사용자 로그인 상태인지 체크
-        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
 
         // 중복된 이름을 가진 산책 스팟인지 체크
         if (spotRepository.findByName(createSpotRequestDto.getName()).isPresent()) {
             throw new AlreadyExistsSpotException();
         }
-
-        // 산책 스팟 등록 요청 유저가 유효한지 체크
-        Member member = memberRepository.findById(createSpotRequestDto.getMemberId()).orElseThrow(InvalidMemberException::new);
 
         // 지역코드가 유효한지 체크
         DongArea dongArea = dongAreaRepository.findById(createSpotRequestDto.getDongAreaId()).orElseThrow(InvalidDongAreaException::new);
@@ -104,9 +99,6 @@ public class SpotService {
             imageRepository.save(image);
         }
 
-        // 평점 초기화
-        Float stars = createSpotRequestDto.getStars() != null ? createSpotRequestDto.getStars() : 0.0f;
-
         Spot spot = Spot.builder()
                 .member(member)
                 .dongArea(dongArea)
@@ -116,7 +108,7 @@ public class SpotService {
                 .latitude(createSpotRequestDto.getLatitude())
                 .longitude(createSpotRequestDto.getLongitude())
                 .images(imageList)
-                .stars(stars)
+                .stars(0.0f)
                 .build();
 
         spotRepository.save(spot);
@@ -135,7 +127,40 @@ public class SpotService {
     }
 
     public ResponseEntity<?> updateSpot(UserPrincipal userPrincipal, UpdateSpotRequestDto updateSpotRequestDto) {
-        return null;
+
+        // 유효한 사용자 로그인 상태인지 체크
+        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+
+        Spot spot = spotRepository.findById(updateSpotRequestDto.getId()).orElseThrow(InvalidSpotIdException::new);
+
+        // 중복된 이름을 가진 산책 스팟인지 체크
+        if (spotRepository.findByName(updateSpotRequestDto.getName()).isPresent()) {
+            throw new AlreadyExistsSpotException();
+        }
+
+        // 지역코드가 유효한지 체크
+        DongArea dongArea = dongAreaRepository.findById(updateSpotRequestDto.getDongAreaId()).orElseThrow(InvalidDongAreaException::new);
+
+        // 산책 스팟 이미지가 1~10개 사이인지 체크
+        if (updateSpotRequestDto.getImage().isEmpty() || updateSpotRequestDto.getImage().size() > 10) {
+            throw new InvalidImageListSizeException();
+        }
+
+        // 이미지 저장
+        List<Image> imageList = new ArrayList<>();
+        for (int i = 0; i < updateSpotRequestDto.getImage().size(); i++) {
+            Image image = Image.builder()
+                    .image(updateSpotRequestDto.getImage().get(i))
+                    .build();
+            imageList.add(imageList.size(), image);
+            imageRepository.save(image);
+        }
+
+        spot.updateSpot(updateSpotRequestDto.getName(), updateSpotRequestDto.getInfo(), updateSpotRequestDto.getLatitude(), updateSpotRequestDto.getLongitude(), imageList, dongArea, updateSpotRequestDto.getDetailAddress());
+
+        spotRepository.save(spot);
+
+        return getResponseEntity(spot);
     }
 
     public ResponseEntity<?> deleteSpot(UserPrincipal userPrincipal, Integer spotId) {

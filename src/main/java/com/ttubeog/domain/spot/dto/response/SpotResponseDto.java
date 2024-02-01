@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 @Builder
 @AllArgsConstructor
-public class CreateSpotResponseDto {
+public class SpotResponseDto {
 
     private Long id;
     private String name;
