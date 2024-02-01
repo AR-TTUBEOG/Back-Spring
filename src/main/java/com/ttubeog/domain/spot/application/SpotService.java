@@ -1,6 +1,5 @@
 package com.ttubeog.domain.spot.application;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttubeog.domain.area.domain.DongArea;
 import com.ttubeog.domain.area.domain.repository.DongAreaRepository;
 import com.ttubeog.domain.image.domain.Image;
