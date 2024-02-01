@@ -1,5 +1,6 @@
 package com.ttubeog.domain.spot.application;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttubeog.domain.area.domain.DongArea;
 import com.ttubeog.domain.area.domain.repository.DongAreaRepository;
 import com.ttubeog.domain.image.domain.Image;
@@ -18,6 +19,7 @@ import com.ttubeog.domain.spot.exception.InvalidImageListSizeException;
 import com.ttubeog.domain.spot.exception.InvalidSpotIdException;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
+import com.ttubeog.global.payload.Message;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
@@ -126,22 +128,24 @@ public class SpotService {
         return getResponseEntity(spot);
     }
 
+    @Transactional
     public ResponseEntity<?> updateSpot(UserPrincipal userPrincipal, UpdateSpotRequestDto updateSpotRequestDto) {
 
         // 유효한 사용자 로그인 상태인지 체크
         memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
 
+        // 존재하는 산책 스팟을 수정하려는지 체크
         Spot spot = spotRepository.findById(updateSpotRequestDto.getId()).orElseThrow(InvalidSpotIdException::new);
 
-        // 중복된 이름을 가진 산책 스팟인지 체크
+        // 수정하려는 이름과 중복된 이름을 가진 산책 스팟이 있는지
         if (spotRepository.findByName(updateSpotRequestDto.getName()).isPresent()) {
             throw new AlreadyExistsSpotException();
         }
 
-        // 지역코드가 유효한지 체크
+        // 수정하려는 지역코드가 유효한지 체크
         DongArea dongArea = dongAreaRepository.findById(updateSpotRequestDto.getDongAreaId()).orElseThrow(InvalidDongAreaException::new);
 
-        // 산책 스팟 이미지가 1~10개 사이인지 체크
+        // 수정하려는 산책 스팟 이미지가 1~10개 사이인지 체크
         if (updateSpotRequestDto.getImage().isEmpty() || updateSpotRequestDto.getImage().size() > 10) {
             throw new InvalidImageListSizeException();
         }
@@ -163,10 +167,25 @@ public class SpotService {
         return getResponseEntity(spot);
     }
 
-    public ResponseEntity<?> deleteSpot(UserPrincipal userPrincipal, Integer spotId) {
-        return null;
+    @Transactional
+    public ResponseEntity<?> deleteSpot(UserPrincipal userPrincipal, Long spotId) {
+
+        // 유효한 사용자 로그인 상태인지 체크
+        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+
+        Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidSpotIdException::new);
+
+        spotRepository.delete(spot);
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(Message.builder().message("산책 스팟을 삭제햇습니다.").build())
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
+    @Transactional
     public ResponseEntity<?> likeSpot(UserPrincipal userPrincipal, Integer spotId) {
         return null;
     }
