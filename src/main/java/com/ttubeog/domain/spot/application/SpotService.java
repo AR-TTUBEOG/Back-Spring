@@ -5,7 +5,7 @@ import com.ttubeog.domain.area.domain.repository.DongAreaRepository;
 import com.ttubeog.domain.image.application.ImageService;
 import com.ttubeog.domain.image.domain.Image;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
-import com.ttubeog.domain.image.dto.request.ImageRequestDto;
+import com.ttubeog.domain.image.dto.request.CreateImageRequestDto;
 import com.ttubeog.domain.image.dto.request.ImageRequestType;
 import com.ttubeog.domain.image.exception.InvalidImageException;
 import com.ttubeog.domain.member.domain.Member;
@@ -23,10 +23,8 @@ import com.ttubeog.domain.spot.exception.InvalidSpotIdException;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -108,12 +106,12 @@ public class SpotService {
         // 이미지 저장
         List<String> imageList = createSpotRequestDto.getImage();
         for (String s : imageList) {
-            ImageRequestDto imageRequestDto = ImageRequestDto.builder()
+            CreateImageRequestDto createImageRequestDto = CreateImageRequestDto.builder()
                     .image(s)
                     .imageRequestType(ImageRequestType.SPOT)
                     .placeId(spot.getId())
                     .build();
-            imageService.createImage(imageRequestDto);
+            imageService.createImage(createImageRequestDto);
         }
 
         return getResponseEntity(spot);
@@ -151,19 +149,20 @@ public class SpotService {
             throw new InvalidImageListSizeException();
         }
 
-        // 이미지 저장
-        List<Image> imageList = new ArrayList<>();
-        for (int i = 0; i < updateSpotRequestDto.getImage().size(); i++) {
-            Image image = Image.builder()
-                    .image(updateSpotRequestDto.getImage().get(i))
-                    .build();
-            imageList.add(imageList.size(), image);
-            imageRepository.save(image);
-        }
-
         spot.updateSpot(updateSpotRequestDto.getName(), updateSpotRequestDto.getInfo(), updateSpotRequestDto.getLatitude(), updateSpotRequestDto.getLongitude(), imageList, dongArea, updateSpotRequestDto.getDetailAddress());
 
         spotRepository.save(spot);
+
+        // 이미지 저장
+        List<String> imageList = updateSpotRequestDto.getImage();
+        for (String s : imageList) {
+            CreateImageRequestDto createImageRequestDto = CreateImageRequestDto.builder()
+                    .image(s)
+                    .imageRequestType(ImageRequestType.SPOT)
+                    .placeId(spot.getId())
+                    .build();
+            imageService.createImage(createImageRequestDto);
+        }
 
         return getResponseEntity(spot);
     }

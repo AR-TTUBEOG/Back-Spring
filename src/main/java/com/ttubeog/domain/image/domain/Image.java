@@ -38,4 +38,14 @@ public class Image extends BaseEntity {
         this.spot = spot;
         this.store = store;
     }
+
+    public void updateImage(String image, Spot spot) {
+        this.image = image;
+        this.spot = spot;
+    }
+
+    public void updateImage(String image, Store store) {
+        this.image = image;
+        this.store = store;
+    }
 }

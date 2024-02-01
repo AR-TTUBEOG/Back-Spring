@@ -7,10 +7,10 @@ import lombok.Getter;
 @Getter
 @Builder
 @AllArgsConstructor
-public class ImageRequestDto {
+public class UpdateImageRequestDto {
 
+    public Long id;
     public String image;
     public ImageRequestType imageRequestType;
     public Long placeId;
-
 }

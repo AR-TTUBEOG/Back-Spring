@@ -2,13 +2,13 @@ package com.ttubeog.domain.image.application;
 
 import com.ttubeog.domain.image.domain.Image;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
-import com.ttubeog.domain.image.dto.request.ImageRequestDto;
+import com.ttubeog.domain.image.dto.request.CreateImageRequestDto;
+import com.ttubeog.domain.image.dto.request.UpdateImageRequestDto;
 import com.ttubeog.domain.image.dto.response.ImageResponseDto;
-import com.ttubeog.domain.spot.domain.Spot;
+import com.ttubeog.domain.image.exception.InvalidImageException;
 import com.ttubeog.domain.spot.domain.repository.SpotRepository;
 import com.ttubeog.domain.spot.exception.InvalidSpotIdException;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,13 +38,13 @@ public class ImageService {
     }
 
     @Transactional
-    public ImageResponseDto createImage(ImageRequestDto imageRequestDto) {
+    public ImageResponseDto createImage(CreateImageRequestDto createImageRequestDto) {
         Image image;
         ImageResponseDto imageResponseDto;
-        if (imageRequestDto.imageRequestType == SPOT) {
+        if (createImageRequestDto.imageRequestType == SPOT) {
             image = Image.builder()
-                    .image(imageRequestDto.getImage())
-                    .spot(spotRepository.findById(imageRequestDto.getPlaceId()).orElseThrow(InvalidSpotIdException::new))
+                    .image(createImageRequestDto.getImage())
+                    .spot(spotRepository.findById(createImageRequestDto.getPlaceId()).orElseThrow(InvalidSpotIdException::new))
                     .build();
 
             imageResponseDto = ImageResponseDto.builder()
@@ -53,8 +53,8 @@ public class ImageService {
                     .build();
         } else {
             image = Image.builder()
-                    .image(imageRequestDto.getImage())
-                    .store(storeRepository.findById(imageRequestDto.getPlaceId()).orElseThrow(InvalidSpotIdException::new))
+                    .image(createImageRequestDto.getImage())
+                    .store(storeRepository.findById(createImageRequestDto.getPlaceId()).orElseThrow(InvalidSpotIdException::new))
                     .build();
 
             imageResponseDto = ImageResponseDto.builder()
@@ -67,4 +67,27 @@ public class ImageService {
         return imageResponseDto;
     }
 
+    @Transactional
+    public ImageResponseDto updateImage(UpdateImageRequestDto updateImageRequestDto) {
+        Image image = imageRepository.findById(updateImageRequestDto.getId()).orElseThrow(InvalidImageException::new);
+        ImageResponseDto imageResponseDto;
+
+        if (updateImageRequestDto.imageRequestType == SPOT) {
+            image.updateImage(updateImageRequestDto.getImage(), spotRepository.findById(updateImageRequestDto.getPlaceId()).orElseThrow(InvalidSpotIdException::new));
+            imageResponseDto = ImageResponseDto.builder()
+                    .id(image.getId())
+                    .placeId(image.getSpot().getId())
+                    .build();
+        } else {
+            image.updateImage(updateImageRequestDto.getImage(), storeRepository.findById(updateImageRequestDto.getPlaceId()).orElseThrow(InvalidSpotIdException::new));
+            imageResponseDto = ImageResponseDto.builder()
+                    .id(image.getId())
+                    .placeId(image.getStore().getId())
+                    .build();
+        }
+
+        imageRepository.save(image);
+
+        return imageResponseDto;
+    }
 }
