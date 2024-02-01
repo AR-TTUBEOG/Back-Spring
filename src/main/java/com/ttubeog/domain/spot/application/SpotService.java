@@ -8,7 +8,6 @@ import com.ttubeog.domain.image.domain.repository.ImageRepository;
 import com.ttubeog.domain.image.dto.request.CreateImageRequestDto;
 import com.ttubeog.domain.image.dto.request.ImageRequestType;
 import com.ttubeog.domain.image.dto.request.UpdateImageRequestDto;
-import com.ttubeog.domain.image.exception.InvalidImageException;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
@@ -30,7 +29,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.ttubeog.domain.image.application.ImageService.getImageString;
@@ -172,7 +170,7 @@ public class SpotService {
     public ResponseEntity<?> deleteSpot(UserPrincipal userPrincipal, Long spotId) {
 
         // 유효한 사용자 로그인 상태인지 체크
-        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
 
         Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidSpotIdException::new);
 
