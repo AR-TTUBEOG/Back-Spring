@@ -5,6 +5,7 @@ import com.ttubeog.domain.area.domain.DongArea;
 import com.ttubeog.domain.area.domain.repository.DongAreaRepository;
 import com.ttubeog.domain.image.domain.Image;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
+import com.ttubeog.domain.image.exception.InvalidImageException;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
@@ -174,6 +175,11 @@ public class SpotService {
         Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
 
         Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidSpotIdException::new);
+
+        List<Image> imageList = spot.getImages();
+        for (Image image : imageList) {
+            imageRepository.delete(imageRepository.findById(image.getId()).orElseThrow(InvalidImageException::new));
+        }
 
         spotRepository.delete(spot);
 
