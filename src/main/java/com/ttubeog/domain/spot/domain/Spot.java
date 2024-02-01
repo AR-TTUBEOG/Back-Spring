@@ -23,21 +23,22 @@ public class Spot extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "info")
+    @Column(name = "info", nullable = false)
     private String info;
 
-    @Column(name = "latitude")
+    @Column(name = "latitude", nullable = false)
     private Float latitude;
 
-    @Column(name = "longitude")
+    @Column(name = "longitude", nullable = false)
     private Float longitude;
 
-    @Column(name = "images")
+    @Column(name = "images", nullable = false)
     @OneToMany(mappedBy = "spot", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images;
 
@@ -45,14 +46,14 @@ public class Spot extends BaseEntity {
     private Float stars;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id)")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dong_area_id")
+    @JoinColumn(name = "dong_area_id", nullable = false)
     private DongArea dongArea;
 
-    @Column(name = "detail_address")
+    @Column(name = "detail_address", nullable = false)
     private String detailAddress;
 
     public Spot(Long id, String name, String info, Float latitude, Float longitude, List<Image> images, Float stars, Member member, DongArea dongArea, String detailAddress) {

@@ -1,4 +1,5 @@
-package com.ttubeog.domain.spot.dto.request;
+package com.ttubeog.domain.spot.dto.response;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +10,7 @@ import java.util.List;
 @Getter
 @Builder
 @AllArgsConstructor
-public class CreateSpotRequestDto {
+public class CreateSpotResponseDto {
 
     private Long id;
     private String name;

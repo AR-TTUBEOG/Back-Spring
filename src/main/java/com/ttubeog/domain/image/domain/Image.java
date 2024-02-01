@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.ibatis.annotations.Many;
 
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,16 +20,16 @@ public class Image extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "spot_id")
-    private Spot spot;
-
-    @Column(name = "image")
+    @Column(name = "image", nullable = false)
     private String image;
 
-    public Image(Long id, Spot spot, String image) {
+    @ManyToOne
+    @JoinColumn(name = "spot")
+    private Spot spot;
+
+    public Image(Long id, String image, Spot spot) {
         this.id = id;
-        this.spot = spot;
         this.image = image;
+        this.spot = spot;
     }
 }
