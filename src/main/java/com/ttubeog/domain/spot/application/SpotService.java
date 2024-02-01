@@ -150,7 +150,7 @@ public class SpotService {
             throw new InvalidImageListSizeException();
         }
 
-        spot.updateSpot(updateSpotRequestDto.getName(), updateSpotRequestDto.getInfo(), updateSpotRequestDto.getLatitude(), updateSpotRequestDto.getLongitude(), imageList, dongArea, updateSpotRequestDto.getDetailAddress());
+        spot.updateSpot(updateSpotRequestDto.getName(), updateSpotRequestDto.getInfo(), updateSpotRequestDto.getLatitude(), updateSpotRequestDto.getLongitude(), dongArea, updateSpotRequestDto.getDetailAddress());
 
         spotRepository.save(spot);
 
