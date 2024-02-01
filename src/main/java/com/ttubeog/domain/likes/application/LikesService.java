@@ -54,7 +54,7 @@ public class LikesService {
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
-                .information(Message.builder().message("매장에 대한 좋아요를 눌렀습니다."))
+                .information(Message.builder().message("매장에 대한 좋아요를 눌렀습니다.").build())
                 .build();
 
         return ResponseEntity.ok(apiResponse);
@@ -81,7 +81,7 @@ public class LikesService {
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
-                .information(Message.builder().message("스팟에 대한 좋아요를 눌렀습니다."))
+                .information(Message.builder().message("스팟에 대한 좋아요를 눌렀습니다.").build())
                 .build();
 
         return ResponseEntity.ok(apiResponse);

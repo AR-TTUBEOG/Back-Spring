@@ -12,5 +12,6 @@ public interface LikesRepository extends JpaRepository<Likes, Long> {
 
     Integer countByStoreId(Long storeId);
 
-    Boolean existsByMemberIdAndStoreId(Long memberId, Long storeId);
+    boolean existsByMemberIdAndStoreId(Long memberId, Long StoreId);
+    boolean existsByMemberIdAndSpotId(Long memberId, Long spotId);
 }
