@@ -2,6 +2,7 @@ package com.ttubeog.domain.image.domain;
 
 import com.ttubeog.domain.common.BaseEntity;
 import com.ttubeog.domain.spot.domain.Spot;
+import com.ttubeog.domain.store.domain.Store;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -23,13 +24,18 @@ public class Image extends BaseEntity {
     @Column(name = "image", nullable = false)
     private String image;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "spot")
     private Spot spot;
 
-    public Image(Long id, String image, Spot spot) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store")
+    private Store store;
+
+    public Image(Long id, String image, Spot spot, Store store) {
         this.id = id;
         this.image = image;
         this.spot = spot;
+        this.store = store;
     }
 }

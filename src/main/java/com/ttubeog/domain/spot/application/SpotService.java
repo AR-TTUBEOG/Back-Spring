@@ -2,8 +2,11 @@ package com.ttubeog.domain.spot.application;
 
 import com.ttubeog.domain.area.domain.DongArea;
 import com.ttubeog.domain.area.domain.repository.DongAreaRepository;
+import com.ttubeog.domain.image.application.ImageService;
 import com.ttubeog.domain.image.domain.Image;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
+import com.ttubeog.domain.image.dto.request.ImageRequestDto;
+import com.ttubeog.domain.image.dto.request.ImageRequestType;
 import com.ttubeog.domain.image.exception.InvalidImageException;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
@@ -20,6 +23,8 @@ import com.ttubeog.domain.spot.exception.InvalidSpotIdException;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.ttubeog.domain.image.application.ImageService.getImageString;
 
 @RequiredArgsConstructor
 @Service
@@ -39,18 +46,11 @@ public class SpotService {
     private final DongAreaRepository dongAreaRepository;
     private final ImageRepository imageRepository;
 
-    private List<String> getSpotImageString(Spot spot) {
-        List<String> spotImageString = new ArrayList<>();
+    private final ImageService imageService;
 
-        for (int i = 0; i < spot.getImages().size(); i++) {
-            spotImageString.add(spotImageString.size(), spot.getImages().get(i).getImage());
-        }
-
-        return spotImageString;
-    }
-
-    @NotNull
+    @NonNull
     private ResponseEntity<?> getResponseEntity(Spot spot) {
+
         SpotResponseDto createSpotResponseDto = SpotResponseDto.builder()
                 .id(spot.getId())
                 .memberId(spot.getMember().getId())
@@ -60,7 +60,7 @@ public class SpotService {
                 .info(spot.getInfo())
                 .latitude(spot.getLatitude())
                 .longitude(spot.getLongitude())
-                .image(getSpotImageString(spot))
+                .image(getImageString(imageRepository.findBySpotId(spot.getId())))
                 .stars(spot.getStars())
                 .build();
 
@@ -90,17 +90,8 @@ public class SpotService {
         if (createSpotRequestDto.getImage().isEmpty() || createSpotRequestDto.getImage().size() > 10) {
             throw new InvalidImageListSizeException();
         }
-
-        // 이미지 저장
-        List<Image> imageList = new ArrayList<>();
-        for (int i = 0; i < createSpotRequestDto.getImage().size(); i++) {
-            Image image = Image.builder()
-                    .image(createSpotRequestDto.getImage().get(i))
-                    .build();
-            imageList.add(imageList.size(), image);
-            imageRepository.save(image);
-        }
-
+        
+        // 산책 스팟 저장
         Spot spot = Spot.builder()
                 .member(member)
                 .dongArea(dongArea)
@@ -109,11 +100,21 @@ public class SpotService {
                 .info(createSpotRequestDto.getInfo())
                 .latitude(createSpotRequestDto.getLatitude())
                 .longitude(createSpotRequestDto.getLongitude())
-                .images(imageList)
                 .stars(0.0f)
                 .build();
 
         spotRepository.save(spot);
+
+        // 이미지 저장
+        List<String> imageList = createSpotRequestDto.getImage();
+        for (String s : imageList) {
+            ImageRequestDto imageRequestDto = ImageRequestDto.builder()
+                    .image(s)
+                    .imageRequestType(ImageRequestType.SPOT)
+                    .placeId(spot.getId())
+                    .build();
+            imageService.createImage(imageRequestDto);
+        }
 
         return getResponseEntity(spot);
     }

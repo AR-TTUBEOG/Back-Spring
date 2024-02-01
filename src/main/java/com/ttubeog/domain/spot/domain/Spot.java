@@ -38,10 +38,6 @@ public class Spot extends BaseEntity {
     @Column(name = "longitude", nullable = false)
     private Float longitude;
 
-    @Column(name = "images", nullable = false)
-    @OneToMany(mappedBy = "spot", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Image> images;
-
     @Column(name = "starts")
     private Float stars;
 
@@ -56,25 +52,23 @@ public class Spot extends BaseEntity {
     @Column(name = "detail_address", nullable = false)
     private String detailAddress;
 
-    public Spot(Long id, String name, String info, Float latitude, Float longitude, List<Image> images, Float stars, Member member, DongArea dongArea, String detailAddress) {
+    public Spot(Long id, String name, String info, Float latitude, Float longitude, Float stars, Member member, DongArea dongArea, String detailAddress) {
         this.id = id;
         this.name = name;
         this.info = info;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.images = images;
         this.stars = stars;
         this.member = member;
         this.dongArea = dongArea;
         this.detailAddress = detailAddress;
     }
 
-    public void updateSpot(String name, String info, Float latitude, Float longitude, List<Image> images, DongArea dongArea, String detailAddress) {
+    public void updateSpot(String name, String info, Float latitude, Float longitude, DongArea dongArea, String detailAddress) {
         this.name = name;
         this.info = info;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.images = images;
         this.dongArea = dongArea;
         this.detailAddress = detailAddress;
     }

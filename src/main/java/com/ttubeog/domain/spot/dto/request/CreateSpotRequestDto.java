@@ -11,7 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 public class CreateSpotRequestDto {
 
-    private Long id;
     private String name;
     private Long dongAreaId;
     private String detailAddress;
