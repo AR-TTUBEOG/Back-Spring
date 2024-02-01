@@ -12,5 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class GuestBookService {
     public ResponseEntity<?> createGuestBook(UserPrincipal userPrincipal, Integer spotId, CreateGuestBookRequestDto createGuestBookRequestDto) {
+        return null;
     }
 }
