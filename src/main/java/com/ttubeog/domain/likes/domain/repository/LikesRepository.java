@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LikesRepository extends JpaRepository<Likes, Long> {
+
+    boolean existsByMemberIdAndStoreId(Long memberId, Long StoreId);
+    boolean existsByMemberIdAndSpotId(Long memberId, Long spotId);
 }
