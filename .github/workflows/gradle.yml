@@ -113,7 +113,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          target: /path/on/remote/server # specify the target path if needed
+          target: /home/ubuntu # specify the target path if needed
           source: . # specify the source directory or file if needed
           command: sudo systemctl start redis-server
           port: 22
