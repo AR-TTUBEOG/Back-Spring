@@ -1,6 +1,7 @@
 package com.ttubeog.domain.benefit.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ttubeog.domain.auth.config.SecurityUtil;
 import com.ttubeog.domain.benefit.domain.Benefit;
 import com.ttubeog.domain.benefit.domain.MemberBenefit;
 import com.ttubeog.domain.benefit.domain.repository.BenefitRepository;
@@ -17,9 +18,7 @@ import com.ttubeog.domain.benefit.exception.OverlappingBenefitException;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
-import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
-import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
@@ -203,9 +202,9 @@ public class BenefitService {
     }
 
     //혜택 조회(사용 가능, 사용 완료, 만료 혜택 모두 조회)
-    public ResponseEntity<?> findMyBenefit(UserPrincipal userPrincipal, Integer page) throws JsonProcessingException {
-
-        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+    public ResponseEntity<?> findMyBenefit(Integer page) throws JsonProcessingException {
+        final long memberId = SecurityUtil.getCurrentMemeberId();
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         Page<MemberBenefit> memberBenefitPage = memberBenefitRepository.findAllByMember(member, PageRequest.of(page, 10));
 

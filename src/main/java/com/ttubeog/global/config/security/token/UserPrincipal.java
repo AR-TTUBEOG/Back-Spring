@@ -1,7 +1,6 @@
 package com.ttubeog.global.config.security.token;
 
-import com.ttubeog.domain.member.domain.MemberRole;
-import com.ttubeog.domain.member.dto.MemberDto;
+import com.ttubeog.domain.member.domain.Member;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,31 +15,27 @@ import java.util.Map;
 @Getter
 public class UserPrincipal implements OAuth2User, UserDetails{
 
-    private final MemberDto member;
+    private final Member member;
 
     private final Long id;
     private final String email;
     private final String password;
-    private final Collection<? extends GrantedAuthority> authorities;
     @Getter
     private Map<String, Object> attributes;
 
-    public UserPrincipal(MemberDto member, Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(Member member, Long id, String email, String password) {
         this.member = member;
         this.id = id;
         this.email = email;
         this.password = password;
-        this.authorities = authorities;
     }
 
-    public static UserPrincipal create(MemberDto member) {
-        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(MemberRole.USER.getRole()));
+    public static UserPrincipal create(Member member) {
         return new UserPrincipal(
                 member,
                 member.getId(),
                 member.getEmail(),
-                member.getPassword(),
-                authorities
+                member.getPassword()
         );
     }
 
@@ -48,7 +43,7 @@ public class UserPrincipal implements OAuth2User, UserDetails{
     public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
-    
+
     public Long getId() {
         return id;
     }
@@ -69,7 +64,7 @@ public class UserPrincipal implements OAuth2User, UserDetails{
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return null;
     }
 
     @Override
@@ -106,5 +101,5 @@ public class UserPrincipal implements OAuth2User, UserDetails{
     public boolean isEnabled() {
         return true;
     }
-    
+
 }

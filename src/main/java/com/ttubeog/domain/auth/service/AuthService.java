@@ -15,6 +15,7 @@ import com.ttubeog.domain.auth.security.OAuthPlatformMemberResponse;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
+import com.ttubeog.global.config.security.token.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -58,7 +59,6 @@ public class AuthService {
         if (memberData.isEmpty()) {
             member = Member.builder()
                     .memberNumber(String.valueOf(memberInfo.getId()))
-                    .status(Status.ACTIVE)
                     .build();
 
             memberRepository.save(member);
@@ -67,17 +67,23 @@ public class AuthService {
         Optional<Member> memberLoginData = memberRepository.findByMemberNumber(String.valueOf(memberInfo.getId()));
 
         String refreshToken = jwtTokenProvider.createRereshToken(memberLoginData.get().getId());
-
-        KakaoTokenResponse oAuthTokenResponse = KakaoTokenResponse.builder()
-                .accessToken(jwtTokenProvider.createAccessToken(
-                        memberLoginData.get().getId()))
-                .refreshToken(refreshToken)
-                .isRegistered(false)
-                .build();
-
         redisTemplate.opsForValue().set(String.valueOf(memberLoginData.get().getId()), refreshToken);
 
-        return oAuthTokenResponse;
+        if (memberData.isEmpty()) {
+            return KakaoTokenResponse.builder()
+                    .accessToken(jwtTokenProvider.createAccessToken(
+                            memberLoginData.get().getId()))
+                    .refreshToken(refreshToken)
+                    .isRegistered(false)
+                    .build();
+        } else {
+            return KakaoTokenResponse.builder()
+                    .accessToken(jwtTokenProvider.createAccessToken(
+                            memberLoginData.get().getId()))
+                    .refreshToken(refreshToken)
+                    .isRegistered(true)
+                    .build();
+        }
     }
 
     private OAuthTokenResponse generateOAuthTokenResponse(Platform platform, String email, String platformId) {
@@ -97,7 +103,7 @@ public class AuthService {
                     return new OAuthTokenResponse(accessToken, refreshToken, true);
                 })
                 .orElseGet(() -> {
-                    Member oauthMember = new Member(email, platform, Status.ACTIVE);
+                    Member oauthMember = new Member(email, platform, Status.ACTIVE, "");
                     Member savedMember = memberRepository.save(oauthMember);
                     String accessToken = issueAccessToken(savedMember);
                     String refreshToken = issueRefreshToken();

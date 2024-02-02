@@ -32,15 +32,7 @@ public class Member extends BaseEntity {
     @Email
     private String email;
 
-    private String imageUrl;
-
     private String password;
-
-    @Enumerated(EnumType.STRING)
-    private Provider provider;
-
-    @Enumerated(EnumType.STRING)
-    private MemberRole memberRole;
 
     private String platformId;
 
@@ -54,11 +46,12 @@ public class Member extends BaseEntity {
     @Column(name = "status")
     private Status status;
 
-    public Member(String email, Platform platform, Status status) {
+    public Member(String email, Platform platform, Status status, String memberNumber) {
         this.email = email;
         this.platform = platform;
         this.platformId = platformId;
         this.status = status;
+        this.memberNumber = memberNumber;
     }
 
     public boolean isRegisteredOAuthMember() {
@@ -69,7 +62,4 @@ public class Member extends BaseEntity {
         this.name = name;
     }
 
-    public void updateImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
 }

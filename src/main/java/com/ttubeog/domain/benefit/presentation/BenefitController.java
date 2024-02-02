@@ -7,6 +7,7 @@ import com.ttubeog.domain.benefit.dto.request.UpdateBenefitReq;
 import com.ttubeog.domain.benefit.dto.response.CreateBenefitRes;
 import com.ttubeog.domain.benefit.dto.response.SaveBenefitRes;
 import com.ttubeog.domain.benefit.dto.response.UpdateBenefitRes;
+import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.global.config.security.token.CurrentUser;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ErrorResponse;
@@ -116,9 +117,8 @@ public class BenefitController {
     @GetMapping
     public ResponseEntity<?> findMyBenefit(
             @Parameter(description = "Accesstoken을 입력해주세요.", required = true)
-            @CurrentUser UserPrincipal userPrincipal,
             @RequestParam(name = "page") Integer page
     ) throws JsonProcessingException {
-        return benefitService.findMyBenefit(userPrincipal, page);
+        return benefitService.findMyBenefit(page);
     }
 }

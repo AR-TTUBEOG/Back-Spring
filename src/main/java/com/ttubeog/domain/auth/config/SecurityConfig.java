@@ -1,6 +1,5 @@
 package com.ttubeog.domain.auth.config;
 
-import com.ttubeog.domain.member.domain.MemberRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
