@@ -108,6 +108,15 @@ jobs:
           source: .
           target: "/home/ubuntu/app/code"
 
+      - name: Start redis-server
+        uses: appleboy/scp-action@master
+        with:
+          key: ${{ secrets.EC2_KEY }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          script: |
+            sudo systemctl start redis-server
+
 
   deploy:
     name: CD with SSH
