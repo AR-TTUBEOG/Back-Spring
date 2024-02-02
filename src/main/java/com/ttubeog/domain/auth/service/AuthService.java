@@ -15,6 +15,7 @@ import com.ttubeog.domain.auth.security.OAuthPlatformMemberResponse;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
+import com.ttubeog.global.config.security.token.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -102,7 +103,7 @@ public class AuthService {
                     return new OAuthTokenResponse(accessToken, refreshToken, true);
                 })
                 .orElseGet(() -> {
-                    Member oauthMember = new Member(email, platform, Status.ACTIVE);
+                    Member oauthMember = new Member(email, platform, Status.ACTIVE, "");
                     Member savedMember = memberRepository.save(oauthMember);
                     String accessToken = issueAccessToken(savedMember);
                     String refreshToken = issueRefreshToken();

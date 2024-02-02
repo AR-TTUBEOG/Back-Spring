@@ -73,7 +73,7 @@ public class JwtTokenProvider {
     }
 
     public String resolveToken(HttpServletRequest request) {
-        String tokenHeader = request.getHeader("Authentication");
+        String tokenHeader = request.getHeader("Authorization");
 
         if (tokenHeader != null && tokenHeader.startsWith("Bearer ")) {
             return tokenHeader.substring(7);
@@ -90,5 +90,12 @@ public class JwtTokenProvider {
         } catch (JwtException e) {
             throw new InvalidAccessTokenException();
         }
+    }
+
+    public Long getMemberId(HttpServletRequest request) {
+        String token = resolveToken(request); // 클라이언트의 토큰을 가져옴
+        String userId = getPayload(token); // 토큰에서 사용자 ID를 추출
+
+        return Long.valueOf(userId); // 사용자 ID를 Long으로 변환하여 반환
     }
 }

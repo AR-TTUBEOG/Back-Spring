@@ -25,7 +25,6 @@ public class MemberDetailRes {
                 .id(member.getId())
                 .name(member.getName())
                 .email(member.getEmail())
-                .ImgUrl(member.getImageUrl())
                 .build();
     }
 
