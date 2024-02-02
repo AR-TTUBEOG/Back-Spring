@@ -23,7 +23,7 @@ public class Member extends BaseEntity {
 
     private String oAuthId;
 
-    private String name;
+    private String nickname;
 
     @Size(max = 45)
     @NotNull
@@ -55,11 +55,11 @@ public class Member extends BaseEntity {
     }
 
     public boolean isRegisteredOAuthMember() {
-        return name != null;
+        return nickname != null;
     }
 
     public void updateName(String name) {
-        this.name = name;
+        this.nickname = name;
     }
 
 }

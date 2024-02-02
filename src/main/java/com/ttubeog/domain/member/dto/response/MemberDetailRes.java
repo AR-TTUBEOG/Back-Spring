@@ -23,7 +23,7 @@ public class MemberDetailRes {
     public static MemberDetailRes toDto(Member member) {
         return MemberDetailRes.builder()
                 .id(member.getId())
-                .name(member.getName())
+                .name(member.getNickname())
                 .email(member.getEmail())
                 .build();
     }

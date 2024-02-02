@@ -39,8 +39,7 @@ public class MemberService {
 
         MemberDetailRes memberDetailRes = MemberDetailRes.builder()
                 .id(member.getId())
-                .email(member.getEmail())
-                .name(member.getName())
+                .name(member.getNickname())
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()
