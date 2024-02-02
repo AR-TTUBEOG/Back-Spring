@@ -5,13 +5,15 @@ import com.ttubeog.domain.auth.domain.Status;
 import com.ttubeog.domain.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
+@Builder
 public class Member extends BaseEntity {
 
     @Id
@@ -22,6 +24,10 @@ public class Member extends BaseEntity {
     private String oAuthId;
 
     private String name;
+
+    @Size(max = 45)
+    @NotNull
+    private String memberNumber;
 
     @Email
     private String email;
@@ -47,20 +53,6 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
-
-    public Member(Long id, String name, String email, String imageUrl, String password, Provider provider, MemberRole memberRole, String platformId, Platform platform, String refreshToken, Status status, int reportCount) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.imageUrl = imageUrl;
-        this.password = password;
-        this.provider = provider;
-        this.memberRole = memberRole;
-        this.platformId = platformId;
-        this.platform = platform;
-        this.refreshToken = refreshToken;
-        this.status = status;
-    }
 
     public Member(String email, Platform platform, Status status) {
         this.email = email;
