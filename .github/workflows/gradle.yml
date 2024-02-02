@@ -113,8 +113,22 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
+          target: /path/on/remote/server # specify the target path if needed
+          source: . # specify the source directory or file if needed
           command: sudo systemctl start redis-server
           port: 22
+          timeout: 30s
+          command_timeout: 10m
+          use_insecure_cipher: false
+          rm: false
+          debug: false
+          strip_components: 0
+          overwrite: false
+          tar_dereference: false
+          tar_exec: tar
+          proxy_port: 22
+          proxy_timeout: 30s
+          proxy_use_insecure_cipher: false
 
 
   deploy:
