@@ -94,9 +94,8 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          # 기존 실행 중인 서버 종료 후 jar 파일 실행
-          script: |
-            sudo rm -rf /home/ubuntu/app/code
+          command: sudo rm -rf /home/ubuntu/app/code
+          port: 22
 
       
       - name: Upload raw sorce to EC2
@@ -114,8 +113,8 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          script: |
-            sudo systemctl start redis-server
+          command: sudo systemctl start redis-server
+          port: 22
 
 
   deploy:
