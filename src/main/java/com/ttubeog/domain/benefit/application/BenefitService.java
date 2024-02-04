@@ -1,6 +1,8 @@
 package com.ttubeog.domain.benefit.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ttubeog.domain.auth.config.SecurityUtil;
+import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.benefit.domain.Benefit;
 import com.ttubeog.domain.benefit.domain.MemberBenefit;
 import com.ttubeog.domain.benefit.domain.repository.BenefitRepository;
@@ -21,7 +23,6 @@ import com.ttubeog.domain.game.dto.response.FindGameRes;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
-import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
@@ -50,6 +51,7 @@ public class BenefitService {
     private final StoreRepository storeRepository;
     private final MemberBenefitRepository memberBenefitRepository;
     private final GameRepository gameRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     // 혜택 생성
     @Transactional

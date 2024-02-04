@@ -13,48 +13,171 @@ on:
   pull_request:
     branches: [ "dev" ]
 
+env:
+  AWS_REGION: ap-northeast-2
+  S3_BUCKET_NAME: s3-ttubeog
+  CODE_DEPLOY_APPLICATION_NAME: ttubeog-codedeploy
+  CODE_DEPLOY_DEPLOYMENT_GROUP_NAME: ttubeog-deploy-group
+
 
 permissions:
   contents: read
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    name: Build
+    runs-on: ubuntu-22.04
 
     steps:
-    - uses: actions/checkout@v3
+      # 작업 엑세스 가능하게 $GITHUB_WORKSPACE에서 저장소를 체크아웃
+      - name: Checkout branch
+        uses: actions/checkout@v3
 
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
+      # java 버전 세팅
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'zulu'
 
-    - name: Copy secret
-      env:
-        OCCUPY_SECRET: ${{ secrets.OCCUPY_SECRET }}
-        OCCUPY_DB_SECRET: ${{ secrets.OCCUPY_DB_SECRET }}
-        OCCUPY_OAUTH_SECRET: ${{ secrets.OCCUPY_OAUTH_SECRET }}
-        OCCUPY_SWAGGER_SECRET: ${{ secrets.OCCUPY_SWAGGER_SECRET }}
-        OCCUPY_SECRET_DIR: src/main/resources
-        OCCUPY_DB_SECRET_DIR: $OCCUPY_SECRET_DIR/database
-        OCCUPY_OAUTH_SECRET_DIR: $OCCUPY_SECRET_DIR/oauth2
-        OCCUPY_SWAGGER_SECRET_DIR: $OCCUPY_SECRET_DIR/swagger
-        OCCUPY_SECRET_DIR_FILE_NAME: application.yml
-        OCCUPY_DB_SECRET_DIR_FILE_NAME: application-database.yml
-        OCCUPY_OAUTH_SECRET_DIR_FILE_NAME: application-oauth2.yml
-        OCCUPY_swagger_SECRET_DIR_FILE_NAME: application-springdoc.yml
-      run:
-          echo $OCCUPY_SECRET | base64 --decode > $OCCUPY_SECRET_DIR/$OCCUPY_SECRET_DIR_FILE_NAME &&
-          echo $OCCUPY_DB_SECRET | base64 --decode > $OCCUPY_DB_SECRET_DIR/$OCCUPY_DB_SECRET_DIR_FILE_NAME &&
-          echo $OCCUPY_OAUTH_SECRET | base64 --decode > $OCCUPY_OAUTH_SECRET_DIR/$OCCUPY_OAUTH_SECRET_DIR_FILE_NAME &&
-          echo $OCCUPY_SWAGGER_SECRET | base64 --decode > $OCCUPY_SWAGGER_SECRET_DIR/$OCCUPY_SWAGGER_SECRET_DIR_FILE_NAME
+      # git ignore한 yml 파일들 github secret에서 복사해 오기
+      - name: Copy secret
+        env:
+          OCCUPY_SECRET: ${{ secrets.OCCUPY_SECRET }}
+          OCCUPY_DB_SECRET: ${{ secrets.OCCUPY_DB_SECRET }}
+          OCCUPY_OAUTH_SECRET: ${{ secrets.OCCUPY_OAUTH_SECRET }}
+          OCCUPY_LOGBACK_SECRET: ${{ secrets.OCCUPY_LOGBACK_SECRET }}
 
-    - name: Run chmod to make gradlew executable
-      run: chmod +x ./gradlew
+          OCCUPY_SECRET_DIR: ./src/main/resources
+          OCCUPY_DB_SECRET_DIR: ./src/main/resources/database
+          OCCUPY_OAUTH_SECRET_DIR: ./src/main/resources/oauth2
+          OCCUPY_LOGBACK_SECRET_DIR: ./src/main/resources
 
-    - name: Build with Gradle
-      uses: gradle/gradle-build-action@bd5760595778326ba7f1441bcf7e88b49de61a25 # v2.6.0
-      with:
-        arguments: build
+          OCCUPY_SECRET_DIR_FILE_NAME: application.yml
+          OCCUPY_DB_SECRET_DIR_FILE_NAME: application-database.yml
+          OCCUPY_OAUTH_SECRET_DIR_FILE_NAME: application-oauth2.yml
+          OCCUPY_LOGBACK_SECRET_DIR_FILE_NAME: logback-test.xml
+        run: |
+          mkdir $OCCUPY_DB_SECRET_DIR
+          mkdir $OCCUPY_OAUTH_SECRET_DIR
+          
+          touch $OCCUPY_SECRET_DIR/$OCCUPY_SECRET_DIR_FILE_NAME
+          touch $OCCUPY_DB_SECRET_DIR/$OCCUPY_DB_SECRET_DIR_FILE_NAME
+          touch $OCCUPY_OAUTH_SECRET_DIR/$OCCUPY_OAUTH_SECRET_DIR_FILE_NAME
+          touch $OCCUPY_LOGBACK_SECRET_DIR/$OCCUPY_LOGBACK_SECRET_DIR_FILE_NAME
+          
+          echo "$OCCUPY_SECRET" > $OCCUPY_SECRET_DIR/$OCCUPY_SECRET_DIR_FILE_NAME
+          echo "$OCCUPY_DB_SECRET" > $OCCUPY_DB_SECRET_DIR/$OCCUPY_DB_SECRET_DIR_FILE_NAME
+          echo "$OCCUPY_OAUTH_SECRET" > $OCCUPY_OAUTH_SECRET_DIR/$OCCUPY_OAUTH_SECRET_DIR_FILE_NAME
+          echo "$OCCUPY_LOGBACK_SECRET" > $OCCUPY_LOGBACK_SECRET_DIR/$OCCUPY_LOGBACK_SECRET_DIR_FILE_NAME
+
+      # gradlew 실행 권한 부여
+      - name: Run chmod to make gradlew executable
+        run: chmod +x ./gradlew
+        shell: bash
+
+      # Build -> jar 파일 생성
+      - name: Build with Gradle
+        run: ./gradlew clean build -x test
+        shell: bash
+
+      - name: Upload Build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: build-artifacts
+          path: |
+            build/libs/*.jar
+
+      - name: Remove past EC2 raw sorce dir
+        uses: appleboy/ssh-action@master
+        with:
+          key: ${{ secrets.EC2_KEY }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          command: sudo rm -rf /home/ubuntu/app/code
+          port: 22
+
+      
+      - name: Upload raw sorce to EC2
+        uses: appleboy/scp-action@master
+        with:
+          key: ${{ secrets.EC2_KEY }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          source: .
+          target: "/home/ubuntu/app/code"
+
+      - name: Start redis-server
+        uses: appleboy/scp-action@master
+        with:
+          key: ${{ secrets.EC2_KEY }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          target: /home/ubuntu # specify the target path if needed
+          source: . # specify the source directory or file if needed
+          command: sudo systemctl start redis-server
+          port: 22
+          timeout: 30s
+          command_timeout: 10m
+          tar_exec: tar
+          proxy_port: 22
+          proxy_timeout: 30s
+
+
+  deploy:
+    name: CD with SSH
+    needs: build
+    runs-on: ubuntu-22.04
+
+    steps: 
+      # (6) AWS 인증 (IAM 사용자 Access Key, Secret Key 활용)
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      # (7) 빌드 결과물을 S3 버킷에 업로드
+#      - name: Upload to AWS S3
+ #       run: |
+ #         aws deploy push \
+  #        --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+   #      --s3-location s3://$S3_BUCKET_NAME/$GITHUB_SHA.zip \
+    #      --source .
+      
+      #    # (8) S3 버킷에 있는 파일을 대상으로 CodeDeploy 실행
+      #    - name: Deploy to AWS EC2 from S3
+      #      run: |
+      #        aws deploy create-deployment \
+      #          --application-name ${{ env.CODE_DEPLOY_APPLICATION_NAME }} \
+      #          --deployment-config-name CodeDeployDefault.AllAtOnce \
+      #          --deployment-group-name ${{ env.CODE_DEPLOY_DEPLOYMENT_GROUP_NAME }} \
+      #          --s3-location bucket=$S3_BUCKET_NAME,key=$GITHUB_SHA.zip,bundleType=zip
+      - name: Download build artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: build-artifacts
+
+      # JAR 파일을 EC2에 배포하는 step
+      - name: SCP JAR to EC2
+        uses: appleboy/scp-action@master
+        with:
+          key: ${{ secrets.EC2_KEY }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          source: "*.jar"
+          target: "/home/ubuntu/app"
+
+      # EC2에 SSH로 배포 커맨드를 입력하는 step
+      - name: Deploy SSH
+        uses: appleboy/ssh-action@master
+        with:
+          key: ${{ secrets.EC2_KEY }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          # 기존 실행 중인 서버 종료 후 jar 파일 실행
+          script: |
+            sudo fuser -k -n tcp 8080
+            sleep 15
+            sudo nohup java -jar /home/ubuntu/app/*.jar > ./nohup.out 2>&1 &

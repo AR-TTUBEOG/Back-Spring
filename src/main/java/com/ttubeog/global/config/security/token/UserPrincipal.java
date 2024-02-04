@@ -20,38 +20,30 @@ public class UserPrincipal implements OAuth2User, UserDetails{
     private final Long id;
     private final String email;
     private final String password;
-    private final Collection<? extends GrantedAuthority> authorities;
+    @Getter
     private Map<String, Object> attributes;
 
-    public UserPrincipal(Member member, Long id, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(Member member, Long id, String email, String password) {
         this.member = member;
         this.id = id;
         this.email = email;
         this.password = password;
-        this.authorities = authorities;
     }
 
-    public static UserPrincipal create(final Member member) {
-        List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(member.getRole().getValue()));
+    public static UserPrincipal create(Member member) {
         return new UserPrincipal(
                 member,
                 member.getId(),
                 member.getEmail(),
-                member.getPassword(),
-                authorities
+                member.getPassword()
         );
     }
 
-    public static UserPrincipal create(Member member, Map<String, Object> attributes) {
-        UserPrincipal userPrincipal = UserPrincipal.create(member);
-        userPrincipal.setAttributes(attributes);
-        return userPrincipal;
-    }
 
     public void setAttributes(Map<String, Object> attributes) {
         this.attributes = attributes;
     }
-    
+
     public Long getId() {
         return id;
     }
@@ -61,23 +53,28 @@ public class UserPrincipal implements OAuth2User, UserDetails{
     }
 
     @Override
+    public <A> A getAttribute(String name) {
+        return OAuth2User.super.getAttribute(name);
+    }
+
+    @Override
     public Map<String, Object> getAttributes() {
         return attributes;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authorities;
+        return null;
+    }
+
+    @Override
+    public String getPassword() {
+        return null;
     }
 
     @Override
     public String getName() {
         return String.valueOf(id);
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
     }
 
     @Override
@@ -104,5 +101,5 @@ public class UserPrincipal implements OAuth2User, UserDetails{
     public boolean isEnabled() {
         return true;
     }
-    
+
 }

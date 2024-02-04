@@ -8,6 +8,7 @@ import com.ttubeog.domain.benefit.dto.response.CreateBenefitRes;
 import com.ttubeog.domain.benefit.dto.response.SaveBenefitRes;
 import com.ttubeog.domain.benefit.dto.response.UpdateBenefitRes;
 import com.ttubeog.domain.game.dto.response.FindGameRes;
+import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.global.config.security.token.CurrentUser;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ErrorResponse;
