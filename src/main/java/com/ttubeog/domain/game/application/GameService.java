@@ -1,6 +1,7 @@
 package com.ttubeog.domain.game.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.benefit.domain.Benefit;
 import com.ttubeog.domain.benefit.domain.repository.BenefitRepository;
 import com.ttubeog.domain.benefit.exception.NonExistentBenefitException;
