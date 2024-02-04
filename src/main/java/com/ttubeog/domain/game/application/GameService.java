@@ -33,6 +33,7 @@ public class GameService {
     private final GiftGameRepository giftGameRepository;
     private final BasketBallRepository basketBallRepository;
     private final RouletteRepository rouletteRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     // 선물게임 생성
     @Transactional
