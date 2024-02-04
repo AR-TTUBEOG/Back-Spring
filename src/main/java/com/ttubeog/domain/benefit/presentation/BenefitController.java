@@ -20,6 +20,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
@@ -41,11 +42,10 @@ public class BenefitController {
     })
     @PostMapping
     public ResponseEntity<?> createBenefit(
-            @Parameter(description = "Accesstoken을 입력해주세요.", required = true)
-            @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @Valid @RequestBody CreateBenefitReq createBenefitReq
     ) throws JsonProcessingException {
-        return benefitService.createBenefit(userPrincipal, createBenefitReq);
+        return benefitService.createBenefit(request, createBenefitReq);
     }
 
     //혜택 삭제
@@ -56,11 +56,10 @@ public class BenefitController {
     })
     @DeleteMapping("/{benefitId}")
     public ResponseEntity<?> deleteBenefit(
-            @Parameter(description = "Accesstoken을 입력해주세요.", required = true)
-            @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @PathVariable(value = "benefitId") Long benefitId
     ) throws JsonProcessingException {
-        return benefitService.deleteBenefit(userPrincipal, benefitId);
+        return benefitService.deleteBenefit(request, benefitId);
     }
 
     //혜택 수정
@@ -71,11 +70,10 @@ public class BenefitController {
     })
     @PatchMapping
     public ResponseEntity<?> updateBenefit(
-            @Parameter(description = "Accesstoken을 입력해주세요.", required = true)
-            @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @Valid @RequestBody UpdateBenefitReq updateBenefitReq
             ) throws JsonProcessingException {
-        return benefitService.updateBenefit(userPrincipal, updateBenefitReq);
+        return benefitService.updateBenefit(request, updateBenefitReq);
     }
 
     //게임 성공 후 혜택 저장
@@ -86,11 +84,10 @@ public class BenefitController {
     })
     @PatchMapping("/{benefitId}")
     public ResponseEntity<?> saveBenefit(
-            @Parameter(description = "Accesstoken을 입력해주세요.", required = true)
-            @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @PathVariable(value = "benefitId") Long benefitId
     ) throws JsonProcessingException {
-        return benefitService.saveBenefit(userPrincipal, benefitId);
+        return benefitService.saveBenefit(request, benefitId);
     }
 
     //혜택 사용
@@ -101,11 +98,10 @@ public class BenefitController {
     })
     @PatchMapping("{benefitId}/use")
     public ResponseEntity<?> useBenefit(
-            @Parameter(description = "Accesstoken을 입력해주세요.", required = true)
-            @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @PathVariable(value = "benefitId") Long benefitId
     ) throws JsonProcessingException {
-        return benefitService.useBenefit(userPrincipal, benefitId);
+        return benefitService.useBenefit(request, benefitId);
     }
 
     //혜택 조회
@@ -116,9 +112,9 @@ public class BenefitController {
     })
     @GetMapping
     public ResponseEntity<?> findMyBenefit(
-            @Parameter(description = "Accesstoken을 입력해주세요.", required = true)
+            HttpServletRequest request,
             @RequestParam(name = "page") Integer page
     ) throws JsonProcessingException {
-        return benefitService.findMyBenefit(page);
+        return benefitService.findMyBenefit(request, page);
     }
 }

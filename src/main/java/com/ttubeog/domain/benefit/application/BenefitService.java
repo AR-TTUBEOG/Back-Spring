@@ -2,6 +2,7 @@ package com.ttubeog.domain.benefit.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttubeog.domain.auth.config.SecurityUtil;
+import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.benefit.domain.Benefit;
 import com.ttubeog.domain.benefit.domain.MemberBenefit;
 import com.ttubeog.domain.benefit.domain.repository.BenefitRepository;
@@ -22,6 +23,7 @@ import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -42,12 +44,14 @@ public class BenefitService {
     private final BenefitRepository benefitRepository;
     private final StoreRepository storeRepository;
     private final MemberBenefitRepository memberBenefitRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     // 혜택 생성
     @Transactional
-    public ResponseEntity<?> createBenefit(UserPrincipal userPrincipal, CreateBenefitReq createBenefitReq) throws JsonProcessingException {
+    public ResponseEntity<?> createBenefit(HttpServletRequest request, CreateBenefitReq createBenefitReq) throws JsonProcessingException {
+        Long memberId = jwtTokenProvider.getMemberId(request);
 
-        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
 //        Store store = storeRepository.findById(createBenefitReq.getStoreId()).orElseThrow(에러::new);
 
@@ -78,9 +82,10 @@ public class BenefitService {
 
     // 혜택 삭제
     @Transactional
-    public ResponseEntity<?> deleteBenefit(UserPrincipal userPrincipal, Long benefitId) throws JsonProcessingException {
+    public ResponseEntity<?> deleteBenefit(HttpServletRequest request, Long benefitId) throws JsonProcessingException {
+        Long memberId = jwtTokenProvider.getMemberId(request);
 
-        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Benefit benefit = benefitRepository.findById(benefitId).orElseThrow(NonExistentBenefitException::new);
 
         //TODO Store의 등록유저가 현재 멤버와 일치하는지 확인
@@ -97,9 +102,10 @@ public class BenefitService {
 
     //혜택 수정
     @Transactional
-    public ResponseEntity<?> updateBenefit(UserPrincipal userPrincipal, UpdateBenefitReq updateBenefitReq) throws JsonProcessingException {
+    public ResponseEntity<?> updateBenefit(HttpServletRequest request, UpdateBenefitReq updateBenefitReq) throws JsonProcessingException {
+        Long memberId = jwtTokenProvider.getMemberId(request);
 
-        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Benefit benefit = benefitRepository.findById(updateBenefitReq.getBenefitId()).orElseThrow(NonExistentBenefitException::new);
 
         //TODO Store의 등록유저가 현재 멤버와 일치하는지 확인
@@ -123,9 +129,10 @@ public class BenefitService {
 
     //게임 성공 후 혜택 저장
     @Transactional
-    public ResponseEntity<?> saveBenefit(UserPrincipal userPrincipal, Long benefitId) throws JsonProcessingException {
+    public ResponseEntity<?> saveBenefit(HttpServletRequest request, Long benefitId) throws JsonProcessingException {
+        Long memberId = jwtTokenProvider.getMemberId(request);
 
-        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Benefit benefit = benefitRepository.findById(benefitId).orElseThrow(NonExistentBenefitException::new);
 
         //유저에게 이미 있는 benefit인지 확인
@@ -166,9 +173,10 @@ public class BenefitService {
 
     //혜택 사용
     @Transactional
-    public ResponseEntity<?> useBenefit(UserPrincipal userPrincipal, Long benefitId) throws JsonProcessingException {
+    public ResponseEntity<?> useBenefit(HttpServletRequest request, Long benefitId) throws JsonProcessingException {
+        Long memberId = jwtTokenProvider.getMemberId(request);
 
-        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Benefit benefit = benefitRepository.findById(benefitId).orElseThrow(NonExistentBenefitException::new);
 
         //만료기간 안에 혜택은 오직 한개
@@ -202,8 +210,8 @@ public class BenefitService {
     }
 
     //혜택 조회(사용 가능, 사용 완료, 만료 혜택 모두 조회)
-    public ResponseEntity<?> findMyBenefit(Integer page) throws JsonProcessingException {
-        final long memberId = SecurityUtil.getCurrentMemeberId();
+    public ResponseEntity<?> findMyBenefit(HttpServletRequest request, Integer page) throws JsonProcessingException {
+        Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         Page<MemberBenefit> memberBenefitPage = memberBenefitRepository.findAllByMember(member, PageRequest.of(page, 10));
