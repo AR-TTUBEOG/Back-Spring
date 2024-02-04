@@ -1,7 +1,7 @@
 package com.ttubeog.domain.member.application;
 
+import com.ttubeog.domain.auth.dto.request.ReissueLoginRequest;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
-import com.ttubeog.domain.benefit.dto.response.CreateBenefitRes;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
@@ -66,5 +66,10 @@ public class MemberService {
                 .build();
 
         return ResponseEntity.ok(apiResponse);
+    }
+
+    // 토큰 재발급 설정
+    public ResponseEntity<?> getMemberReissueToken(HttpServletRequest request, ReissueLoginRequest reissueLoginRequest) {
+        return null;
     }
 }

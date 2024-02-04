@@ -1,5 +1,6 @@
 package com.ttubeog.domain.member.presentation;
 
+import com.ttubeog.domain.auth.dto.request.ReissueLoginRequest;
 import com.ttubeog.domain.member.application.MemberService;
 import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
 import com.ttubeog.domain.member.dto.response.MemberDetailRes;
@@ -35,7 +36,7 @@ public class MemberController {
         return memberService.getCurrentUser(request);
     }
 
-    @Operation(summary = "닉네임 설정", description = "현재 접속된 멤버의 닉네임을 설정합니다.")
+    @Operation(summary = "닉네임 설정", description = "현재 접속된 멤버의 초기 닉네임을 설정합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "닉네임 설정", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = MemberDetailRes.class))}),
             @ApiResponse(responseCode = "400", description = "닉네임 설정 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
@@ -45,5 +46,16 @@ public class MemberController {
             HttpServletRequest request, @RequestBody ProduceNicknameRequest produceNicknameRequest
     ) {
         return memberService.postMemberNickname(request, produceNicknameRequest);
+    }
+
+    @Operation(summary = "토큰 재발급", description = "현재 접속된 멤버의 토큰을 재발급 합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "토큰 재발급 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = MemberDetailRes.class))}),
+            @ApiResponse(responseCode = "400", description = "토큰 재발급 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+    })
+    @GetMapping("/login/reissue")
+    public ResponseEntity<?> loginReissue(HttpServletRequest request, @RequestBody ReissueLoginRequest reissueLoginRequest) {
+        // TODO
+        return null;
     }
 }
