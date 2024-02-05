@@ -1,5 +1,5 @@
 package com.ttubeog.domain.game.domain;
 
 public enum GameType {
-    basketball, roulette, gift
+    BASKETBALL, ROULETTE, GIFT
 }
