@@ -56,7 +56,6 @@ public class AuthService {
             member = Member.builder()
                     .memberNumber(String.valueOf(memberInfo.getId()))
                     .platform(Platform.KAKAO)
-                    .status(Status.ACTIVE)
                     .build();
 
             memberRepository.save(member);
@@ -64,7 +63,7 @@ public class AuthService {
 
         Optional<Member> memberLoginData = memberRepository.findByMemberNumber(String.valueOf(memberInfo.getId()));
 
-        String refreshToken = jwtTokenProvider.createRereshToken(memberLoginData.get().getId());
+        String refreshToken = jwtTokenProvider.createRefreshToken(memberLoginData.get().getId());
         redisTemplate.opsForValue().set(String.valueOf(memberLoginData.get().getId()), refreshToken);
 
         String memberName = memberLoginData.get().getNickname();

@@ -44,7 +44,7 @@ public class JwtTokenProvider {
     }
 
 
-    public String createRereshToken(Long memberId) {            // 토큰 생성
+    public String createRefreshToken(Long memberId) {            // 토큰 생성
         Claims claims = Jwts.claims().setSubject(String.valueOf(memberId));
         Date now = new Date();
 
