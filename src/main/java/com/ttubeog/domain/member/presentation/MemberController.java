@@ -54,8 +54,10 @@ public class MemberController {
             @ApiResponse(responseCode = "400", description = "토큰 재발급 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @GetMapping("/login/reissue")
-    public ResponseEntity<?> loginReissue(HttpServletRequest request, @RequestBody ReissueLoginRequest reissueLoginRequest) {
-        // TODO
+    public ResponseEntity<?> loginReissue(
+            HttpServletRequest request, @RequestBody ReissueLoginRequest reissueLoginRequest
+    ) {
+
         return null;
     }
 }
