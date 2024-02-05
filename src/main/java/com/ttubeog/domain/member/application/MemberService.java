@@ -1,7 +1,6 @@
 package com.ttubeog.domain.member.application;
 
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
-import com.ttubeog.domain.benefit.dto.response.CreateBenefitRes;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
@@ -23,7 +22,6 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
-
     // 현재 유저 조회
     public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
         Long memberId = jwtTokenProvider.getMemberId(request);
@@ -35,6 +33,7 @@ public class MemberService {
         MemberDetailRes memberDetailRes = MemberDetailRes.builder()
                 .id(member.getId())
                 .name(member.getNickname())
+                .platform(member.getPlatform())
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()
@@ -58,6 +57,7 @@ public class MemberService {
         MemberDetailRes memberDetailRes = MemberDetailRes.builder()
                 .id(member.getId())
                 .name(member.getNickname())
+                .platform(member.getPlatform())
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()

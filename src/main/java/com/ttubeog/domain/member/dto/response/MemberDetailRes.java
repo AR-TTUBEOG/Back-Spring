@@ -1,5 +1,6 @@
 package com.ttubeog.domain.member.dto.response;
 
+import com.ttubeog.domain.auth.domain.Platform;
 import com.ttubeog.domain.member.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,15 +17,13 @@ public class MemberDetailRes {
 
     private String name;
 
-    private String email;
-
-    private String ImgUrl;
+    private Platform platform;
 
     public static MemberDetailRes toDto(Member member) {
         return MemberDetailRes.builder()
                 .id(member.getId())
                 .name(member.getNickname())
-                .email(member.getEmail())
+                .platform(member.getPlatform())
                 .build();
     }
 
