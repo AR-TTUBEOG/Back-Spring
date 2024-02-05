@@ -2,7 +2,6 @@ package com.ttubeog.domain.auth.controller;
 
 import com.ttubeog.domain.auth.dto.request.AppleLoginRequest;
 import com.ttubeog.domain.auth.dto.request.KakaoLoginRequest;
-import com.ttubeog.domain.auth.dto.request.ReissueLoginRequest;
 import com.ttubeog.domain.auth.dto.response.KakaoTokenResponse;
 import com.ttubeog.domain.auth.dto.response.OAuthTokenResponse;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;

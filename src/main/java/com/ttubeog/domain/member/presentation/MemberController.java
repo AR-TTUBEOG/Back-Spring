@@ -1,6 +1,5 @@
 package com.ttubeog.domain.member.presentation;
 
-import com.ttubeog.domain.auth.dto.request.ReissueLoginRequest;
 import com.ttubeog.domain.member.application.MemberService;
 import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
 import com.ttubeog.domain.member.dto.response.MemberDetailRes;
@@ -55,9 +54,9 @@ public class MemberController {
     })
     @GetMapping("/login/reissue")
     public ResponseEntity<?> loginReissue(
-            HttpServletRequest request, @RequestBody ReissueLoginRequest reissueLoginRequest
+            HttpServletRequest request
     ) {
 
-        return null;
+        return memberService.getMemberReissueToken(request);
     }
 }

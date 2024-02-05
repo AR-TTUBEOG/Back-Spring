@@ -1,11 +1,14 @@
 package com.ttubeog.domain.member.application;
 
-import com.ttubeog.domain.auth.dto.request.ReissueLoginRequest;
+import com.ttubeog.domain.auth.exception.AccessTokenExpiredException;
+import com.ttubeog.domain.auth.exception.InvalidAccessTokenException;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
 import com.ttubeog.domain.member.dto.response.MemberDetailRes;
+import com.ttubeog.domain.member.exception.InvalidAccessTokenExpiredException;
+import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.payload.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,9 +54,9 @@ public class MemberService {
         Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.updateUserNickname(produceNicknameRequest.getNickname(), memberId);
 
-        Optional<Member> checkUser = memberRepository.findById(memberId);
+        Optional<Member> checkMember = memberRepository.findById(memberId);
 
-        Member member = checkUser.get();
+        Member member = checkMember.get();
 
         MemberDetailRes memberDetailRes = MemberDetailRes.builder()
                 .id(member.getId())
@@ -69,7 +72,28 @@ public class MemberService {
     }
 
     // 토큰 재발급 설정
-    public ResponseEntity<?> getMemberReissueToken(HttpServletRequest request, ReissueLoginRequest reissueLoginRequest) {
-        return null;
+    public ResponseEntity<?> getMemberReissueToken(HttpServletRequest request) {
+        Long memberId;
+
+        try {
+            memberId = jwtTokenProvider.getMemberId(request);
+        } catch (InvalidAccessTokenException | AccessTokenExpiredException e) {
+            throw e;
+        }
+
+        Optional<Member> checkMember = memberRepository.findById(memberId);
+        if (checkMember.isEmpty()) {
+            throw new InvalidMemberException();    // 존재 하지 않는 회원일 경우
+        }
+
+        Member member = checkMember.get();
+
+        // 리프레시 토큰으로 새로운 액세스 토큰 발급
+        try {
+            String newAccessToken = jwtTokenProvider.createAccessToken(memberId);
+            return ResponseEntity.ok(new ApiResponse(true, newAccessToken));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(new InvalidAccessTokenExpiredException());
+        }
     }
 }
