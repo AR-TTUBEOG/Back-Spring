@@ -1,11 +1,12 @@
 package com.ttubeog.domain.member.domain.repository;
 
 import com.ttubeog.domain.auth.domain.Platform;
-import com.ttubeog.domain.auth.domain.Status;
 import com.ttubeog.domain.member.domain.Member;
+import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -32,4 +33,7 @@ public interface MemberRepository extends JpaRepository<Member,Long>{
     @Query("select m.id from Member m where m.platform = :platform and m.platformId = :platformId")
     Optional<Long> findIdByPlatformAndPlatformId(Platform platform, String platformId);
 
+    @Modifying
+    @Query("update Member as m set m.nickname = :nickName where m.id = :memberId")
+    void updateUserNickname(@Param("nickName") String nickName, @Param("memberId") Long memberId);
 }

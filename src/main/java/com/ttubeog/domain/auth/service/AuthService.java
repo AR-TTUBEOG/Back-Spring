@@ -6,7 +6,6 @@ import com.ttubeog.domain.auth.domain.Status;
 import com.ttubeog.domain.auth.domain.Token;
 import com.ttubeog.domain.auth.dto.KakaoInfoDto;
 import com.ttubeog.domain.auth.dto.request.AppleLoginRequest;
-import com.ttubeog.domain.auth.dto.request.KakaoLoginRequest;
 import com.ttubeog.domain.auth.dto.response.KakaoTokenResponse;
 import com.ttubeog.domain.auth.dto.response.OAuthTokenResponse;
 import com.ttubeog.domain.auth.exception.NotFoundMemberException;
@@ -15,16 +14,12 @@ import com.ttubeog.domain.auth.security.OAuthPlatformMemberResponse;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
-import com.ttubeog.global.config.security.token.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -59,6 +54,8 @@ public class AuthService {
         if (memberData.isEmpty()) {
             member = Member.builder()
                     .memberNumber(String.valueOf(memberInfo.getId()))
+                    .platform(Platform.KAKAO)
+                    .status(Status.ACTIVE)
                     .build();
 
             memberRepository.save(member);
@@ -69,7 +66,8 @@ public class AuthService {
         String refreshToken = jwtTokenProvider.createRereshToken(memberLoginData.get().getId());
         redisTemplate.opsForValue().set(String.valueOf(memberLoginData.get().getId()), refreshToken);
 
-        if (memberData.isEmpty()) {
+        String memberName = memberLoginData.get().getNickname();
+        if (memberName == null || memberName.isEmpty()) {
             return KakaoTokenResponse.builder()
                     .accessToken(jwtTokenProvider.createAccessToken(
                             memberLoginData.get().getId()))
