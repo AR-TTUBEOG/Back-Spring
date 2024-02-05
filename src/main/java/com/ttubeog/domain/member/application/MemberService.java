@@ -1,8 +1,10 @@
 package com.ttubeog.domain.member.application;
 
+import com.ttubeog.domain.auth.dto.response.OAuthTokenResponse;
 import com.ttubeog.domain.auth.exception.AccessTokenExpiredException;
 import com.ttubeog.domain.auth.exception.InvalidAccessTokenException;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
+import com.ttubeog.domain.auth.service.RefreshTokenService;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
@@ -25,15 +27,16 @@ import java.util.Optional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenService refreshTokenService;
 
 
     // 현재 유저 조회
     public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
-        Optional<Member> checkUser = memberRepository.findById(memberId);
-        DefaultAssert.isOptionalPresent(checkUser);
-        Member member = checkUser.get();
+        Optional<Member> checkMember = memberRepository.findById(memberId);
+        DefaultAssert.isOptionalPresent(checkMember);
+        Member member = checkMember.get();
 
         MemberDetailRes memberDetailRes = MemberDetailRes.builder()
                 .id(member.getId())
@@ -55,9 +58,9 @@ public class MemberService {
         Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.updateUserNickname(produceNicknameRequest.getNickname(), memberId);
 
-        Optional<Member> checkUser = memberRepository.findById(memberId);
+        Optional<Member> checkMember = memberRepository.findById(memberId);
 
-        Member member = checkUser.get();
+        Member member = checkMember.get();
 
         MemberDetailRes memberDetailRes = MemberDetailRes.builder()
                 .id(member.getId())
@@ -73,6 +76,7 @@ public class MemberService {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @Transactional
     // 토큰 재발급 설정
     public ResponseEntity<?> getMemberReissueToken(HttpServletRequest request) {
         Long memberId;
@@ -80,7 +84,7 @@ public class MemberService {
         try {
             memberId = jwtTokenProvider.getMemberId(request);
         } catch (InvalidAccessTokenException | AccessTokenExpiredException e) {
-            throw e;
+            throw new InvalidAccessTokenException();
         }
 
         Optional<Member> checkMember = memberRepository.findById(memberId);
@@ -93,7 +97,18 @@ public class MemberService {
         // 리프레시 토큰으로 새로운 액세스 토큰 발급
         try {
             String newAccessToken = jwtTokenProvider.createAccessToken(memberId);
-            return ResponseEntity.ok(new ApiResponse(true, newAccessToken));
+            String newRefreshToken = jwtTokenProvider.createRefreshToken(memberId);
+            refreshTokenService.saveTokenInfo(memberId, newRefreshToken, newAccessToken);
+
+
+
+            OAuthTokenResponse oAuthTokenResponse = new OAuthTokenResponse(newAccessToken, newRefreshToken, member.isRegisteredOAuthMember());
+
+            ApiResponse apiResponse = ApiResponse.builder()
+                    .check(true)
+                    .information(oAuthTokenResponse)
+                    .build();
+            return ResponseEntity.ok(apiResponse);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new InvalidAccessTokenExpiredException());
         }

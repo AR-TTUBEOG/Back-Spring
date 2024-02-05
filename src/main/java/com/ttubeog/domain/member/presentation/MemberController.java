@@ -1,5 +1,6 @@
 package com.ttubeog.domain.member.presentation;
 
+import com.ttubeog.domain.auth.dto.response.OAuthTokenResponse;
 import com.ttubeog.domain.member.application.MemberService;
 import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
 import com.ttubeog.domain.member.dto.response.MemberDetailRes;
@@ -49,7 +50,7 @@ public class MemberController {
 
     @Operation(summary = "토큰 재발급", description = "현재 접속된 멤버의 토큰을 재발급 합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "토큰 재발급 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = MemberDetailRes.class))}),
+            @ApiResponse(responseCode = "200", description = "토큰 재발급 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = OAuthTokenResponse.class))}),
             @ApiResponse(responseCode = "400", description = "토큰 재발급 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @GetMapping("/login/reissue")
