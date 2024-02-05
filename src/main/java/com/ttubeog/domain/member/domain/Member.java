@@ -44,6 +44,10 @@ public class Member extends BaseEntity {
     @Column(name = "status")
     private Status status;
 
+    @Column(name = "refresh_token")
+    private String refreshToken;
+
+
     public Member(String email, Platform platform, Status status, String memberNumber) {
         this.email = email;
         this.platform = platform;
