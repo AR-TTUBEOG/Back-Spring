@@ -40,8 +40,6 @@ public class Member extends BaseEntity {
     @Column(name = "platform")
     private Platform platform;
 
-    private String refreshToken;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;

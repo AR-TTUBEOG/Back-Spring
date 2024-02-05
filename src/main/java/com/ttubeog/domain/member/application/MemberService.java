@@ -38,6 +38,7 @@ public class MemberService {
         MemberDetailRes memberDetailRes = MemberDetailRes.builder()
                 .id(member.getId())
                 .name(member.getNickname())
+                .platform(member.getPlatform())
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()
@@ -54,13 +55,14 @@ public class MemberService {
         Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.updateUserNickname(produceNicknameRequest.getNickname(), memberId);
 
-        Optional<Member> checkMember = memberRepository.findById(memberId);
+        Optional<Member> checkUser = memberRepository.findById(memberId);
 
-        Member member = checkMember.get();
+        Member member = checkUser.get();
 
         MemberDetailRes memberDetailRes = MemberDetailRes.builder()
                 .id(member.getId())
                 .name(member.getNickname())
+                .platform(member.getPlatform())
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()
