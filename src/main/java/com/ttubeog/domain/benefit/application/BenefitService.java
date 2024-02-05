@@ -250,14 +250,14 @@ public class BenefitService {
                     .gameId(game.getId())
                     .type(game.getType());
 
-            if (game.getType() == GameType.basketball) {
+            if (game.getType() == GameType.BASKETBALL) {
                 builder.timeLimit(game.getBasketballGame().getTimeLimit())
                         .ballCount(game.getBasketballGame().getBallCount())
                         .successCount(game.getBasketballGame().getSuccessCount());
-            } else if (game.getType() == GameType.gift) {
+            } else if (game.getType() == GameType.GIFT) {
                 builder.timeLimit(game.getGiftGame().getTimeLimit())
                         .giftCount(game.getGiftGame().getGiftCount());
-            } else if (game.getType() == GameType.roulette) {
+            } else if (game.getType() == GameType.ROULETTE) {
                 Hibernate.initialize(game.getRouletteGame().getOptions()); // 명시적 초기화
                 builder.options(game.getRouletteGame().getOptions());
             }
