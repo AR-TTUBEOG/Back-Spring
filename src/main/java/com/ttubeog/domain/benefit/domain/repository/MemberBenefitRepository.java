@@ -15,7 +15,7 @@ import java.util.Optional;
 @Repository
 public interface MemberBenefitRepository extends JpaRepository<MemberBenefit, Long> {
 
-    List<MemberBenefit> findAllByBenefitAndCreatedAtIsAfter(Benefit benefit, LocalDateTime createdAt);
+    Boolean existsByBenefitAndCreatedAtIsAfter(Benefit benefit, LocalDateTime createdAt);
 
     Optional<MemberBenefit> findByBenefitAndMemberAndExpiredIsFalse(Benefit benefit, Member member);
 
