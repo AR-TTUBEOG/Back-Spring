@@ -17,7 +17,7 @@ public class UpdateBenefitRes {
     @Schema(description = "내용", example = "아메리카노 20% 할인")
     private String content;
 
-    @Schema(description = "혜택타입", example = "sale")
+    @Schema(description = "혜택타입", example = "SALE")
     private BenefitType type;
 
     @Builder

@@ -42,13 +42,13 @@ public class GameService {
         ).orElseThrow(NonExistentBenefitException::new);
 
         //하나의 혜택에 같은 종류 Game이 들어갈 수 없음
-        if (gameRepository.existsByBenefitAndType(benefit, GameType.gift)) {
+        if (gameRepository.existsByBenefitAndType(benefit, GameType.GIFT)) {
             throw new OverlappingGameException();
         }
 
         Game game = Game.builder()
                 .benefit(benefit)
-                .type(GameType.gift)
+                .type(GameType.GIFT)
                 .build();
 
         gameRepository.save(game);
@@ -85,13 +85,13 @@ public class GameService {
         ).orElseThrow(NonExistentBenefitException::new);
 
         //하나의 혜택에 같은 종류 Game이 들어갈 수 없음
-        if (gameRepository.existsByBenefitAndType(benefit, GameType.basketball)) {
+        if (gameRepository.existsByBenefitAndType(benefit, GameType.BASKETBALL)) {
             throw new OverlappingGameException();
         }
 
         Game game = Game.builder()
                 .benefit(benefit)
-                .type(GameType.basketball)
+                .type(GameType.BASKETBALL)
                 .build();
 
         gameRepository.save(game);
@@ -130,13 +130,13 @@ public class GameService {
         ).orElseThrow(NonExistentBenefitException::new);
 
         //하나의 혜택에 같은 종류 Game이 들어갈 수 없음
-        if (gameRepository.existsByBenefitAndType(benefit, GameType.roulette)) {
+        if (gameRepository.existsByBenefitAndType(benefit, GameType.ROULETTE)) {
             throw new OverlappingGameException();
         }
 
         Game game = Game.builder()
                 .benefit(benefit)
-                .type(GameType.roulette)
+                .type(GameType.ROULETTE)
                 .build();
         gameRepository.save(game);
 
@@ -260,14 +260,14 @@ public class GameService {
                 .gameId(game.getId())
                 .type(game.getType());
 
-        if (game.getType() == GameType.basketball) {
+        if (game.getType() == GameType.BASKETBALL) {
             builder.timeLimit(game.getBasketballGame().getTimeLimit())
                     .ballCount(game.getBasketballGame().getBallCount())
                     .successCount(game.getBasketballGame().getSuccessCount());
-        } else if (game.getType() == GameType.gift) {
+        } else if (game.getType() == GameType.GIFT) {
             builder.timeLimit(game.getGiftGame().getTimeLimit())
                     .giftCount(game.getGiftGame().getGiftCount());
-        } else if (game.getType() == GameType.roulette) {
+        } else if (game.getType() == GameType.ROULETTE) {
             Hibernate.initialize(game.getRouletteGame().getOptions()); // 명시적 초기화
             builder.options(game.getRouletteGame().getOptions());
         }

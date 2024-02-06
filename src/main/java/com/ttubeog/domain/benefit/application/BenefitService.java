@@ -21,11 +21,11 @@ import com.ttubeog.domain.game.dto.response.FindGameRes;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
-import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
@@ -236,7 +236,6 @@ public class BenefitService {
 
     //혜택ID로 게임 조회
     public ResponseEntity<?> findGames(UserPrincipal userPrincipal, Long benefitId) throws JsonProcessingException {
-
         memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
         Benefit benefit = benefitRepository.findById(benefitId).orElseThrow(NonExistentBenefitException::new);
         List<Game> games = gameRepository.findAllByBenefit(benefit);
@@ -247,14 +246,14 @@ public class BenefitService {
                     .gameId(game.getId())
                     .type(game.getType());
 
-            if (game.getType() == GameType.basketball) {
+            if (game.getType() == GameType.BASKETBALL) {
                 builder.timeLimit(game.getBasketballGame().getTimeLimit())
                         .ballCount(game.getBasketballGame().getBallCount())
                         .successCount(game.getBasketballGame().getSuccessCount());
-            } else if (game.getType() == GameType.gift) {
+            } else if (game.getType() == GameType.GIFT) {
                 builder.timeLimit(game.getGiftGame().getTimeLimit())
                         .giftCount(game.getGiftGame().getGiftCount());
-            } else if (game.getType() == GameType.roulette) {
+            } else if (game.getType() == GameType.ROULETTE) {
                 Hibernate.initialize(game.getRouletteGame().getOptions()); // 명시적 초기화
                 builder.options(game.getRouletteGame().getOptions());
             }
