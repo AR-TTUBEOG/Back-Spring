@@ -16,7 +16,6 @@ public class UserPrincipal implements OAuth2User, UserDetails{
 
     private final Long id;
     private final String email;
-    private final String password;
     @Getter
     private Map<String, Object> attributes;
 
@@ -24,16 +23,6 @@ public class UserPrincipal implements OAuth2User, UserDetails{
         this.member = member;
         this.id = id;
         this.email = email;
-        this.password = password;
-    }
-
-    public static UserPrincipal create(Member member) {
-        return new UserPrincipal(
-                member,
-                member.getId(),
-                member.getEmail(),
-                member.getPassword()
-        );
     }
 
 
