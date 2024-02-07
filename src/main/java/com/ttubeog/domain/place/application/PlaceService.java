@@ -5,6 +5,7 @@ import com.ttubeog.domain.likes.domain.repository.LikesRepository;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.place.domain.PlaceType;
+import com.ttubeog.domain.place.dto.request.GetNearbyPlaceReq;
 import com.ttubeog.domain.place.dto.response.GetAllPlaceRes;
 import com.ttubeog.domain.spot.domain.Spot;
 import com.ttubeog.domain.spot.domain.repository.SpotRepository;
@@ -150,6 +151,48 @@ public class PlaceService {
         }
 
         allPlaces.sort(Comparator.comparingInt(GetAllPlaceRes::getRecommendationScore).reversed());
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(allPlaces)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    private double calculateDistance(Float lat1, Float lon1, Float lat2, Float lon2) {
+        double R = 6371; // 지구 반지름
+
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); // 단위 km
+        double distance = R * c * 1000; // 단위 m
+
+        return distance;
+    }
+
+    // 거리순 조회
+    @Transactional
+    public ResponseEntity<?> getAllPlacesNearby(GetNearbyPlaceReq getNearbyPlaceReq) {
+
+        final long memberId = SecurityUtil.getCurrentMemeberId();
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        List<GetAllPlaceRes> allPlaces = getAllPlaceResList();
+
+        Float userLatitude = getNearbyPlaceReq.getLatitude();
+        Float userLongitude = getNearbyPlaceReq.getLongitude();
+
+        for (GetAllPlaceRes place: allPlaces) {
+            double distance = calculateDistance(userLatitude, userLongitude, place.getLatitude(), place.getLongitude());
+            place.setDistance(distance);
+        }
+
+        allPlaces.sort(Comparator.comparingDouble(GetAllPlaceRes::getDistance));
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)

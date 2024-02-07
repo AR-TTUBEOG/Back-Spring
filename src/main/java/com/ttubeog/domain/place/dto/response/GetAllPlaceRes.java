@@ -49,9 +49,13 @@ public class GetAllPlaceRes {
     @Schema(description = "추천 점수")
     private Integer recommendationScore;
 
+    @Schema(description = "사용자와의 거리")
+    private Double distance;
+
     @Builder
     public GetAllPlaceRes(Long placeId, PlaceType placeType, Long memberId, String name, Float latitude, Float longitude,
-                          String image, Float stars, Integer guestbookCount, Integer likesCount, Boolean isFavorited, LocalDateTime createdAt, Integer recommendationScore) {
+                          String image, Float stars, Integer guestbookCount, Integer likesCount, Boolean isFavorited,
+                          LocalDateTime createdAt, Integer recommendationScore, Double distance) {
         this.placeId = placeId;
         this.placeType = placeType;
         this.memberId = memberId;
@@ -65,5 +69,6 @@ public class GetAllPlaceRes {
         this.isFavorited = isFavorited;
         this.createdAt = createdAt;
         this.recommendationScore = recommendationScore;
+        this.distance = distance;
     }
 }

@@ -1,6 +1,7 @@
 package com.ttubeog.domain.place.presentation;
 
 import com.ttubeog.domain.place.application.PlaceService;
+import com.ttubeog.domain.place.dto.request.GetNearbyPlaceReq;
 import com.ttubeog.domain.place.dto.response.GetAllPlaceRes;
 import com.ttubeog.global.payload.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,9 +10,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,6 +46,19 @@ public class PlaceController {
     @GetMapping("/recommended")
     public ResponseEntity<?> getAllPlacesRecommended() {
         return placeService.getAllPlacesRecommended();
+    }
+
+    // 거리순 조회
+    @Operation(summary = "전체 장소 거리순 조회", description = "전체 장소를 거리순으로 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "거리순 조회 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = GetAllPlaceRes.class))}),
+            @ApiResponse(responseCode = "400", description = "거리순 조회 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @GetMapping("/nearby")
+    public ResponseEntity<?> getAllPlacesNearby(
+            @Valid @RequestBody GetNearbyPlaceReq getNearbyPlaceReq
+    ) {
+        return placeService.getAllPlacesNearby(getNearbyPlaceReq);
     }
 
     // 최신순 조회
