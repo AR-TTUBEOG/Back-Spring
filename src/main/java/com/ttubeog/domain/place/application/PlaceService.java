@@ -103,4 +103,21 @@ public class PlaceService {
 
         return ResponseEntity.ok(apiResponse);
     }
+
+    // 최신순 조회
+    @Transactional
+    public ResponseEntity<?> getAllPlacesLatest() {
+
+        final long memberId = SecurityUtil.getCurrentMemeberId();
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        List<GetAllPlaceRes> allPlaces = getAllPlaceResList();
+        allPlaces.sort(Comparator.comparing(GetAllPlaceRes::getCreatedAt).reversed());
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(allPlaces)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
 }

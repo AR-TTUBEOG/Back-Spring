@@ -33,4 +33,15 @@ public class PlaceController {
     public ResponseEntity<?> getAllPlaces() {
         return placeService.getAllPlaces();
     }
+
+    // 최신순 조회
+    @Operation(summary = "전체 장소 최신순 조회", description = "전체 장소를 최신순으로 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "최신순 조회 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = GetAllPlaceRes.class))}),
+            @ApiResponse(responseCode = "400", description = "최신순 조회 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @GetMapping("/latest")
+    public ResponseEntity<?> getAllPlacesLatest() {
+        return placeService.getAllPlacesLatest();
+    }
 }
