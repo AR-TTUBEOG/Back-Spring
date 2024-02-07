@@ -104,6 +104,61 @@ public class PlaceService {
         return ResponseEntity.ok(apiResponse);
     }
 
+    public int calculateRecommendationScore(float stars, int guestbookCount, int likesCount) {
+
+        int starsScore = (int) (stars * 20);
+        int guestbookScore = calculateGuestbookScore(guestbookCount);
+        int likesScore = calculateLikesStore(likesCount);
+        int totalScore = starsScore + guestbookScore + likesScore;
+
+        return totalScore;
+    }
+
+    private int calculateGuestbookScore(int guestbookCount) {
+
+        if (guestbookCount <= 10) {
+            return 10;
+        } else if (guestbookCount <= 50) {
+            return 30;
+        } else {
+            return 50;
+        }
+    }
+
+    private int calculateLikesStore(int likesCount) {
+
+        if (likesCount <= 100) {
+            return 10;
+        } else if (likesCount <= 500) {
+            return 30;
+        } else {
+            return 50;
+        }
+    }
+
+    // 추천순 조회
+    @Transactional
+    public ResponseEntity<?> getAllPlacesRecommended() {
+
+        final long memberId = SecurityUtil.getCurrentMemeberId();
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        List<GetAllPlaceRes> allPlaces = getAllPlaceResList();
+
+        for (GetAllPlaceRes place : allPlaces) {
+            int recommendationScore = calculateRecommendationScore(place.getStars(), place.getGuestbookCount(), place.getLikesCount());
+            place.setRecommendationScore(recommendationScore);
+        }
+
+        allPlaces.sort(Comparator.comparingInt(GetAllPlaceRes::getRecommendationScore).reversed());
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(allPlaces)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
     // 최신순 조회
     @Transactional
     public ResponseEntity<?> getAllPlacesLatest() {
