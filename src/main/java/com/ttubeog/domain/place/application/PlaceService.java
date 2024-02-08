@@ -13,6 +13,8 @@ import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.global.payload.ApiResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +35,14 @@ public class PlaceService {
     private final SpotRepository spotRepository;
     private final LikesRepository likesRepository;
 
-    public List<GetAllPlaceRes> getAllPlaceResList() {
+    public List<GetAllPlaceRes> getPageOfPlaces(List<GetAllPlaceRes> places, int page, int size) {
+        int startIndex = page * size;
+        int endIndex = Math.min(startIndex + size, places.size());
+
+        return places.subList(startIndex, endIndex);
+    }
+
+    public List<GetAllPlaceRes> getAllPlaceResList(Pageable pageable) {
 
         List<GetAllPlaceRes> places = new ArrayList<>();
 
@@ -41,8 +50,10 @@ public class PlaceService {
         places.addAll(stores.stream().map(this::mapStoreToDto).collect(Collectors.toList()));
         // List<Spot> spots = spotRepository.findAll();
         // places.addAll(spots.stream().map(this::mapSpotToDto).collect(Collectors.toList()));
+        int page = pageable.getPageNumber();
+        int size = pageable.getPageSize();
 
-        return places;
+        return getPageOfPlaces(places, page, size);
     }
 
     private GetAllPlaceRes mapStoreToDto(Store store) {
@@ -91,11 +102,12 @@ public class PlaceService {
 
     // 전체 조회
     @Transactional
-    public ResponseEntity<?> getAllPlaces() {
+    public ResponseEntity<?> getAllPlaces(Pageable pageable) {
 
         final long memberId = SecurityUtil.getCurrentMemeberId();
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
-        List<GetAllPlaceRes> allPlaces = getAllPlaceResList();
+
+        List<GetAllPlaceRes> allPlaces = getAllPlaceResList(pageable);
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
@@ -139,11 +151,11 @@ public class PlaceService {
 
     // 추천순 조회
     @Transactional
-    public ResponseEntity<?> getAllPlacesRecommended() {
+    public ResponseEntity<?> getAllPlacesRecommended(Pageable pageable) {
 
         final long memberId = SecurityUtil.getCurrentMemeberId();
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
-        List<GetAllPlaceRes> allPlaces = getAllPlaceResList();
+        List<GetAllPlaceRes> allPlaces = getAllPlaceResList(pageable);
 
         for (GetAllPlaceRes place : allPlaces) {
             int recommendationScore = calculateRecommendationScore(place.getStars(), place.getGuestbookCount(), place.getLikesCount());
@@ -178,11 +190,11 @@ public class PlaceService {
 
     // 거리순 조회
     @Transactional
-    public ResponseEntity<?> getAllPlacesNearby(GetNearbyPlaceReq getNearbyPlaceReq) {
+    public ResponseEntity<?> getAllPlacesNearby(GetNearbyPlaceReq getNearbyPlaceReq, Pageable pageable) {
 
         final long memberId = SecurityUtil.getCurrentMemeberId();
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
-        List<GetAllPlaceRes> allPlaces = getAllPlaceResList();
+        List<GetAllPlaceRes> allPlaces = getAllPlaceResList(pageable);
 
         Float userLatitude = getNearbyPlaceReq.getLatitude();
         Float userLongitude = getNearbyPlaceReq.getLongitude();
@@ -204,11 +216,11 @@ public class PlaceService {
 
     // 최신순 조회
     @Transactional
-    public ResponseEntity<?> getAllPlacesLatest() {
+    public ResponseEntity<?> getAllPlacesLatest(Pageable pageable) {
 
         final long memberId = SecurityUtil.getCurrentMemeberId();
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
-        List<GetAllPlaceRes> allPlaces = getAllPlaceResList();
+        List<GetAllPlaceRes> allPlaces = getAllPlaceResList(pageable);
         allPlaces.sort(Comparator.comparing(GetAllPlaceRes::getCreatedAt).reversed());
 
         ApiResponse apiResponse = ApiResponse.builder()
