@@ -7,12 +7,9 @@ import com.ttubeog.domain.comment.dto.request.WriteCommentReq;
 import com.ttubeog.domain.comment.dto.response.GetCommentRes;
 import com.ttubeog.domain.comment.dto.response.UpdateCommentRes;
 import com.ttubeog.domain.comment.dto.response.WriteCommentRes;
-import com.ttubeog.global.config.security.token.CurrentUser;
-import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ErrorResponse;
 import com.ttubeog.global.payload.Message;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,8 +20,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(name = "Comment", description = "Comment API")
 @RestController
