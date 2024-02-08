@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -40,10 +41,10 @@ public class CommentController {
     })
     @PostMapping
     public ResponseEntity<?> writeComment(
-            @Parameter(description = "AccessToken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @Valid @RequestBody WriteCommentReq writeCommentReq
     ) {
-        return commentService.writeComment(userPrincipal, writeCommentReq);
+        return commentService.writeComment(request, writeCommentReq);
     }
 
     // 댓글 수정
@@ -54,10 +55,10 @@ public class CommentController {
     })
     @PatchMapping
     public ResponseEntity<?> updateComment(
-            @Parameter(description = "AccessToken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @Valid @RequestBody UpdateCommentReq updateCommentReq
     ) {
-        return commentService.updateComment(userPrincipal, updateCommentReq);
+        return commentService.updateComment(request, updateCommentReq);
     }
 
     // 댓글 삭제
@@ -68,10 +69,10 @@ public class CommentController {
     })
     @DeleteMapping("/{commentId}")
     public ResponseEntity<?> deleteComment(
-            @Parameter(description = "AccessToken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @PathVariable Long commentId
     ) {
-        return commentService.deleteComment(userPrincipal, commentId);
+        return commentService.deleteComment(request, commentId);
     }
 
     // AR뷰 댓글 조회 (반경 이용)
