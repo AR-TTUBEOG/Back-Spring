@@ -48,9 +48,10 @@ public class SpotController {
     @PatchMapping
     public ResponseEntity<?> updateSpot(
             @CurrentUser HttpServletRequest request,
+            @RequestParam(name = "spotId") Long spotId,
             @RequestBody UpdateSpotRequestDto updateSpotRequestDto
     ) throws JsonProcessingException {
-        return spotService.updateSpot(request, updateSpotRequestDto);
+        return spotService.updateSpot(request, spotId, updateSpotRequestDto);
     }
 
     @Operation(summary = "산책 스팟 삭제", description = "산책 스팟을 삭제합니다.")

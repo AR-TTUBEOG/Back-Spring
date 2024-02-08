@@ -135,7 +135,7 @@ public class SpotService {
     }
 
     @Transactional
-    public ResponseEntity<?> updateSpot(HttpServletRequest request, UpdateSpotRequestDto updateSpotRequestDto) {
+    public ResponseEntity<?> updateSpot(HttpServletRequest request, Long spotId, UpdateSpotRequestDto updateSpotRequestDto) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -143,11 +143,14 @@ public class SpotService {
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         // 존재하는 산책 스팟을 수정하려는지 체크
-        Spot spot = spotRepository.findById(updateSpotRequestDto.getId()).orElseThrow(InvalidSpotIdException::new);
+        Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidSpotIdException::new);
 
         // 수정하려는 이름과 중복된 이름을 가진 산책 스팟이 있는지
         if (spotRepository.findByName(updateSpotRequestDto.getName()).isPresent()) {
-            throw new AlreadyExistsSpotException();
+            Spot duplicateSpot =  spotRepository.findByName(updateSpotRequestDto.getName()).orElseThrow(InvalidSpotIdException::new);
+            if (!duplicateSpot.getId().equals(spotId)) {
+                throw new AlreadyExistsSpotException();
+            }
         }
 
         // 수정하려는 지역코드가 유효한지 체크
@@ -162,6 +165,7 @@ public class SpotService {
 
         spotRepository.save(spot);
 
+        /*
         // 이미지 저장
         List<String> imageList = updateSpotRequestDto.getImage();
         for (String s : imageList) {
@@ -172,6 +176,8 @@ public class SpotService {
                     .build();
             imageService.updateImage(updateImageRequestDto);
         }
+
+         */
 
         return getResponseEntity(spot);
     }
