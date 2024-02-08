@@ -13,7 +13,6 @@ import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.domain.store.exception.NonExistentStoreException;
 import com.ttubeog.domain.spot.exception.NonExistentSpotException;
-import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
 import jakarta.servlet.http.HttpServletRequest;
