@@ -61,9 +61,11 @@ public class AuthService {
         }
 
         Optional<Member> memberLoginData = memberRepository.findByMemberNumber(String.valueOf(memberInfo.getId()));
+        validateStatus(memberLoginData.get());
 
         String refreshToken = jwtTokenProvider.createRefreshToken(memberLoginData.get().getId());
         redisTemplate.opsForValue().set(String.valueOf(memberLoginData.get().getId()), refreshToken);
+        refreshTokenService.saveTokenInfo(memberData.get().getId(), refreshToken, accessToken);
 
         String memberName = memberLoginData.get().getNickname();
         if (memberName == null || memberName.isEmpty()) {
