@@ -2,12 +2,12 @@ package com.ttubeog.domain.spot.application;
 
 import com.ttubeog.domain.area.domain.DongArea;
 import com.ttubeog.domain.area.domain.repository.DongAreaRepository;
+import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.image.application.ImageService;
 import com.ttubeog.domain.image.domain.Image;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
 import com.ttubeog.domain.image.dto.request.CreateImageRequestDto;
 import com.ttubeog.domain.image.dto.request.ImageRequestType;
-import com.ttubeog.domain.image.dto.request.UpdateImageRequestDto;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
@@ -20,9 +20,9 @@ import com.ttubeog.domain.spot.exception.AlreadyExistsSpotException;
 import com.ttubeog.domain.spot.exception.InvalidDongAreaException;
 import com.ttubeog.domain.spot.exception.InvalidImageListSizeException;
 import com.ttubeog.domain.spot.exception.InvalidSpotIdException;
-import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +44,8 @@ public class SpotService {
     private final ImageRepository imageRepository;
 
     private final ImageService imageService;
+
+    private final JwtTokenProvider jwtTokenProvider;
 
     @NonNull
     private ResponseEntity<?> getResponseEntity(Spot spot) {
@@ -70,10 +72,12 @@ public class SpotService {
     }
 
     @Transactional
-    public ResponseEntity<?> createSpot(UserPrincipal userPrincipal, CreateSpotRequestDto createSpotRequestDto) {
+    public ResponseEntity<?> createSpot(HttpServletRequest request, CreateSpotRequestDto createSpotRequestDto) {
+
+        Long memberId = jwtTokenProvider.getMemberId(request);
 
         // 유효한 사용자 로그인 상태인지 체크
-        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         // 중복된 이름을 가진 산책 스팟인지 체크
         if (spotRepository.findByName(createSpotRequestDto.getName()).isPresent()) {
@@ -116,10 +120,12 @@ public class SpotService {
         return getResponseEntity(spot);
     }
 
-    public ResponseEntity<?> findBySpotId(UserPrincipal userPrincipal, Long spotId) {
+    public ResponseEntity<?> findBySpotId(HttpServletRequest request, Long spotId) {
+
+        Long memberId = jwtTokenProvider.getMemberId(request);
 
         // 유효한 사용자 로그인 상태인지 체크
-        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidSpotIdException::new);
 
@@ -127,17 +133,22 @@ public class SpotService {
     }
 
     @Transactional
-    public ResponseEntity<?> updateSpot(UserPrincipal userPrincipal, UpdateSpotRequestDto updateSpotRequestDto) {
+    public ResponseEntity<?> updateSpot(HttpServletRequest request, Long spotId, UpdateSpotRequestDto updateSpotRequestDto) {
+
+        Long memberId = jwtTokenProvider.getMemberId(request);
 
         // 유효한 사용자 로그인 상태인지 체크
-        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         // 존재하는 산책 스팟을 수정하려는지 체크
-        Spot spot = spotRepository.findById(updateSpotRequestDto.getId()).orElseThrow(InvalidSpotIdException::new);
+        Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidSpotIdException::new);
 
         // 수정하려는 이름과 중복된 이름을 가진 산책 스팟이 있는지
         if (spotRepository.findByName(updateSpotRequestDto.getName()).isPresent()) {
-            throw new AlreadyExistsSpotException();
+            Spot duplicateSpot =  spotRepository.findByName(updateSpotRequestDto.getName()).orElseThrow(InvalidSpotIdException::new);
+            if (!duplicateSpot.getId().equals(spotId)) {
+                throw new AlreadyExistsSpotException();
+            }
         }
 
         // 수정하려는 지역코드가 유효한지 체크
@@ -152,6 +163,7 @@ public class SpotService {
 
         spotRepository.save(spot);
 
+        /*
         // 이미지 저장
         List<String> imageList = updateSpotRequestDto.getImage();
         for (String s : imageList) {
@@ -163,14 +175,18 @@ public class SpotService {
             imageService.updateImage(updateImageRequestDto);
         }
 
+         */
+
         return getResponseEntity(spot);
     }
 
     @Transactional
-    public ResponseEntity<?> deleteSpot(UserPrincipal userPrincipal, Long spotId) {
+    public ResponseEntity<?> deleteSpot(HttpServletRequest request, Long spotId) {
+
+        Long memberId = jwtTokenProvider.getMemberId(request);
 
         // 유효한 사용자 로그인 상태인지 체크
-        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidSpotIdException::new);
 
@@ -190,7 +206,7 @@ public class SpotService {
     }
 
     @Transactional
-    public ResponseEntity<?> likeSpot(UserPrincipal userPrincipal, Integer spotId) {
+    public ResponseEntity<?> likeSpot(HttpServletRequest request, Integer spotId) {
         return null;
     }
 }
