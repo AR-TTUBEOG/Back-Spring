@@ -1,5 +1,6 @@
 package com.ttubeog.domain.member.application;
 
+import com.ttubeog.domain.auth.domain.Status;
 import com.ttubeog.domain.auth.dto.response.OAuthTokenResponse;
 import com.ttubeog.domain.auth.exception.AccessTokenExpiredException;
 import com.ttubeog.domain.auth.exception.InvalidAccessTokenException;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.naming.spi.ResolveResult;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -32,6 +34,8 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
     private final RedisTemplate<String, String> redisTemplate;
+    private static final int WAITING_PERIOD_DAYS = 3;
+
 
 
     // 현재 유저 조회
@@ -140,7 +144,20 @@ public class MemberService {
     public ResponseEntity<?> deleteUser(HttpServletRequest request) {
         Long memberId = jwtTokenProvider.getMemberId(request);
         Optional<Member> checkMember = memberRepository.findById(memberId);
-        memberRepository.delete(checkMember.get());
+
+        if (checkMember.isEmpty()) {
+            throw new InvalidMemberException();
+        }
+
+        Member member = checkMember.get();
+        if (member.getStatus() == Status.INACTIVE) {
+            return ResponseEntity.badRequest().body(new InvalidMemberException("이미 탈퇴한 회원입니다."));
+        }
+
+        member = Member.builder().status(Status.INACTIVE).build();
+        memberRepository.save(member);
+
+        LocalDateTime deleteTime = LocalDateTime.now().plusDays(WAITING_PERIOD_DAYS);
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
