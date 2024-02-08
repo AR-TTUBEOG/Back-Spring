@@ -7,7 +7,6 @@ import com.ttubeog.domain.spot.application.SpotService;
 import com.ttubeog.domain.spot.dto.request.CreateSpotRequestDto;
 import com.ttubeog.domain.spot.dto.request.UpdateSpotRequestDto;
 import com.ttubeog.global.config.security.token.CurrentUser;
-import com.ttubeog.global.config.security.token.UserPrincipal;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
