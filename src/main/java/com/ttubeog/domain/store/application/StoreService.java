@@ -47,6 +47,7 @@ public class StoreService {
                 .name(registerStoreReq.getName())
                 .info(registerStoreReq.getInfo())
                 .dongArea(dongArea)
+                .member(member)
                 .detailAddress(registerStoreReq.getDetailAddress())
                 .latitude(registerStoreReq.getLatitude())
                 .longitude(registerStoreReq.getLongitude())
@@ -85,8 +86,8 @@ public class StoreService {
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Store store = storeRepository.findById(updateStoreReq.getStoreId()).orElseThrow(NonExistentStoreException::new);
 
-        Member storeOwner = store.getMember();
-        if (!storeOwner.getId().equals(memberId)) {
+        Long storeOwnerId = store.getMember().getId();
+        if (!storeOwnerId.equals(memberId)) {
             throw new UnathorizedMemberException();
         }
 
