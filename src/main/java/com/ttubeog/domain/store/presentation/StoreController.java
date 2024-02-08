@@ -1,6 +1,5 @@
 package com.ttubeog.domain.store.presentation;
 
-<<<<<<< HEAD
 import com.ttubeog.domain.likes.application.LikesService;
 import com.ttubeog.domain.store.application.StoreService;
 import com.ttubeog.domain.store.dto.request.RegisterStoreReq;
@@ -10,26 +9,12 @@ import com.ttubeog.domain.store.dto.response.RegisterStoreRes;
 import com.ttubeog.domain.store.dto.response.UpdateStoreRes;
 import com.ttubeog.global.payload.Message;
 import io.swagger.v3.oas.annotations.Operation;
-=======
-import com.ttubeog.domain.store.application.StoreService;
-import com.ttubeog.domain.store.dto.request.RegisterStoreReq;
-import com.ttubeog.domain.store.dto.request.UpdateStoreReq;
-import com.ttubeog.domain.store.dto.response.RegisterStoreRes;
-import com.ttubeog.domain.store.dto.response.UpdateStoreRes;
-import com.ttubeog.global.config.security.token.CurrentUser;
-import com.ttubeog.global.config.security.token.UserPrincipal;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
->>>>>>> d24e682addba1c3f6ecb3d36471bc02b98fb1e09
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-<<<<<<< HEAD
 import jakarta.servlet.http.HttpServletRequest;
-=======
->>>>>>> d24e682addba1c3f6ecb3d36471bc02b98fb1e09
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -43,10 +28,8 @@ import org.springframework.web.bind.annotation.*;
 public class StoreController {
 
     private final StoreService storeService;
-<<<<<<< HEAD
     private final LikesService likesService;
-=======
->>>>>>> d24e682addba1c3f6ecb3d36471bc02b98fb1e09
+
 
     // 매장 등록
     @Operation(summary = "매장 등록", description = "매장을 등록합니다.")
@@ -56,17 +39,10 @@ public class StoreController {
     })
     @PostMapping
     public ResponseEntity<?> registerStore(
-<<<<<<< HEAD
             HttpServletRequest request,
             @Valid @RequestBody RegisterStoreReq registerStoreReq
     ) {
         return storeService.registerStore(request, registerStoreReq);
-=======
-            @Parameter(description = "AccessToken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
-            @Valid @RequestBody RegisterStoreReq registerStoreReq
-    ) {
-        return storeService.registerStore(userPrincipal, registerStoreReq);
->>>>>>> d24e682addba1c3f6ecb3d36471bc02b98fb1e09
     }
 
     // 매장 수정
@@ -77,7 +53,6 @@ public class StoreController {
     })
     @PatchMapping
     public ResponseEntity<?> updateStore(
-<<<<<<< HEAD
             HttpServletRequest request,
             @Valid @RequestBody UpdateStoreReq updateStoreReq
     ) {
@@ -125,11 +100,4 @@ public class StoreController {
     ) {
         return likesService.likesStore(request, storeId);
     }*/
-=======
-            @Parameter(description = "AccessToken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
-            @Valid @RequestBody UpdateStoreReq updateStoreReq
-    ) {
-        return storeService.updateStore(userPrincipal, updateStoreReq);
-    }
->>>>>>> d24e682addba1c3f6ecb3d36471bc02b98fb1e09
 }
