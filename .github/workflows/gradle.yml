@@ -88,25 +88,40 @@ jobs:
           path: |
             build/libs/*.jar
 
-      - name: Remove past EC2 raw sorce dir
-        uses: appleboy/ssh-action@master
-        with:
-          key: ${{ secrets.EC2_KEY }}
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          # 기존 실행 중인 서버 종료 후 jar 파일 실행
-          script: |
-            sudo rm -rf /home/ubuntu/app/code
+#      - name: Remove past EC2 raw sorce dir
+#        uses: appleboy/ssh-action@master
+#        with:
+#          key: ${{ secrets.EC2_KEY }}
+#          host: ${{ secrets.EC2_HOST }}
+#          username: ${{ secrets.EC2_USER }}
+#          command: sudo rm -rf /home/ubuntu/app/code
+#          port: 22
 
       
-      - name: Upload raw sorce to EC2
+#      - name: Upload raw sorce to EC2
+#        uses: appleboy/scp-action@master
+#        with:
+#          key: ${{ secrets.EC2_KEY }}
+#          host: ${{ secrets.EC2_HOST }}
+#          username: ${{ secrets.EC2_USER }}
+#          source: .
+#          target: "/home/ubuntu/app/code"
+
+      - name: Start redis-server
         uses: appleboy/scp-action@master
         with:
           key: ${{ secrets.EC2_KEY }}
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          source: .
-          target: "/home/ubuntu/app/code"
+          target: /home/ubuntu # specify the target path if needed
+          source: . # specify the source directory or file if needed
+          command: sudo systemctl start redis-server
+          port: 22
+          timeout: 30s
+          command_timeout: 10m
+          tar_exec: tar
+          proxy_port: 22
+          proxy_timeout: 30s
 
 
   deploy:

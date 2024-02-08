@@ -1,6 +1,5 @@
 package com.ttubeog.domain.auth.config;
 
-import com.ttubeog.domain.member.domain.MemberRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,6 +7,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -28,15 +28,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain configure(final HttpSecurity httpSecurity) throws Exception {
         return httpSecurity.cors(withDefaults())
-                .csrf((csrf) -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/auth/login/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs", "/swagger-resources/**", "/api/**").permitAll()
+                        .requestMatchers("/swagger-ui/**",
+                                "/v2/api-docs",
+                                "/swagger-resources/**",
+                                "/h2-console/**",
+                                "/favicon.ico",
+                                "/v3/api-docs/**",
+                                "/api/**").permitAll()
 //                        .requestMatchers("/api/**").hasAuthority(MemberRole.USER.getRole())
                         .anyRequest().authenticated())
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.disable())    // 기본 로그인 폼 미사용
-                .httpBasic(httpSecurityHttpBasicConfigurer -> httpSecurityHttpBasicConfigurer.disable())    // 기본 http 미사용
+                .formLogin(AbstractHttpConfigurer::disable)    // 기본 로그인 폼 미사용
+                .httpBasic(AbstractHttpConfigurer::disable)    // 기본 http 미사용
                 .build();
     }
 
@@ -59,12 +64,13 @@ public class SecurityConfig {
     public WebSecurityCustomizer webSecurityCustomizer(){
         return web ->
                 web.ignoring()
-                        .requestMatchers("/auth/login/**")
-                        .requestMatchers("/swagger-ui/**",
+                        .requestMatchers("/auth/login/**",
+                                "/swagger-ui/**",
                                 "/v2/api-docs",
                                 "/swagger-resources/**",
                                 "/h2-console/**",
                                 "/favicon.ico",
-                                "/v3/api-docs/**");
+                                "/v3/api-docs/**",
+                                "/api/**");
     }
 }
