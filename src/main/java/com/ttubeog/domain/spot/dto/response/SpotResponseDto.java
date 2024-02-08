@@ -1,19 +1,13 @@
 package com.ttubeog.domain.spot.dto.response;
 
 
-import com.ttubeog.domain.image.application.ImageService;
-import com.ttubeog.domain.spot.domain.Spot;
-import com.ttubeog.global.payload.ApiResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NonNull;
-import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
-import static com.ttubeog.domain.image.application.ImageService.getImageString;
 
 @Getter
 @Builder
