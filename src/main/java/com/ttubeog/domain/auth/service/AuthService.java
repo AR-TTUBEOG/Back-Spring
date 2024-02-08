@@ -57,20 +57,21 @@ public class AuthService {
             member = Member.builder()
                     .memberNumber(String.valueOf(memberInfo.getId()))
                     .platform(Platform.KAKAO)
+                    .status(Status.ACTIVE)
                     .build();
 
             memberRepository.save(member);
         }
 
         Optional<Member> memberLoginData = memberRepository.findByMemberNumber(String.valueOf(memberInfo.getId()));
-        validateStatus(memberLoginData.get());
 
         String refreshToken = jwtTokenProvider.createRefreshToken(memberLoginData.get().getId());
         redisTemplate.opsForValue().set(String.valueOf(memberLoginData.get().getId()), refreshToken);
-        refreshTokenService.saveTokenInfo(memberData.get().getId(), refreshToken, accessToken);
 
         String memberName = memberLoginData.get().getNickname();
         if (memberName == null || memberName.isEmpty()) {
+            validateStatus(memberLoginData.get());
+
             return KakaoTokenResponse.builder()
                     .accessToken(jwtTokenProvider.createAccessToken(
                             memberLoginData.get().getId()))
@@ -78,6 +79,8 @@ public class AuthService {
                     .isRegistered(false)
                     .build();
         } else {
+            validateStatus(memberLoginData.get());
+
             return KakaoTokenResponse.builder()
                     .accessToken(jwtTokenProvider.createAccessToken(
                             memberLoginData.get().getId()))
@@ -90,7 +93,6 @@ public class AuthService {
     private OAuthTokenResponse generateOAuthTokenResponse(Platform platform, String email, String platformId) {
         return memberRepository.findByMemberNumber(platformId)
                 .map(existingMember -> {
-                    // 이미 가입된 회원인 경우
                     validateStatus(existingMember);
                     String accessToken = issueAccessToken(existingMember);
                     String refreshToken = issueRefreshToken();
@@ -98,7 +100,6 @@ public class AuthService {
                     return new OAuthTokenResponse(accessToken, refreshToken, true);
                 })
                 .orElseGet(() -> {
-                    // 새로운 회원인 경우
                     Member newMember = new Member(email, platform, Status.ACTIVE, platformId);
                     Member savedMember = memberRepository.save(newMember);
                     String accessToken = issueAccessToken(savedMember);
