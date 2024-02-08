@@ -88,24 +88,24 @@ jobs:
           path: |
             build/libs/*.jar
 
-      - name: Remove past EC2 raw sorce dir
-        uses: appleboy/ssh-action@master
-        with:
-          key: ${{ secrets.EC2_KEY }}
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          command: sudo rm -rf /home/ubuntu/app/code
-          port: 22
+#      - name: Remove past EC2 raw sorce dir
+#        uses: appleboy/ssh-action@master
+#        with:
+#          key: ${{ secrets.EC2_KEY }}
+#          host: ${{ secrets.EC2_HOST }}
+#          username: ${{ secrets.EC2_USER }}
+#          command: sudo rm -rf /home/ubuntu/app/code
+#          port: 22
 
       
-      - name: Upload raw sorce to EC2
-        uses: appleboy/scp-action@master
-        with:
-          key: ${{ secrets.EC2_KEY }}
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          source: .
-          target: "/home/ubuntu/app/code"
+#      - name: Upload raw sorce to EC2
+#        uses: appleboy/scp-action@master
+#        with:
+#          key: ${{ secrets.EC2_KEY }}
+#          host: ${{ secrets.EC2_HOST }}
+#          username: ${{ secrets.EC2_USER }}
+#          source: .
+#          target: "/home/ubuntu/app/code"
 
       - name: Start redis-server
         uses: appleboy/scp-action@master
