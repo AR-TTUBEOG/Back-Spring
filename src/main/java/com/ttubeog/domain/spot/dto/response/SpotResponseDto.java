@@ -32,6 +32,9 @@ public class SpotResponseDto {
     @Schema(description = "상세 주소", defaultValue = "1층")
     private String detailAddress;
 
+    @Schema(description = "등록 유저 ID", defaultValue = "1")
+    private Long memberId;
+
     @Schema(description = "세부 정보", defaultValue = "연인, 친구들과 산책하기 좋은 장소입니다.")
     private String info;
 
