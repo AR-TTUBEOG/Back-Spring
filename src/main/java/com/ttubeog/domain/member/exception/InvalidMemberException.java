@@ -1,6 +1,5 @@
 package com.ttubeog.domain.member.exception;
 
-import com.ttubeog.domain.spot.exception.InvalidDongAreaException;
 
 public class InvalidMemberException extends RuntimeException {
 
