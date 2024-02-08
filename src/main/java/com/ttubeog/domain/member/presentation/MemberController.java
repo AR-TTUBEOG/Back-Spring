@@ -73,4 +73,16 @@ public class MemberController {
     ) {
         return memberService.deleteLogout(request);
     }
+
+    @Operation(summary = "회원탈퇴", description = "현재 접속된 회원이 탈퇴 합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "회원탈퇴 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}),
+            @ApiResponse(responseCode = "400", description = "회원탈퇴 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+    })
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteUser(
+            HttpServletRequest request
+    ) {
+        return memberService.deleteUser(request);
+    }
 }

@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.naming.spi.ResolveResult;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -104,7 +105,6 @@ public class MemberService {
             refreshTokenService.saveTokenInfo(memberId, newRefreshToken, newAccessToken);
 
 
-
             OAuthTokenResponse oAuthTokenResponse = new OAuthTokenResponse(newAccessToken, newRefreshToken, member.isRegisteredOAuthMember());
 
             ApiResponse apiResponse = ApiResponse.builder()
@@ -133,5 +133,20 @@ public class MemberService {
 
     public void deleteValueByKey(String key) {
         redisTemplate.delete(key);
+    }
+
+    @Transactional
+    // 회원탈퇴
+    public ResponseEntity<?> deleteUser(HttpServletRequest request) {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        Optional<Member> checkMember = memberRepository.findById(memberId);
+        memberRepository.delete(checkMember.get());
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(Message.builder().message("성공적으로 회원탈퇴 되었습니다.").build())
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 }
