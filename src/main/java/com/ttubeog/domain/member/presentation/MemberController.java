@@ -67,10 +67,10 @@ public class MemberController {
             @ApiResponse(responseCode = "200", description = "로그아웃 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}),
             @ApiResponse(responseCode = "400", description = "로그아웃 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
-    @GetMapping("/logout")
+    @DeleteMapping("/logout")
     public ResponseEntity<?> logout(
             HttpServletRequest request
     ) {
-        return null;
+        return memberService.deleteLogout(request);
     }
 }

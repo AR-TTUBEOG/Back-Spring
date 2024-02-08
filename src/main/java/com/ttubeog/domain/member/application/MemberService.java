@@ -13,8 +13,10 @@ import com.ttubeog.domain.member.exception.InvalidAccessTokenExpiredException;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.payload.ApiResponse;
+import com.ttubeog.global.payload.Message;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +30,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
+    private final RedisTemplate<String, String> redisTemplate;
 
 
     // 현재 유저 조회
@@ -112,5 +115,23 @@ public class MemberService {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new InvalidAccessTokenExpiredException());
         }
+    }
+
+    @Transactional
+    // 로그아웃
+    public ResponseEntity<?> deleteLogout(HttpServletRequest request) {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        deleteValueByKey(String.valueOf(memberId));
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(Message.builder().message("성공적으로 로그아웃 되었습니다.").build())
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    public void deleteValueByKey(String key) {
+        redisTemplate.delete(key);
     }
 }
