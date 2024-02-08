@@ -1,9 +1,12 @@
 package com.ttubeog.domain.benefit.domain;
 
 import com.ttubeog.domain.common.BaseEntity;
+import com.ttubeog.domain.game.domain.Game;
 import com.ttubeog.domain.store.domain.Store;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -26,9 +29,11 @@ public class Benefit extends BaseEntity {
     @JoinColumn(name = "store_id")
     private Store store;
 
+    @OneToMany(mappedBy = "benefit", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Game> game;
+
     @Builder
-    public Benefit(Long id, String content, BenefitType type, Store store) {
-        this.id = id;
+    public Benefit(String content, BenefitType type, Store store) {
         this.content = content;
         this.type = type;
         this.store = store;

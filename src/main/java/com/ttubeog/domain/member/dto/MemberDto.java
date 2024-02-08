@@ -23,7 +23,7 @@ public class MemberDto {
         return MemberDto.builder()
                 .id(member.getId())
                 .email(member.getEmail())
-                .name(member.getName())
+                .name(member.getNickname())
                 .platform(member.getPlatform())
                 .build();
     }
