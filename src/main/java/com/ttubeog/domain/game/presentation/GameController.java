@@ -139,4 +139,18 @@ public class GameController {
         return gameService.findGame(userPrincipal, gameId);
     }
 
+    //게임 조회
+    @Operation(summary = "혜택 조회", description = "게임Id로 혜택 정보를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "조회 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = RouletteBenefitResDto.class) ) } ),
+            @ApiResponse(responseCode = "400", description = "조회 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
+    })
+    @GetMapping("/{gameId}/benefit")
+    public ResponseEntity<?> findBenefit(
+            @CurrentUser UserPrincipal userPrincipal,
+            @PathVariable(value = "gameId") Long gameId
+    ) throws JsonProcessingException {
+        return gameService.findBenefit(userPrincipal, gameId);
+    }
+
 }

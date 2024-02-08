@@ -33,7 +33,7 @@ public class FindGameRes {
     private List<String> options;
 
     @Builder
-    public FindGameRes(Long gameId, GameType type, LocalTime timeLimit, Integer giftCount, Integer ballCount, Integer successCount, List<String> options) {
+    public FindGameRes(Long gameId,  GameType type, LocalTime timeLimit, Integer giftCount, Integer ballCount, Integer successCount, List<String> options) {
         this.gameId = gameId;
         this.type = type;
         this.timeLimit = timeLimit;

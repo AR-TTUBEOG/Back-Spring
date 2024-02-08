@@ -13,6 +13,9 @@ public class CreateBenefitReq {
 //    @Schema(description = "매장 ID", example = "1")
 //    private Long storeId;
 
+    @Schema(description = "게임 ID", example = "1")
+    private Long gameId;
+
     @Schema(description = "내용", example = "아메리카노 20% 할인")
     private String content;
 

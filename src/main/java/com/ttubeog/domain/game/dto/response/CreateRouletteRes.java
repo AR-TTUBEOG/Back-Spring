@@ -12,16 +12,15 @@ public class CreateRouletteRes {
     @Schema(description = "게임 ID", example = "1")
     private Long gameId;
 
-    @Schema(description = "혜택 ID", example = "1")
-    private Long benefitId;
-
-    @Schema(description = "옵션 내용", example = "[\"꽝\",\"5% 할인\",\"아메리카노 증정\",\"꽝\"]")
+    @Schema(description = "옵션 내용", example = "[\"5% 할인\",\"아메리카노 증정\"]")
     private List<String> options;
 
+    private List<RouletteBenefitResDto> benefits;
+
     @Builder
-    public CreateRouletteRes(Long gameId, Long benefitId, List<String> options) {
+    public CreateRouletteRes(Long gameId, List<String> options, List<RouletteBenefitResDto> benefits) {
         this.gameId = gameId;
-        this.benefitId = benefitId;
         this.options = options;
+        this.benefits = benefits;
     }
 }
