@@ -2,7 +2,7 @@ package com.ttubeog.domain.spot.presentation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttubeog.domain.guestbook.application.GuestBookService;
-import com.ttubeog.domain.guestbook.dto.CreateGuestBookRequestDto;
+import com.ttubeog.domain.guestbook.dto.request.CreateGuestBookRequestDto;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.spot.application.SpotService;
 import com.ttubeog.domain.spot.dto.request.CreateSpotRequestDto;
