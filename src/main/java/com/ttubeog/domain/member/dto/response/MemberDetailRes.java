@@ -19,6 +19,8 @@ public class MemberDetailRes {
 
     private Platform platform;
 
+    private Boolean isUsed;
+
     public static MemberDetailRes toDto(Member member) {
         return MemberDetailRes.builder()
                 .id(member.getId())
