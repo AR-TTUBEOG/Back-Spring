@@ -2,6 +2,7 @@ package com.ttubeog.domain.spot.application;
 
 import com.ttubeog.domain.area.domain.DongArea;
 import com.ttubeog.domain.area.domain.repository.DongAreaRepository;
+import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.image.application.ImageService;
 import com.ttubeog.domain.image.domain.Image;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
@@ -23,6 +24,7 @@ import com.ttubeog.domain.spot.exception.InvalidSpotIdException;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +46,8 @@ public class SpotService {
     private final ImageRepository imageRepository;
 
     private final ImageService imageService;
+
+    private final JwtTokenProvider jwtTokenProvider;
 
     @NonNull
     private ResponseEntity<?> getResponseEntity(Spot spot) {
@@ -70,7 +74,9 @@ public class SpotService {
     }
 
     @Transactional
-    public ResponseEntity<?> createSpot(UserPrincipal userPrincipal, CreateSpotRequestDto createSpotRequestDto) {
+    public ResponseEntity<?> createSpot(HttpServletRequest request, UserPrincipal userPrincipal, CreateSpotRequestDto createSpotRequestDto) {
+
+        Long memberId = jwtTokenProvider.getMemberId(request);
 
         // 유효한 사용자 로그인 상태인지 체크
         Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
