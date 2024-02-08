@@ -5,6 +5,7 @@ import com.ttubeog.domain.member.application.MemberService;
 import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
 import com.ttubeog.domain.member.dto.response.MemberDetailRes;
 import com.ttubeog.global.payload.ErrorResponse;
+import com.ttubeog.global.payload.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -59,5 +60,17 @@ public class MemberController {
     ) {
 
         return memberService.getMemberReissueToken(request);
+    }
+
+    @Operation(summary = "로그아웃", description = "현재 접속된 멤버가 로그아웃 합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "로그아웃 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}),
+            @ApiResponse(responseCode = "400", description = "로그아웃 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+    })
+    @GetMapping("/logout")
+    public ResponseEntity<?> logout(
+            HttpServletRequest request
+    ) {
+        return null;
     }
 }
