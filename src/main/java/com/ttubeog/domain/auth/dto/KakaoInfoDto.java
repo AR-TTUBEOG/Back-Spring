@@ -1,19 +1,17 @@
 package com.ttubeog.domain.auth.dto;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Builder;
 import lombok.Getter;
 
-import java.util.Map;
-
 @Getter
-@AllArgsConstructor
+@Builder
 public class KakaoInfoDto {
-    private Long id;
-    private String email;
+    private long id;
 
-    public KakaoInfoDto(Map<String, Object> info) {
-        this.id = Long.valueOf(info.get("id").toString());
-        this.email = info.get("email") != null
-                ? info.get(email).toString() : "";
+    @JsonCreator
+    public KakaoInfoDto(@JsonProperty("id") long id) {
+        this.id = id;
     }
 }
