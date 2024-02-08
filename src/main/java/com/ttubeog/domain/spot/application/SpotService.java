@@ -5,9 +5,9 @@ import com.ttubeog.domain.area.domain.repository.DongAreaRepository;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.image.application.ImageService;
 import com.ttubeog.domain.image.domain.Image;
+import com.ttubeog.domain.image.domain.ImageType;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
 import com.ttubeog.domain.image.dto.request.CreateImageRequestDto;
-import com.ttubeog.domain.image.dto.request.ImageRequestType;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
@@ -111,7 +111,7 @@ public class SpotService {
         for (String s : imageList) {
             CreateImageRequestDto createImageRequestDto = CreateImageRequestDto.builder()
                     .image(s)
-                    .imageRequestType(ImageRequestType.SPOT)
+                    .imageType(ImageType.SPOT)
                     .placeId(spot.getId())
                     .build();
             imageService.createImage(createImageRequestDto);
@@ -163,19 +163,22 @@ public class SpotService {
 
         spotRepository.save(spot);
 
-        /*
-        // 이미지 저장
-        List<String> imageList = updateSpotRequestDto.getImage();
-        for (String s : imageList) {
-            UpdateImageRequestDto updateImageRequestDto = UpdateImageRequestDto.builder()
-                    .image(s)
-                    .imageRequestType(ImageRequestType.SPOT)
-                    .placeId(spot.getId())
-                    .build();
-            imageService.updateImage(updateImageRequestDto);
+        List<Image> imageList = imageRepository.findBySpotId(spotId);
+
+        for (Image image : imageList) {
+            imageService.deleteImage(image.getId());
         }
 
-         */
+        List<String> imageStringList = updateSpotRequestDto.getImage();
+
+        for (String s : imageStringList) {
+            CreateImageRequestDto createImageRequestDto = CreateImageRequestDto.builder()
+                    .image(s)
+                    .imageType(ImageType.SPOT)
+                    .placeId(spotId)
+                    .build();
+            imageService.createImage(createImageRequestDto);
+        }
 
         return getResponseEntity(spot);
     }
