@@ -15,7 +15,6 @@ import com.ttubeog.domain.store.dto.response.UpdateStoreRes;
 import com.ttubeog.domain.store.exception.InvalidDongAreaException;
 import com.ttubeog.domain.store.exception.UnathorizedMemberException;
 import com.ttubeog.domain.store.exception.NonExistentStoreException;
-import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;

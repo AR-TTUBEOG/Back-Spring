@@ -6,8 +6,6 @@ import com.ttubeog.domain.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @Entity
 @Getter
 @Builder
