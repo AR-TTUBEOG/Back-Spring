@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor
+@Table(name = "dong_area")
 public class DongArea extends BaseEntity {
 
     @Id
