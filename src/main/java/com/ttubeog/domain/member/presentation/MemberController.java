@@ -36,7 +36,7 @@ public class MemberController {
         return memberService.getCurrentUser(request);
     }
 
-    @Operation(summary = "닉네임 설정", description = "현재 접속된 멤버의 초기 닉네임을 설정합니다.\ncheck == true 인 경우 닉네임 설정 성공, check == false 인 경우 닉네임 중복으로 실패")
+    @Operation(summary = "닉네임 설정", description = "현재 접속된 멤버의 초기 닉네임을 설정합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "닉네임 설정", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = MemberDetailRes.class))}),
             @ApiResponse(responseCode = "400", description = "닉네임 설정 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),

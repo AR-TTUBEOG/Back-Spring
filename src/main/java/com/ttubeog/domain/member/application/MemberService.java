@@ -2,7 +2,6 @@ package com.ttubeog.domain.member.application;
 
 import com.ttubeog.domain.auth.dto.response.OAuthTokenResponse;
 import com.ttubeog.domain.auth.exception.AccessTokenExpiredException;
-import com.ttubeog.domain.auth.exception.DuplicatedNicknameException;
 import com.ttubeog.domain.auth.exception.InvalidAccessTokenException;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.auth.service.RefreshTokenService;
@@ -14,7 +13,6 @@ import com.ttubeog.domain.member.exception.InvalidAccessTokenExpiredException;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.payload.ApiResponse;
-import com.ttubeog.global.payload.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -54,21 +52,14 @@ public class MemberService {
         return ResponseEntity.ok(apiResponse);
     }
 
+    // 닉네임 설정
     @Transactional
     public ResponseEntity<?> postMemberNickname(HttpServletRequest request, ProduceNicknameRequest produceNicknameRequest) {
         Long memberId = jwtTokenProvider.getMemberId(request);
-
-        if (memberRepository.existsByNickname(produceNicknameRequest.getNickname())) {
-            ApiResponse apiResponse = ApiResponse.builder()
-                    .check(false)
-                    .build();
-
-            return ResponseEntity.ok(apiResponse);
-        }
-
         memberRepository.updateUserNickname(produceNicknameRequest.getNickname(), memberId);
 
         Optional<Member> checkMember = memberRepository.findById(memberId);
+
         Member member = checkMember.get();
 
         MemberDetailRes memberDetailRes = MemberDetailRes.builder()
@@ -84,7 +75,6 @@ public class MemberService {
 
         return ResponseEntity.ok(apiResponse);
     }
-
 
     @Transactional
     // 토큰 재발급 설정
