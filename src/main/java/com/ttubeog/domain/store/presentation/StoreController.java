@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -40,10 +41,10 @@ public class StoreController {
     })
     @PostMapping
     public ResponseEntity<?> registerStore(
-            @Parameter(description = "AccessToken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @Valid @RequestBody RegisterStoreReq registerStoreReq
     ) {
-        return storeService.registerStore(userPrincipal, registerStoreReq);
+        return storeService.registerStore(request, registerStoreReq);
     }
 
     // 매장 수정
@@ -54,10 +55,10 @@ public class StoreController {
     })
     @PatchMapping
     public ResponseEntity<?> updateStore(
-            @Parameter(description = "AccessToken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @Valid @RequestBody UpdateStoreReq updateStoreReq
     ) {
-        return storeService.updateStore(userPrincipal, updateStoreReq);
+        return storeService.updateStore(request, updateStoreReq);
     }
 
     // 매장 삭제
@@ -68,10 +69,10 @@ public class StoreController {
     })
     @DeleteMapping("/{storeId}")
     public ResponseEntity<?> deleteStore(
-            @Parameter(description = "AccessToken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @PathVariable Long storeId
     ) {
-        return storeService.deleteStore(userPrincipal, storeId);
+        return storeService.deleteStore(request, storeId);
     }
 
     // 매장 세부사항 조회
@@ -82,22 +83,23 @@ public class StoreController {
     })
     @GetMapping("/{storeId}")
     public ResponseEntity<?> getStoreDetails(
+            HttpServletRequest request,
             @PathVariable Long storeId
     ) {
-        return storeService.getStoreDetails(storeId);
+        return storeService.getStoreDetails(request, storeId);
     }
 
     // 매장 좋아요 누르기
-    @Operation(summary = "매장 좋아요 누르기", description = "매장에 대한 좋아요를 누릅니다.")
+    /*Operation(summary = "매장 좋아요 누르기", description = "매장에 대한 좋아요를 누릅니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "매장 좋아요 누르기 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}),
             @ApiResponse(responseCode = "400", description = "매장 좋아요 누르기 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PostMapping("/{storeId}/likes")
     public ResponseEntity<?> likesStore(
-            @Parameter(description = "AccessToken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @PathVariable Long storeId
     ) {
-        return likesService.likesStore(userPrincipal, storeId);
-    }
+        return likesService.likesStore(request, storeId);
+    }*/
 }

@@ -1,6 +1,8 @@
 package com.ttubeog.domain.store.application;
 
 import com.ttubeog.domain.area.domain.DongArea;
+import com.ttubeog.domain.area.domain.repository.DongAreaRepository;
+import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.store.domain.Store;
@@ -10,12 +12,14 @@ import com.ttubeog.domain.store.dto.request.UpdateStoreReq;
 import com.ttubeog.domain.store.dto.response.GetStoreDetailRes;
 import com.ttubeog.domain.store.dto.response.RegisterStoreRes;
 import com.ttubeog.domain.store.dto.response.UpdateStoreRes;
+import com.ttubeog.domain.store.exception.InvalidDongAreaException;
 import com.ttubeog.domain.store.exception.UnathorizedMemberException;
 import com.ttubeog.domain.store.exception.NonExistentStoreException;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -28,17 +32,22 @@ public class StoreService {
 
     private final StoreRepository storeRepository;
     private final MemberRepository memberRepository;
+    private final DongAreaRepository dongAreaRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     // 매장 등록
     @Transactional
-    public ResponseEntity<?> registerStore(UserPrincipal userPrincipal, RegisterStoreReq registerStoreReq) {
+    public ResponseEntity<?> registerStore(HttpServletRequest request, RegisterStoreReq registerStoreReq) {
 
-        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+
+        DongArea dongArea = dongAreaRepository.findById(registerStoreReq.getDongAreaId()).orElseThrow(InvalidDongAreaException::new);
 
         Store store = Store.builder()
                 .name(registerStoreReq.getName())
                 .info(registerStoreReq.getInfo())
-                .dongArea(new DongArea(registerStoreReq.getDongAreaId()))
+                .dongArea(dongArea)
                 .detailAddress(registerStoreReq.getDetailAddress())
                 .latitude(registerStoreReq.getLatitude())
                 .longitude(registerStoreReq.getLongitude())
@@ -71,13 +80,14 @@ public class StoreService {
 
     // 매장 수정
     @Transactional
-    public ResponseEntity<?> updateStore(UserPrincipal userPrincipal, UpdateStoreReq updateStoreReq) {
+    public ResponseEntity<?> updateStore(HttpServletRequest request, UpdateStoreReq updateStoreReq) {
 
-        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Store store = storeRepository.findById(updateStoreReq.getStoreId()).orElseThrow(NonExistentStoreException::new);
 
         Member storeOwner = store.getMember();
-        if (storeOwner.getId() != member.getId()) {
+        if (!storeOwner.getId().equals(memberId)) {
             throw new UnathorizedMemberException();
         }
 
@@ -110,9 +120,10 @@ public class StoreService {
 
     // 매장 삭제
     @Transactional
-    public ResponseEntity<?> deleteStore(UserPrincipal userPrincipal, Long storeId) {
+    public ResponseEntity<?> deleteStore(HttpServletRequest request, Long storeId) {
 
-        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Store store = storeRepository.findById(storeId).orElseThrow(NonExistentStoreException::new);
         storeRepository.delete(store);
 
@@ -125,8 +136,10 @@ public class StoreService {
     }
 
     // 매장 세부사항 조회
-    public ResponseEntity<?> getStoreDetails(Long storeId) {
+    public ResponseEntity<?> getStoreDetails(HttpServletRequest request, Long storeId) {
 
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Store store = storeRepository.findById(storeId).orElseThrow(NonExistentStoreException::new);
 
         // List<BenefitType> storeBenefits = benefitRepository.findTypeByStoreId(storeId);
