@@ -23,7 +23,7 @@ public class Member extends BaseEntity {
 
     private String oAuthId;
 
-    private String name;
+    private String nickname;
 
     @Size(max = 45)
     @NotNull
@@ -32,44 +32,34 @@ public class Member extends BaseEntity {
     @Email
     private String email;
 
-    private String imageUrl;
-
-    private String password;
-
-    @Enumerated(EnumType.STRING)
-    private Provider provider;
-
-    @Enumerated(EnumType.STRING)
-    private MemberRole memberRole;
-
     private String platformId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "platform")
     private Platform platform;
 
-    private String refreshToken;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;
 
-    public Member(String email, Platform platform, Status status) {
+    @Column(name = "refresh_token")
+    private String refreshToken;
+
+
+    public Member(String email, Platform platform, Status status, String memberNumber) {
         this.email = email;
         this.platform = platform;
         this.platformId = platformId;
         this.status = status;
+        this.memberNumber = memberNumber;
     }
 
     public boolean isRegisteredOAuthMember() {
-        return name != null;
+        return nickname != null;
     }
 
     public void updateName(String name) {
-        this.name = name;
+        this.nickname = name;
     }
 
-    public void updateImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
 }
