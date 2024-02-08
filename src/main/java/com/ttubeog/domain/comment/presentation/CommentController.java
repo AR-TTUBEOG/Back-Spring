@@ -4,6 +4,7 @@ import com.ttubeog.domain.comment.application.CommentService;
 import com.ttubeog.domain.comment.dto.request.GetCommentReq;
 import com.ttubeog.domain.comment.dto.request.UpdateCommentReq;
 import com.ttubeog.domain.comment.dto.request.WriteCommentReq;
+import com.ttubeog.domain.comment.dto.response.GetCommentRes;
 import com.ttubeog.domain.comment.dto.response.UpdateCommentRes;
 import com.ttubeog.domain.comment.dto.response.WriteCommentRes;
 import com.ttubeog.global.config.security.token.CurrentUser;
@@ -78,12 +79,12 @@ public class CommentController {
     // AR뷰 댓글 조회 (반경 이용)
     @Operation(summary = "댓글 조회", description = "반경 내의 댓글을 조회힙니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "댓글 조회 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = List.class))}),
+            @ApiResponse(responseCode = "200", description = "댓글 조회 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = GetCommentRes.class))}),
             @ApiResponse(responseCode = "400", description = "댓글 조회 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @GetMapping
     public ResponseEntity<?> getCommentForAR(
-            @Valid @RequestBody GetCommentReq getCommentReq
+            @Valid GetCommentReq getCommentReq
     ) {
         return commentService.getCommentForAR(getCommentReq);
     }
