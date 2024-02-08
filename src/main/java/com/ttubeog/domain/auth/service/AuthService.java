@@ -8,7 +8,6 @@ import com.ttubeog.domain.auth.dto.KakaoInfoDto;
 import com.ttubeog.domain.auth.dto.request.AppleLoginRequest;
 import com.ttubeog.domain.auth.dto.response.KakaoTokenResponse;
 import com.ttubeog.domain.auth.dto.response.OAuthTokenResponse;
-import com.ttubeog.domain.auth.exception.NotFoundMemberException;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.auth.security.OAuthPlatformMemberResponse;
 import com.ttubeog.domain.member.domain.Member;
@@ -18,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Optional;
@@ -33,6 +33,8 @@ public class AuthService {
     private final RedisTemplate<String, String> redisTemplate;
 
 
+
+    @Transactional
     public OAuthTokenResponse appleOAuthLogin(AppleLoginRequest request) {
         OAuthPlatformMemberResponse applePlatformMember =
                 appleOAuthMemberProvider.getApplePlatformMember(request.getToken());
@@ -86,32 +88,26 @@ public class AuthService {
     }
 
     private OAuthTokenResponse generateOAuthTokenResponse(Platform platform, String email, String platformId) {
-        return memberRepository.findIdByPlatformAndPlatformId(platform, platformId)
-                .map(memberId -> {
-                    Member findMember = memberRepository.findById(memberId)
-                            .orElseThrow(NotFoundMemberException::new);
-                    validateStatus(findMember);
-                    String accessToken = issueAccessToken(findMember);
+        return memberRepository.findByMemberNumber(platformId)
+                .map(existingMember -> {
+                    // 이미 가입된 회원인 경우
+                    validateStatus(existingMember);
+                    String accessToken = issueAccessToken(existingMember);
                     String refreshToken = issueRefreshToken();
-
-                    refreshTokenService.saveTokenInfo(findMember.getId(), refreshToken, accessToken);
-
-                    if (!findMember.isRegisteredOAuthMember()) {
-                        return new OAuthTokenResponse(accessToken, refreshToken, false);
-                    }
+                    refreshTokenService.saveTokenInfo(existingMember.getId(), refreshToken, accessToken);
                     return new OAuthTokenResponse(accessToken, refreshToken, true);
                 })
                 .orElseGet(() -> {
-                    Member oauthMember = new Member(email, platform, Status.ACTIVE, "");
-                    Member savedMember = memberRepository.save(oauthMember);
+                    // 새로운 회원인 경우
+                    Member newMember = new Member(email, platform, Status.ACTIVE, platformId);
+                    Member savedMember = memberRepository.save(newMember);
                     String accessToken = issueAccessToken(savedMember);
                     String refreshToken = issueRefreshToken();
-
                     refreshTokenService.saveTokenInfo(savedMember.getId(), refreshToken, accessToken);
-
                     return new OAuthTokenResponse(accessToken, refreshToken, false);
                 });
     }
+
 
     private String issueAccessToken(final Member findMember) {
         return jwtTokenProvider.createAccessToken(findMember.getId());
@@ -138,3 +134,4 @@ public class AuthService {
                 .block();
     }
 }
+
