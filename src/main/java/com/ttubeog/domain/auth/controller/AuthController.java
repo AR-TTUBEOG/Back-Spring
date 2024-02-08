@@ -12,10 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "OAuth", description = "로그인")
 @RestController
@@ -28,9 +25,8 @@ public class AuthController {
     @Operation(summary = "카카오 OAuth 로그인")
     @PostMapping("/login/kakao")
     public KakaoTokenResponse loginKakao(@RequestBody @Valid KakaoLoginRequest kakaoLoginRequest, HttpServletRequest request) {
-        KakaoTokenResponse reissueTokenResponseDto = authService.kakaoOAuthLogin(kakaoLoginRequest.getAccessToken());
 
-        return reissueTokenResponseDto;
+        return authService.kakaoOAuthLogin(kakaoLoginRequest.getAccessToken());
     }
 
     @Operation(summary = "애플 OAuth 로그인")

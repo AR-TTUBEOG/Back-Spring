@@ -6,7 +6,6 @@ import com.ttubeog.domain.auth.domain.Status;
 import com.ttubeog.domain.auth.domain.Token;
 import com.ttubeog.domain.auth.dto.KakaoInfoDto;
 import com.ttubeog.domain.auth.dto.request.AppleLoginRequest;
-import com.ttubeog.domain.auth.dto.request.KakaoLoginRequest;
 import com.ttubeog.domain.auth.dto.response.KakaoTokenResponse;
 import com.ttubeog.domain.auth.dto.response.OAuthTokenResponse;
 import com.ttubeog.domain.auth.exception.NotFoundMemberException;
@@ -18,12 +17,9 @@ import com.ttubeog.domain.member.exception.InvalidMemberException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -58,7 +54,7 @@ public class AuthService {
         if (memberData.isEmpty()) {
             member = Member.builder()
                     .memberNumber(String.valueOf(memberInfo.getId()))
-                    .status(Status.ACTIVE)
+                    .platform(Platform.KAKAO)
                     .build();
 
             memberRepository.save(member);
@@ -66,18 +62,25 @@ public class AuthService {
 
         Optional<Member> memberLoginData = memberRepository.findByMemberNumber(String.valueOf(memberInfo.getId()));
 
-        String refreshToken = jwtTokenProvider.createRereshToken(memberLoginData.get().getId());
-
-        KakaoTokenResponse oAuthTokenResponse = KakaoTokenResponse.builder()
-                .accessToken(jwtTokenProvider.createAccessToken(
-                        memberLoginData.get().getId()))
-                .refreshToken(refreshToken)
-                .isRegistered(false)
-                .build();
-
+        String refreshToken = jwtTokenProvider.createRefreshToken(memberLoginData.get().getId());
         redisTemplate.opsForValue().set(String.valueOf(memberLoginData.get().getId()), refreshToken);
 
-        return oAuthTokenResponse;
+        String memberName = memberLoginData.get().getNickname();
+        if (memberName == null || memberName.isEmpty()) {
+            return KakaoTokenResponse.builder()
+                    .accessToken(jwtTokenProvider.createAccessToken(
+                            memberLoginData.get().getId()))
+                    .refreshToken(refreshToken)
+                    .isRegistered(false)
+                    .build();
+        } else {
+            return KakaoTokenResponse.builder()
+                    .accessToken(jwtTokenProvider.createAccessToken(
+                            memberLoginData.get().getId()))
+                    .refreshToken(refreshToken)
+                    .isRegistered(true)
+                    .build();
+        }
     }
 
     private OAuthTokenResponse generateOAuthTokenResponse(Platform platform, String email, String platformId) {
@@ -97,7 +100,7 @@ public class AuthService {
                     return new OAuthTokenResponse(accessToken, refreshToken, true);
                 })
                 .orElseGet(() -> {
-                    Member oauthMember = new Member(email, platform, Status.ACTIVE);
+                    Member oauthMember = new Member(email, platform, Status.ACTIVE, "");
                     Member savedMember = memberRepository.save(oauthMember);
                     String accessToken = issueAccessToken(savedMember);
                     String refreshToken = issueRefreshToken();

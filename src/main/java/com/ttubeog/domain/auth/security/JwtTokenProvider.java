@@ -13,23 +13,29 @@ import java.util.Date;
 public class JwtTokenProvider {
     private final String secretKey;
     private final long validityAccessTokenInMilliseconds;
+    private final long validityRefreshTokenInMilliseconds;
     private final JwtParser jwtParser;
-    private final long refreshTokenTime = 1L * 60 * 1000 * 2;
 
 
     public JwtTokenProvider(@Value("${jwt.secret-key}") String secretKey,
                             @Value("${jwt.access-expired-time}")
-                            long validityAccessTokenInMilliseconds) {
+                            long validityAccessTokenInMilliseconds,
+                            @Value("${jwt.refresh-expired-time}")
+                            long validityRefreshTokenInMilliseconds) {
         this.secretKey = secretKey;
         this.validityAccessTokenInMilliseconds = validityAccessTokenInMilliseconds;
+        this.validityRefreshTokenInMilliseconds = validityRefreshTokenInMilliseconds;
         this.jwtParser = Jwts.parser().setSigningKey(secretKey);
     }
 
     public String createAccessToken(Long memberId) {
+        Claims claims = Jwts.claims().setSubject(String.valueOf(memberId));
+
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityAccessTokenInMilliseconds);
 
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(String.valueOf(memberId))
                 .setIssuedAt(now)
                 .setExpiration(validity)
@@ -38,13 +44,14 @@ public class JwtTokenProvider {
     }
 
 
-    public String createRereshToken(Long userId) {            // 토큰 생성
-        Claims claims = Jwts.claims().setSubject(String.valueOf(userId));
-
+    public String createRefreshToken(Long memberId) {            // 토큰 생성
+        Claims claims = Jwts.claims().setSubject(String.valueOf(memberId));
         Date now = new Date();
+
         String token = Jwts.builder()
+                .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + refreshTokenTime))
+                .setExpiration(new Date(now.getTime() + validityRefreshTokenInMilliseconds))
                 .signWith(SignatureAlgorithm.HS256, secretKey) // 암호화 알고리즘, secret 값 세팅
                 .compact();
 
@@ -73,7 +80,7 @@ public class JwtTokenProvider {
     }
 
     public String resolveToken(HttpServletRequest request) {
-        String tokenHeader = request.getHeader("Authentication");
+        String tokenHeader = request.getHeader("Authorization");
 
         if (tokenHeader != null && tokenHeader.startsWith("Bearer ")) {
             return tokenHeader.substring(7);
@@ -90,5 +97,12 @@ public class JwtTokenProvider {
         } catch (JwtException e) {
             throw new InvalidAccessTokenException();
         }
+    }
+
+    public Long getMemberId(HttpServletRequest request) {
+        String token = resolveToken(request);
+        String memberId = getPayload(token);
+
+        return Long.valueOf(memberId);
     }
 }
