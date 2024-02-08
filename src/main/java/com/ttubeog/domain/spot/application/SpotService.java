@@ -74,12 +74,12 @@ public class SpotService {
     }
 
     @Transactional
-    public ResponseEntity<?> createSpot(HttpServletRequest request, UserPrincipal userPrincipal, CreateSpotRequestDto createSpotRequestDto) {
+    public ResponseEntity<?> createSpot(HttpServletRequest request, CreateSpotRequestDto createSpotRequestDto) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
         // 유효한 사용자 로그인 상태인지 체크
-        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         // 중복된 이름을 가진 산책 스팟인지 체크
         if (spotRepository.findByName(createSpotRequestDto.getName()).isPresent()) {
@@ -122,10 +122,12 @@ public class SpotService {
         return getResponseEntity(spot);
     }
 
-    public ResponseEntity<?> findBySpotId(UserPrincipal userPrincipal, Long spotId) {
+    public ResponseEntity<?> findBySpotId(HttpServletRequest request, Long spotId) {
+
+        Long memberId = jwtTokenProvider.getMemberId(request);
 
         // 유효한 사용자 로그인 상태인지 체크
-        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidSpotIdException::new);
 
@@ -133,10 +135,12 @@ public class SpotService {
     }
 
     @Transactional
-    public ResponseEntity<?> updateSpot(UserPrincipal userPrincipal, UpdateSpotRequestDto updateSpotRequestDto) {
+    public ResponseEntity<?> updateSpot(HttpServletRequest request, UpdateSpotRequestDto updateSpotRequestDto) {
+
+        Long memberId = jwtTokenProvider.getMemberId(request);
 
         // 유효한 사용자 로그인 상태인지 체크
-        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         // 존재하는 산책 스팟을 수정하려는지 체크
         Spot spot = spotRepository.findById(updateSpotRequestDto.getId()).orElseThrow(InvalidSpotIdException::new);
@@ -173,10 +177,12 @@ public class SpotService {
     }
 
     @Transactional
-    public ResponseEntity<?> deleteSpot(UserPrincipal userPrincipal, Long spotId) {
+    public ResponseEntity<?> deleteSpot(HttpServletRequest request, Long spotId) {
+
+        Long memberId = jwtTokenProvider.getMemberId(request);
 
         // 유효한 사용자 로그인 상태인지 체크
-        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidSpotIdException::new);
 
@@ -196,7 +202,7 @@ public class SpotService {
     }
 
     @Transactional
-    public ResponseEntity<?> likeSpot(UserPrincipal userPrincipal, Integer spotId) {
+    public ResponseEntity<?> likeSpot(HttpServletRequest request, Integer spotId) {
         return null;
     }
 }
