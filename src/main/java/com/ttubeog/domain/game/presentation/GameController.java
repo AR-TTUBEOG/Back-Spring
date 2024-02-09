@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,10 +36,10 @@ public class GameController {
     })
     @PostMapping("/gift")
     public ResponseEntity<?> createGift(
-            @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @Valid @RequestBody CreateGiftReq createGiftReq
     ) throws JsonProcessingException {
-        return gameService.createGift(userPrincipal, createGiftReq);
+        return gameService.createGift(request, createGiftReq);
     }
 
     //농구 게임 생성
@@ -49,10 +50,10 @@ public class GameController {
     })
     @PostMapping("/basketball")
     public ResponseEntity<?> createBasketball(
-            @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @Valid @RequestBody CreateBasketballReq createBasketballReq
             ) throws JsonProcessingException {
-        return gameService.createBasketBall(userPrincipal, createBasketballReq);
+        return gameService.createBasketBall(request, createBasketballReq);
     }
 
     //돌림판 게임 생성
@@ -63,10 +64,10 @@ public class GameController {
     })
     @PostMapping("/roulette")
     public ResponseEntity<?> createRoulette(
-            @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @Valid @RequestBody CreateRouletteReq createRouletteReq
             ) throws JsonProcessingException {
-        return gameService.createRoulette(userPrincipal, createRouletteReq);
+        return gameService.createRoulette(request, createRouletteReq);
     }
 
     //선물 게임 수정
@@ -77,10 +78,10 @@ public class GameController {
     })
     @PatchMapping("/gift")
     public ResponseEntity<?> updateGift(
-            @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @Valid @RequestBody UpdateGiftReq updateGiftReq
             ) throws JsonProcessingException {
-        return gameService.updateGift(userPrincipal, updateGiftReq);
+        return gameService.updateGift(request, updateGiftReq);
     }
 
     //농구 게임 수정
@@ -91,10 +92,10 @@ public class GameController {
     })
     @PatchMapping("/basketball")
     public ResponseEntity<?> updateBasketball(
-            @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @Valid @RequestBody UpdateBasketballReq updateBasketballReq
             ) throws JsonProcessingException {
-        return gameService.updateBasketball(userPrincipal, updateBasketballReq);
+        return gameService.updateBasketball(request, updateBasketballReq);
     }
 
     //돌림판 게임 수정
@@ -105,10 +106,10 @@ public class GameController {
     })
     @PatchMapping("/roulette")
     public ResponseEntity<?> updateRoulette(
-            @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @Valid @RequestBody UpdateRouletteReq updateRouletteReq
     ) throws JsonProcessingException {
-        return gameService.updateRoulette(userPrincipal, updateRouletteReq);
+        return gameService.updateRoulette(request, updateRouletteReq);
     }
 
     //게임 삭제
@@ -119,10 +120,10 @@ public class GameController {
     })
     @DeleteMapping("/{gameId}")
     public ResponseEntity<?> deleteGame(
-            @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @PathVariable(value = "gameId") Long gameId
     ) throws JsonProcessingException {
-        return gameService.deleteGame(userPrincipal, gameId);
+        return gameService.deleteGame(request, gameId);
     }
 
     //게임 조회
@@ -133,10 +134,10 @@ public class GameController {
     })
     @GetMapping("/{gameId}")
     public ResponseEntity<?> findGame(
-            @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @PathVariable(value = "gameId") Long gameId
     ) throws JsonProcessingException {
-        return gameService.findGame(userPrincipal, gameId);
+        return gameService.findGame(request, gameId);
     }
 
     //게임 조회
@@ -147,10 +148,10 @@ public class GameController {
     })
     @GetMapping("/{gameId}/benefit")
     public ResponseEntity<?> findBenefit(
-            @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @PathVariable(value = "gameId") Long gameId
     ) throws JsonProcessingException {
-        return gameService.findBenefit(userPrincipal, gameId);
+        return gameService.findBenefit(request, gameId);
     }
 
 }
