@@ -1,6 +1,8 @@
 package com.ttubeog.domain.game.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ttubeog.domain.auth.config.SecurityUtil;
+import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.benefit.domain.Benefit;
 import com.ttubeog.domain.benefit.domain.MemberBenefit;
 import com.ttubeog.domain.benefit.domain.repository.BenefitRepository;
@@ -38,12 +40,13 @@ public class GameService {
     private final BasketBallRepository basketBallRepository;
     private final RouletteRepository rouletteRepository;
     private final MemberBenefitRepository memberBenefitRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     // 선물게임 생성
     @Transactional
-    public ResponseEntity<?> createGift(UserPrincipal userPrincipal, CreateGiftReq createGiftReq) throws JsonProcessingException {
-
-        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+    public ResponseEntity<?> createGift(HttpServletRequest request, CreateGiftReq createGiftReq) throws JsonProcessingException {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         //TODO 연결 후 store에 이미 존재하는 gametype인지 확인
 
@@ -88,9 +91,9 @@ public class GameService {
 
     // 농구게임 생성
     @Transactional
-    public ResponseEntity<?> createBasketBall(UserPrincipal userPrincipal, CreateBasketballReq createBasketballReq) throws JsonProcessingException {
-
-        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+    public ResponseEntity<?> createBasketBall(HttpServletRequest request, CreateBasketballReq createBasketballReq) throws JsonProcessingException {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         Game game = Game.builder()
                 .type(GameType.BASKETBALL)
@@ -135,9 +138,9 @@ public class GameService {
 
     //돌림판 게임 생성
     @Transactional
-    public ResponseEntity<?> createRoulette(UserPrincipal userPrincipal, CreateRouletteReq createRouletteReq) throws JsonProcessingException {
-
-        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+    public ResponseEntity<?> createRoulette(HttpServletRequest request, CreateRouletteReq createRouletteReq) throws JsonProcessingException {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         Game game = Game.builder()
                 .type(GameType.ROULETTE)
@@ -184,9 +187,9 @@ public class GameService {
 
     //선물게임 수정
     @Transactional
-    public ResponseEntity<?> updateGift(UserPrincipal userPrincipal, UpdateGiftReq updateGiftReq) throws JsonProcessingException {
-
-        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+    public ResponseEntity<?> updateGift(HttpServletRequest request, UpdateGiftReq updateGiftReq) throws JsonProcessingException {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         GiftGame giftGame = giftGameRepository.findById(updateGiftReq.getGameId()).orElseThrow(NonExistentGameException::new);
         Benefit benefit = benefitRepository.findByGame(giftGame.getGame()).orElseThrow(NonExistentBenefitException::new);
         benefit.deleteGame();
@@ -220,9 +223,9 @@ public class GameService {
 
     //농구게임 수정
     @Transactional
-    public ResponseEntity<?> updateBasketball(UserPrincipal userPrincipal, UpdateBasketballReq updateBasketballReq) throws JsonProcessingException {
-
-        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+    public ResponseEntity<?> updateBasketball(HttpServletRequest request, UpdateBasketballReq updateBasketballReq) throws JsonProcessingException {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         BasketballGame basketballGame = basketBallRepository.findById(updateBasketballReq.getGameId()).orElseThrow(NonExistentGameException::new);
         Benefit benefit = benefitRepository.findByGame(basketballGame.getGame()).orElseThrow(NonExistentBenefitException::new);
         benefit.deleteGame();
@@ -258,9 +261,9 @@ public class GameService {
 
     //돌림판 게임 수정
     @Transactional
-    public ResponseEntity<?> updateRoulette(UserPrincipal userPrincipal, UpdateRouletteReq updateRouletteReq) throws JsonProcessingException {
-
-        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+    public ResponseEntity<?> updateRoulette(HttpServletRequest request, UpdateRouletteReq updateRouletteReq) throws JsonProcessingException {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         RouletteGame rouletteGame = rouletteRepository.findById(updateRouletteReq.getGameId()).orElseThrow(NonExistentGameException::new);
         List<Benefit> benefitList = benefitRepository.findAllByGame(rouletteGame.getGame());
         benefitList.forEach(benefit -> benefit.deleteGame());
@@ -301,9 +304,9 @@ public class GameService {
 
     //게임 삭제
     @Transactional
-    public ResponseEntity<?> deleteGame(UserPrincipal userPrincipal, Long gameId) throws JsonProcessingException {
-
-        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+    public ResponseEntity<?> deleteGame(HttpServletRequest request, Long gameId) throws JsonProcessingException {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Game game = gameRepository.findById(gameId).orElseThrow(NonExistentGameException::new);
         List<Benefit> benefitList = benefitRepository.findAllByGame(game);
         List<MemberBenefit> memberBenefitList = memberBenefitRepository.findAllByMemberAndBenefitIn(member, benefitList);
@@ -322,9 +325,9 @@ public class GameService {
 
     //게임 조회
     @Transactional
-    public ResponseEntity<?> findGame(UserPrincipal userPrincipal, Long gameId) throws JsonProcessingException {
-
-        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+    public ResponseEntity<?> findGame(HttpServletRequest request, Long gameId) throws JsonProcessingException {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Game game = gameRepository.findById(gameId).orElseThrow(NonExistentBenefitException::new);
 
         FindGameRes.FindGameResBuilder builder = FindGameRes.builder()
@@ -355,9 +358,9 @@ public class GameService {
 
     //게임ID로 혜택 조회
     @Transactional
-    public ResponseEntity<?> findBenefit(UserPrincipal userPrincipal, Long gameId) throws JsonProcessingException {
-
-        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+    public ResponseEntity<?> findBenefit(HttpServletRequest request, Long gameId) throws JsonProcessingException {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Game game = gameRepository.findById(gameId).orElseThrow(NonExistentGameException::new);
         List<Benefit> benefitList = benefitRepository.findAllByGame(game);
 
