@@ -60,10 +60,29 @@ public class MemberService {
         return ResponseEntity.ok(apiResponse);
     }
 
-    // 닉네임 설정
     @Transactional
     public ResponseEntity<?> postMemberNickname(HttpServletRequest request, ProduceNicknameRequest produceNicknameRequest) {
         Long memberId = jwtTokenProvider.getMemberId(request);
+
+        if (memberRepository.existsByNickname(produceNicknameRequest.getNickname())) {
+            Optional<Member> checkMember = memberRepository.findById(memberId);
+            Member member = checkMember.get();
+
+            MemberDetailRes memberDetailRes = MemberDetailRes.builder()
+                    .id(member.getId())
+                    .name(member.getNickname())
+                    .platform(member.getPlatform())
+                    .isUsed(false)
+                    .build();
+
+            ApiResponse apiResponse = ApiResponse.builder()
+                    .check(true)
+                    .information(memberDetailRes)
+                    .build();
+
+            return ResponseEntity.ok(apiResponse);
+        }
+
         memberRepository.updateUserNickname(produceNicknameRequest.getNickname(), memberId);
 
         Optional<Member> checkMember = memberRepository.findById(memberId);
@@ -74,6 +93,7 @@ public class MemberService {
                 .id(member.getId())
                 .name(member.getNickname())
                 .platform(member.getPlatform())
+                .isUsed(true)
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()
