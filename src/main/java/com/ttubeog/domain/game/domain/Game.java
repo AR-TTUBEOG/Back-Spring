@@ -23,10 +23,6 @@ public class Game extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private GameType type;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "store_id")
-    private Store store;
-
     @OneToOne(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private GiftGame giftGame;
 
@@ -37,8 +33,7 @@ public class Game extends BaseEntity {
     private RouletteGame rouletteGame;
 
     @Builder
-    public Game(GameType type, Store store) {
+    public Game(GameType type) {
         this.type = type;
-        this.store = store;
     }
 }

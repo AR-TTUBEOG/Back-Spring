@@ -10,6 +10,8 @@ import java.util.List;
 @Schema(description = "CreateRouletteGameRequest")
 public class CreateRouletteReq {
 
+    //private Long storeId
+
     @Schema(description = "혜택 타입", example = "SALE")
     private BenefitType benefitType;
 

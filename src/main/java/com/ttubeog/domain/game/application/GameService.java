@@ -45,6 +45,8 @@ public class GameService {
 
         memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
 
+        //TODO 연결 후 store에 이미 존재하는 gametype인지 확인
+
         Game game = Game.builder()
                 .type(GameType.GIFT)
                 .build();
@@ -187,18 +189,25 @@ public class GameService {
         memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
         GiftGame giftGame = giftGameRepository.findById(updateGiftReq.getGameId()).orElseThrow(NonExistentGameException::new);
         Benefit benefit = benefitRepository.findByGame(giftGame.getGame()).orElseThrow(NonExistentBenefitException::new);
+        benefit.deleteGame();
 
         giftGame.updateTimeLimit(updateGiftReq.getTimeLimit());
         giftGame.updateGiftCount(updateGiftReq.getGiftCount());
-        benefit.updateBenefit(updateGiftReq.getBenefitContent(), updateGiftReq.getBenefitType());
+
+        Benefit newBenefit = Benefit.builder()
+                .game(giftGame.getGame())
+                .type(updateGiftReq.getBenefitType())
+                .content(updateGiftReq.getBenefitContent())
+                .build();
+        benefitRepository.save(newBenefit);
 
         UpdateGiftRes updateGiftRes = UpdateGiftRes.builder()
                 .gameId(giftGame.getId())
                 .giftCount(giftGame.getGiftCount())
                 .timeLimit(giftGame.getTimeLimit())
-                .benefitId(benefit.getId())
-                .benefitContent(benefit.getContent())
-                .benefitType(benefit.getType())
+                .benefitId(newBenefit.getId())
+                .benefitContent(newBenefit.getContent())
+                .benefitType(newBenefit.getType())
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()
@@ -216,20 +225,27 @@ public class GameService {
         memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
         BasketballGame basketballGame = basketBallRepository.findById(updateBasketballReq.getGameId()).orElseThrow(NonExistentGameException::new);
         Benefit benefit = benefitRepository.findByGame(basketballGame.getGame()).orElseThrow(NonExistentBenefitException::new);
+        benefit.deleteGame();
 
         basketballGame.updateBallCount(updateBasketballReq.getBallCount());
         basketballGame.updateSuccessCount(updateBasketballReq.getSuccessCount());
         basketballGame.updateTimeLimit(updateBasketballReq.getTimeLimit());
-        benefit.updateBenefit(updateBasketballReq.getBenefitContent(), updateBasketballReq.getBenefitType());
+
+        Benefit newBenefit = Benefit.builder()
+                .game(basketballGame.getGame())
+                .type(updateBasketballReq.getBenefitType())
+                .content(updateBasketballReq.getBenefitContent())
+                .build();
+        benefitRepository.save(newBenefit);
 
         UpdateBasketballRes updateBasketballRes = UpdateBasketballRes.builder()
                 .gameId(basketballGame.getId())
                 .ballCount(basketballGame.getBallCount())
                 .timeLimit(basketballGame.getTimeLimit())
                 .successCount(basketballGame.getSuccessCount())
-                .benefitId(benefit.getId())
-                .benefitContent(benefit.getContent())
-                .benefitType(benefit.getType())
+                .benefitId(newBenefit.getId())
+                .benefitContent(newBenefit.getContent())
+                .benefitType(newBenefit.getType())
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()

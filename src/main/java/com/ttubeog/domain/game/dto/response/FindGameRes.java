@@ -14,6 +14,8 @@ public class FindGameRes {
     @Schema(description = "게임 ID", example = "1")
     private Long gameId;
 
+    //private Long storeId;
+
     @Schema(description = "종류", example = "roulette")
     private GameType type;
 

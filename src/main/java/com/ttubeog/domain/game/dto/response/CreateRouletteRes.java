@@ -15,6 +15,8 @@ public class CreateRouletteRes {
     @Schema(description = "옵션 내용", example = "[\"5% 할인\",\"아메리카노 증정\"]")
     private List<String> options;
 
+    //private Long storeId;
+
     private List<RouletteBenefitResDto> benefits;
 
     @Builder

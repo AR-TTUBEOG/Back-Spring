@@ -2,6 +2,7 @@ package com.ttubeog.domain.benefit.domain;
 
 import com.ttubeog.domain.common.BaseEntity;
 import com.ttubeog.domain.game.domain.Game;
+import com.ttubeog.domain.store.domain.Store;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,19 +27,16 @@ public class Benefit extends BaseEntity {
     @JoinColumn(name = "game_id")
     private Game game;
 
-//    @OneToMany(mappedBy = "benefit", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Game> game;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "store_id")
+    private Store store;
 
     @Builder
-    public Benefit(String content, BenefitType type, Game game) {
+    public Benefit(String content, BenefitType type, Game game, Store store) {
         this.content = content;
         this.type = type;
         this.game = game;
-    }
-
-    public void updateBenefit(String content, BenefitType type) {
-        this.content = content;
-        this.type = type;
+        this.store = store;
     }
 
     public void deleteGame() {
