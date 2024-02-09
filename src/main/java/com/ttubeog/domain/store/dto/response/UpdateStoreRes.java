@@ -3,7 +3,9 @@ package com.ttubeog.domain.store.dto.response;
 import com.ttubeog.domain.store.domain.StoreType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
+import lombok.Data;
 
+@Data
 public class UpdateStoreRes {
 
     @Schema(description = "매장 ID")
