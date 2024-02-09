@@ -125,6 +125,12 @@ public class StoreService {
         Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Store store = storeRepository.findById(storeId).orElseThrow(NonExistentStoreException::new);
+
+        Long storeOwnerId = store.getMember().getId();
+        if (!storeOwnerId.equals(memberId)) {
+            throw new UnathorizedMemberException();
+        }
+
         storeRepository.delete(store);
 
         ApiResponse apiResponse = ApiResponse.builder()
