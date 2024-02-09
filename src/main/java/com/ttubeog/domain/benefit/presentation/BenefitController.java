@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,10 +33,10 @@ public class BenefitController {
     })
     @PatchMapping("/{benefitId}")
     public ResponseEntity<?> saveBenefit(
-            @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @PathVariable(value = "benefitId") Long benefitId
     ) throws JsonProcessingException {
-        return benefitService.saveBenefit(userPrincipal, benefitId);
+        return benefitService.saveBenefit(request, benefitId);
     }
 
     //혜택 사용
@@ -46,10 +47,10 @@ public class BenefitController {
     })
     @PatchMapping("{benefitId}/use")
     public ResponseEntity<?> useBenefit(
-            @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @PathVariable(value = "benefitId") Long benefitId
     ) throws JsonProcessingException {
-        return benefitService.useBenefit(userPrincipal, benefitId);
+        return benefitService.useBenefit(request, benefitId);
     }
 
     //혜택 조회
@@ -60,9 +61,9 @@ public class BenefitController {
     })
     @GetMapping
     public ResponseEntity<?> findMyBenefit(
-            @CurrentUser UserPrincipal userPrincipal,
+            HttpServletRequest request,
             @RequestParam(name = "page") Integer page
     ) throws JsonProcessingException {
-        return benefitService.findMyBenefit(userPrincipal, page);
+        return benefitService.findMyBenefit(request, page);
     }
 }
