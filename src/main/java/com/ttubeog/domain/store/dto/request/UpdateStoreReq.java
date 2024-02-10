@@ -4,6 +4,8 @@ import com.ttubeog.domain.store.domain.StoreType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class UpdateStoreReq {
 
@@ -20,13 +22,13 @@ public class UpdateStoreReq {
     private String detailAddress;
 
     @Schema(description = "위도")
-    private Float latitude;
+    private Double latitude;
 
     @Schema(description = "경도")
-    private Float longitude;
+    private Double longitude;
 
-    @Schema(description = "이미지")
-    private String image;
+    @Schema(description = "이미지 리스트")
+    private List<String> image;
 
     @Schema(description = "업종")
     private StoreType type;

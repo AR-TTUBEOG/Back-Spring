@@ -33,13 +33,13 @@ public class GetStoreDetailRes {
     private String detailAddress;
 
     @Schema(description = "위도")
-    private Float latitude;
+    private Double latitude;
 
     @Schema(description = "경도")
-    private Float longitude;
+    private Double longitude;
 
-    @Schema(description = "이미지")
-    private String image;
+    @Schema(description = "이미지 리스트")
+    private List<String> image;
 
     @Schema(description = "별점")
     private Float stars;
