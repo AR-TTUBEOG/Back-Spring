@@ -34,7 +34,7 @@ public class RouletteGame extends BaseEntity {
         this.options = options;
     }
 
-    public void updateOptions(List<String> options) {
+    public void updateRoulette(List<String> options) {
         this.options = options;
     }
 }

@@ -2,6 +2,7 @@ package com.ttubeog.domain.game.domain;
 
 import com.ttubeog.domain.benefit.domain.Benefit;
 import com.ttubeog.domain.common.BaseEntity;
+import com.ttubeog.domain.store.domain.Store;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -22,10 +23,6 @@ public class Game extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private GameType type;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "benefit_id")
-    private Benefit benefit;
-
     @OneToOne(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
     private GiftGame giftGame;
 
@@ -36,8 +33,7 @@ public class Game extends BaseEntity {
     private RouletteGame rouletteGame;
 
     @Builder
-    public Game(GameType type, Benefit benefit) {
+    public Game(GameType type) {
         this.type = type;
-        this.benefit = benefit;
     }
 }
