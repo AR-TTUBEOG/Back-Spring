@@ -172,7 +172,7 @@ public class PlaceService {
         return ResponseEntity.ok(apiResponse);
     }
 
-    private double calculateDistance(Float lat1, Float lon1, Float lat2, Float lon2) {
+    private double calculateDistance(Double lat1, Double lon1, Double lat2, Double lon2) {
         double R = 6371; // 지구 반지름
 
         double dLat = Math.toRadians(lat2 - lat1);
@@ -196,8 +196,8 @@ public class PlaceService {
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         List<GetAllPlaceRes> allPlaces = getAllPlaceResList(pageable);
 
-        Float userLatitude = getNearbyPlaceReq.getLatitude();
-        Float userLongitude = getNearbyPlaceReq.getLongitude();
+        Double userLatitude = getNearbyPlaceReq.getLatitude();
+        Double userLongitude = getNearbyPlaceReq.getLongitude();
 
         for (GetAllPlaceRes place: allPlaces) {
             double distance = calculateDistance(userLatitude, userLongitude, place.getLatitude(), place.getLongitude());

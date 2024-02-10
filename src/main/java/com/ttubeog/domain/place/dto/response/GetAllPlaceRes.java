@@ -23,10 +23,10 @@ public class GetAllPlaceRes {
     private String name;
 
     @Schema(description = "위도")
-    private Float latitude;
+    private Double latitude;
 
     @Schema(description = "경도")
-    private Float longitude;
+    private Double longitude;
 
     @Schema(description = "대표 이미지")
     private String image;
@@ -53,7 +53,7 @@ public class GetAllPlaceRes {
     private Double distance;
 
     @Builder
-    public GetAllPlaceRes(Long placeId, PlaceType placeType, Long memberId, String name, Float latitude, Float longitude,
+    public GetAllPlaceRes(Long placeId, PlaceType placeType, Long memberId, String name, Double latitude, Double longitude,
                           String image, Float stars, Integer guestbookCount, Integer likesCount, Boolean isFavorited,
                           LocalDateTime createdAt, Integer recommendationScore, Double distance) {
         this.placeId = placeId;
