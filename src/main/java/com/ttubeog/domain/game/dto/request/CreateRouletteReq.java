@@ -1,5 +1,6 @@
 package com.ttubeog.domain.game.dto.request;
 
+import com.ttubeog.domain.benefit.domain.BenefitType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -9,9 +10,11 @@ import java.util.List;
 @Schema(description = "CreateRouletteGameRequest")
 public class CreateRouletteReq {
 
-    @Schema(description = "혜택 ID", example = "1")
-    private Long benefitId;
+    //private Long storeId
 
-    @Schema(description = "옵션 내용", example = "[\"꽝\",\"5% 할인\",\"아메리카노 증정\",\"꽝\"]")
+    @Schema(description = "혜택 타입", example = "SALE")
+    private BenefitType benefitType;
+
+    @Schema(description = "옵션 내용", example = "[\"5% 할인\",\"아메리카노 증정\"]")
     private List<String> options;
 }
