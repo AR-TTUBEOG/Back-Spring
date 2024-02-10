@@ -13,6 +13,7 @@ import com.ttubeog.domain.image.exception.InvalidImageTypeException;
 import com.ttubeog.domain.spot.domain.repository.SpotRepository;
 import com.ttubeog.domain.spot.exception.InvalidSpotIdException;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
+import com.ttubeog.domain.store.exception.InvalidStoreIdException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -92,7 +93,7 @@ public class ImageService {
             image = Image.builder()
                     .image(createImageRequestDto.getImage())
                     .imageType(createImageRequestDto.getImageType())
-                    .store(storeRepository.findById(createImageRequestDto.getPlaceId()).orElseThrow(InvalidSpotIdException::new))
+                    .store(storeRepository.findById(createImageRequestDto.getPlaceId()).orElseThrow(InvalidStoreIdException::new))
                     .build();
 
             imageResponseDto = ImageResponseDto.builder()
@@ -104,13 +105,13 @@ public class ImageService {
             image = Image.builder()
                     .image(createImageRequestDto.getImage())
                     .imageType(createImageRequestDto.getImageType())
-                    .store(storeRepository.findById(createImageRequestDto.getPlaceId()).orElseThrow(InvalidSpotIdException::new))
+                    .guestBook(guestBookRepository.findById(createImageRequestDto.getPlaceId()).orElseThrow(InvalidGuestBookIdException::new))
                     .build();
 
             imageResponseDto = ImageResponseDto.builder()
                     .id(image.getId())
                     .imageType(image.getImageType())
-                    .placeId(image.getStore().getId())
+                    .placeId(image.getGuestBook().getId())
                     .build();
         } else {
             throw new InvalidImageTypeException();
@@ -143,8 +144,7 @@ public class ImageService {
                     .placeId(image.getSpot().getId())
                     .build();
         } else if (updateImageRequestDto.getImageType().equals(ImageType.STORE)){
-            // TODO 스토어 exception 수정하기
-            image.updateImage(updateImageRequestDto.getImage(), storeRepository.findById(updateImageRequestDto.getPlaceId()).orElseThrow(InvalidSpotIdException::new));
+            image.updateImage(updateImageRequestDto.getImage(), storeRepository.findById(updateImageRequestDto.getPlaceId()).orElseThrow(InvalidStoreIdException::new));
 
             imageResponseDto = ImageResponseDto.builder()
                     .id(image.getId())
@@ -157,7 +157,7 @@ public class ImageService {
             imageResponseDto = ImageResponseDto.builder()
                     .id(image.getId())
                     .imageType(image.getImageType())
-                    .placeId(image.getStore().getId())
+                    .placeId(image.getGuestBook().getId())
                     .build();
         } else {
             throw new InvalidImageTypeException();

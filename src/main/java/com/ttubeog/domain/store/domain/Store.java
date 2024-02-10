@@ -33,9 +33,6 @@ public class Store extends BaseEntity {
     @Column(name = "longitude")
     private Double longitude;
 
-    @Column(name = "image")
-    private String image;
-
     @Column(name = "stars")
     private Float stars;
 
@@ -71,10 +68,7 @@ public class Store extends BaseEntity {
         this.longitude = longitude;
     }
 
-    public void updateImage(String image) {
-        this.image = image;
-    }
-
+    public void updateStars(Float stars) { this.stars = stars; }
     public void updateType(StoreType type) {
         this.type = type;
     }

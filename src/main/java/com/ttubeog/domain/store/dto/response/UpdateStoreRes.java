@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class UpdateStoreRes {
 
@@ -26,8 +28,8 @@ public class UpdateStoreRes {
     @Schema(description = "경도")
     private Double longitude;
 
-    @Schema(description = "이미지")
-    private String image;
+    @Schema(description = "이미지 리스트")
+    private List<String> image;
 
     @Schema(description = "평균 별점")
     private Float stars;
@@ -37,7 +39,7 @@ public class UpdateStoreRes {
 
     @Builder
     public UpdateStoreRes(Long storeId, String detailAddress, String name, String info,
-                          Double latitude, Double longitude, String image, Float stars, StoreType type) {
+                          Double latitude, Double longitude, List<String> image, Float stars, StoreType type) {
         this.storeId = storeId;
         this.detailAddress = detailAddress;
         this.name = name;
