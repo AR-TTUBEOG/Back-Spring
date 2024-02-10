@@ -28,10 +28,10 @@ public class Store extends BaseEntity {
     private String detailAddress;
 
     @Column(name = "latitude")
-    private Float latitude;
+    private Double latitude;
 
     @Column(name = "longitude")
-    private Float longitude;
+    private Double longitude;
 
     @Column(name = "image")
     private String image;
@@ -63,11 +63,11 @@ public class Store extends BaseEntity {
         this.detailAddress = detailAddress;
     }
 
-    public void updateLatitude(Float latitude) {
+    public void updateLatitude(Double latitude) {
         this.latitude = latitude;
     }
 
-    public void updateLongitude(Float longitude) {
+    public void updateLongitude(Double longitude) {
         this.longitude = longitude;
     }
 

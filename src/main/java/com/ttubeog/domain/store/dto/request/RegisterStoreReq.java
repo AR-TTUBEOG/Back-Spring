@@ -21,10 +21,10 @@ public class RegisterStoreReq {
     private String detailAddress;
 
     @Schema(description = "위도")
-    private Float latitude;
+    private Double latitude;
 
     @Schema(description = "경도")
-    private Float longitude;
+    private Double longitude;
 
     @Schema(description = "이미지")
     private String image;

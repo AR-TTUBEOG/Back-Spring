@@ -21,10 +21,10 @@ public class UpdateStoreRes {
     private String detailAddress;
 
     @Schema(description = "위도")
-    private Float latitude;
+    private Double latitude;
 
     @Schema(description = "경도")
-    private Float longitude;
+    private Double longitude;
 
     @Schema(description = "이미지")
     private String image;
@@ -37,7 +37,7 @@ public class UpdateStoreRes {
 
     @Builder
     public UpdateStoreRes(Long storeId, String detailAddress, String name, String info,
-                          Float latitude, Float longitude, String image, Float stars, StoreType type) {
+                          Double latitude, Double longitude, String image, Float stars, StoreType type) {
         this.storeId = storeId;
         this.detailAddress = detailAddress;
         this.name = name;
