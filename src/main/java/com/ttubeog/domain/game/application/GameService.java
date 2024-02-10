@@ -19,6 +19,7 @@ import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
 import org.springframework.http.ResponseEntity;
@@ -313,6 +314,7 @@ public class GameService {
 
         memberBenefitRepository.deleteAll(memberBenefitList);
         benefitRepository.deleteAll(benefitList);
+
         gameRepository.delete(game);
 
         ApiResponse apiResponse = ApiResponse.builder()

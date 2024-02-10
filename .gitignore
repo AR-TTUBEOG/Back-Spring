@@ -42,8 +42,14 @@ out/
 .LSOverride
 
 ### Project security ###
-/src/main/resources/database/
-/src/main/resources/oauth2/
+**/resources/application.yml
+**/resources/database/
+**/resources/oauth2/
+**/resources/logback.xml
+**/applicatioin.yml
+**/application-database.yml
+**/application-oauth2.yml
+**/logback.yml
 Dockerfile
 docker-compose.yaml
 deploy_*.sh
