@@ -29,12 +29,15 @@ public class UpdateStoreRes {
     @Schema(description = "이미지")
     private String image;
 
+    @Schema(description = "평균 별점")
+    private Float stars;
+
     @Schema(description = "업종")
     private StoreType type;
 
     @Builder
     public UpdateStoreRes(Long storeId, String detailAddress, String name, String info,
-                          Float latitude, Float longitude, String image, StoreType type) {
+                          Float latitude, Float longitude, String image, Float stars, StoreType type) {
         this.storeId = storeId;
         this.detailAddress = detailAddress;
         this.name = name;
@@ -42,6 +45,7 @@ public class UpdateStoreRes {
         this.latitude = latitude;
         this.longitude = longitude;
         this.image = image;
+        this.stars = stars;
         this.type = type;
     }
 }

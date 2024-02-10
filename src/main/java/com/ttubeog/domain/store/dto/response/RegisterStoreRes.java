@@ -36,12 +36,15 @@ public class RegisterStoreRes {
     @Schema(description = "이미지")
     private String image;
 
+    @Schema(description = "평균 별점")
+    private Float stars;
+
     @Schema(description = "업종")
     private StoreType type;
 
     @Builder
     public RegisterStoreRes(Long storeId, Long memberId, String name, String info, Long dongAreaId,
-                            String detailAddress,Float latitude, Float longitude, String image, StoreType type) {
+                            String detailAddress,Float latitude, Float longitude, String image, Float stars, StoreType type) {
         this.storeId = storeId;
         this.memberId = memberId;
         this.name = name;
@@ -51,6 +54,7 @@ public class RegisterStoreRes {
         this.latitude = latitude;
         this.longitude = longitude;
         this.image = image;
+        this.stars = stars;
         this.type = type;
     }
 }

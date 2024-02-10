@@ -52,6 +52,7 @@ public class StoreService {
                 .latitude(registerStoreReq.getLatitude())
                 .longitude(registerStoreReq.getLongitude())
                 .image(registerStoreReq.getImage())
+                .stars(0.0f)
                 .type(registerStoreReq.getType())
                 .build();
 
@@ -67,6 +68,7 @@ public class StoreService {
                 .latitude(store.getLatitude())
                 .longitude(store.getLongitude())
                 .image(store.getImage())
+                .stars(store.getStars())
                 .type(store.getType())
                 .build();
 
@@ -107,6 +109,7 @@ public class StoreService {
                 .latitude(store.getLatitude())
                 .longitude(store.getLongitude())
                 .image(store.getImage())
+                .stars(store.getStars())
                 .type(store.getType())
                 .build();
 
