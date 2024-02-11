@@ -1,5 +1,7 @@
 package com.ttubeog.domain.image.dto.request;
 
+import com.ttubeog.domain.image.domain.Image;
+import com.ttubeog.domain.image.domain.ImageType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,6 +13,6 @@ public class UpdateImageRequestDto {
 
     public Long id;
     public String image;
-    public ImageRequestType imageRequestType;
+    public ImageType imageType;
     public Long placeId;
 }

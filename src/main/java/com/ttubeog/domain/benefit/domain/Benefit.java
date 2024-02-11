@@ -6,8 +6,6 @@ import com.ttubeog.domain.store.domain.Store;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
@@ -26,20 +24,22 @@ public class Benefit extends BaseEntity {
     private BenefitType type;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_id")
+    private Game game;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "store_id")
     private Store store;
 
-    @OneToMany(mappedBy = "benefit", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Game> game;
-
     @Builder
-    public Benefit(String content, BenefitType type, Store store) {
+    public Benefit(String content, BenefitType type, Game game, Store store) {
         this.content = content;
         this.type = type;
+        this.game = game;
         this.store = store;
     }
 
-    public void updateContent(String content) {
-        this.content = content;
+    public void deleteGame() {
+        this.game = null;
     }
 }
