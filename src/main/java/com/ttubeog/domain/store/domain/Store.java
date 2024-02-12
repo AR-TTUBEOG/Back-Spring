@@ -3,8 +3,13 @@ package com.ttubeog.domain.store.domain;
 import com.ttubeog.domain.area.domain.DongArea;
 import com.ttubeog.domain.common.BaseEntity;
 import com.ttubeog.domain.member.domain.Member;
+import jakarta.persistence.Table;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Entity
 @Getter
