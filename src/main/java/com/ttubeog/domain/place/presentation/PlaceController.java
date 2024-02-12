@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -32,10 +33,12 @@ public class PlaceController {
             @ApiResponse(responseCode = "400", description = "전체 장소 조회 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @GetMapping
-    public ResponseEntity<?> getAllPlaces(@RequestParam(defaultValue = "0") int page,
-                                          @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<?> getAllPlaces(
+            HttpServletRequest request,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return placeService.getAllPlaces(pageable);
+        return placeService.getAllPlaces(request, pageable);
     }
 
     // 추천순 조회
@@ -45,10 +48,12 @@ public class PlaceController {
             @ApiResponse(responseCode = "400", description = "추천순 조회 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @GetMapping("/recommended")
-    public ResponseEntity<?> getAllPlacesRecommended(@RequestParam(defaultValue = "0") int page,
-                                                     @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<?> getAllPlacesRecommended(
+            HttpServletRequest request,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return placeService.getAllPlacesRecommended(pageable);
+        return placeService.getAllPlacesRecommended(request, pageable);
     }
 
     // 거리순 조회
@@ -59,12 +64,13 @@ public class PlaceController {
     })
     @GetMapping("/nearby")
     public ResponseEntity<?> getAllPlacesNearby(
+            HttpServletRequest request,
             @Valid @RequestBody GetNearbyPlaceReq getNearbyPlaceReq,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        return placeService.getAllPlacesNearby(getNearbyPlaceReq, pageable);
+        return placeService.getAllPlacesNearby(request, getNearbyPlaceReq, pageable);
     }
 
     // 최신순 조회
@@ -74,9 +80,11 @@ public class PlaceController {
             @ApiResponse(responseCode = "400", description = "최신순 조회 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @GetMapping("/latest")
-    public ResponseEntity<?> getAllPlacesLatest(@RequestParam(defaultValue = "0") int page,
-                                                @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<?> getAllPlacesLatest(
+            HttpServletRequest request,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return placeService.getAllPlacesLatest(pageable);
+        return placeService.getAllPlacesLatest(request, pageable);
     }
 }

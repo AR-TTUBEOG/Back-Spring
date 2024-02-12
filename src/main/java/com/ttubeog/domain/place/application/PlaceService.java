@@ -1,6 +1,9 @@
 package com.ttubeog.domain.place.application;
 
 import com.ttubeog.domain.auth.config.SecurityUtil;
+import com.ttubeog.domain.auth.security.JwtTokenProvider;
+import com.ttubeog.domain.image.application.ImageService;
+import com.ttubeog.domain.image.domain.repository.ImageRepository;
 import com.ttubeog.domain.likes.domain.repository.LikesRepository;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
@@ -12,6 +15,7 @@ import com.ttubeog.domain.spot.domain.repository.SpotRepository;
 import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.global.payload.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +38,9 @@ public class PlaceService {
     private final StoreRepository storeRepository;
     private final SpotRepository spotRepository;
     private final LikesRepository likesRepository;
+    private final ImageRepository imageRepository;
+    private final ImageService imageService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     public List<GetAllPlaceRes> getPageOfPlaces(List<GetAllPlaceRes> places, int page, int size) {
         int startIndex = page * size;
@@ -42,12 +49,12 @@ public class PlaceService {
         return places.subList(startIndex, endIndex);
     }
 
-    public List<GetAllPlaceRes> getAllPlaceResList(Pageable pageable) {
+    public List<GetAllPlaceRes> getAllPlaceResList(HttpServletRequest request, Pageable pageable) {
 
         List<GetAllPlaceRes> places = new ArrayList<>();
 
         List<Store> stores = storeRepository.findAll();
-        places.addAll(stores.stream().map(this::mapStoreToDto).collect(Collectors.toList()));
+        places.addAll(stores.stream().map(store -> mapStoreToDto(request, store)).collect(Collectors.toList()));
         // List<Spot> spots = spotRepository.findAll();
         // places.addAll(spots.stream().map(this::mapSpotToDto).collect(Collectors.toList()));
         int page = pageable.getPageNumber();
@@ -56,10 +63,12 @@ public class PlaceService {
         return getPageOfPlaces(places, page, size);
     }
 
-    private GetAllPlaceRes mapStoreToDto(Store store) {
+    private GetAllPlaceRes mapStoreToDto(HttpServletRequest request, Store store) {
 
-        final long memberId = SecurityUtil.getCurrentMemeberId();
+        Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+
+        // 현재 로그인 유저의 좋아요 여부
         Boolean storeLiked = likesRepository.existsByMemberIdAndStoreId(memberId, store.getId());
         PlaceType placeType = new PlaceType(true, false);
 
@@ -70,7 +79,7 @@ public class PlaceService {
                 .name(store.getName())
                 .latitude(store.getLatitude())
                 .longitude(store.getLongitude())
-                //.image(store.getImage())
+                // .image(store.getImage())
                 .stars(store.getStars())
                 // .guestbookCount(guestRepository.countByStoreId(store.getID()))
                 .isFavorited(storeLiked)
@@ -82,6 +91,8 @@ public class PlaceService {
 
         final long memberId = SecurityUtil.getCurrentMemberId();
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+
+        // 현재 로그인 유저의 좋아요 여부
         Boolean spotLiked = likesRepository.existsByMemberIdAndSpotId(memberId, spot.getId());
         PlaceType placeType = new PlaceType(false, true);
 
@@ -102,12 +113,12 @@ public class PlaceService {
 
     // 전체 조회
     @Transactional
-    public ResponseEntity<?> getAllPlaces(Pageable pageable) {
+    public ResponseEntity<?> getAllPlaces(HttpServletRequest request, Pageable pageable) {
 
-        final long memberId = SecurityUtil.getCurrentMemeberId();
+        Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
-        List<GetAllPlaceRes> allPlaces = getAllPlaceResList(pageable);
+        List<GetAllPlaceRes> allPlaces = getAllPlaceResList(request, pageable);
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
@@ -151,11 +162,11 @@ public class PlaceService {
 
     // 추천순 조회
     @Transactional
-    public ResponseEntity<?> getAllPlacesRecommended(Pageable pageable) {
+    public ResponseEntity<?> getAllPlacesRecommended(HttpServletRequest request, Pageable pageable) {
 
-        final long memberId = SecurityUtil.getCurrentMemeberId();
+        Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
-        List<GetAllPlaceRes> allPlaces = getAllPlaceResList(pageable);
+        List<GetAllPlaceRes> allPlaces = getAllPlaceResList(request, pageable);
 
         for (GetAllPlaceRes place : allPlaces) {
             int recommendationScore = calculateRecommendationScore(place.getStars(), place.getGuestbookCount(), place.getLikesCount());
@@ -190,11 +201,11 @@ public class PlaceService {
 
     // 거리순 조회
     @Transactional
-    public ResponseEntity<?> getAllPlacesNearby(GetNearbyPlaceReq getNearbyPlaceReq, Pageable pageable) {
+    public ResponseEntity<?> getAllPlacesNearby(HttpServletRequest request, GetNearbyPlaceReq getNearbyPlaceReq, Pageable pageable) {
 
-        final long memberId = SecurityUtil.getCurrentMemeberId();
+        Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
-        List<GetAllPlaceRes> allPlaces = getAllPlaceResList(pageable);
+        List<GetAllPlaceRes> allPlaces = getAllPlaceResList(request, pageable);
 
         Double userLatitude = getNearbyPlaceReq.getLatitude();
         Double userLongitude = getNearbyPlaceReq.getLongitude();
@@ -216,11 +227,11 @@ public class PlaceService {
 
     // 최신순 조회
     @Transactional
-    public ResponseEntity<?> getAllPlacesLatest(Pageable pageable) {
+    public ResponseEntity<?> getAllPlacesLatest(HttpServletRequest request, Pageable pageable) {
 
-        final long memberId = SecurityUtil.getCurrentMemeberId();
+        Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
-        List<GetAllPlaceRes> allPlaces = getAllPlaceResList(pageable);
+        List<GetAllPlaceRes> allPlaces = getAllPlaceResList(request, pageable);
         allPlaces.sort(Comparator.comparing(GetAllPlaceRes::getCreatedAt).reversed());
 
         ApiResponse apiResponse = ApiResponse.builder()
