@@ -88,7 +88,7 @@ public class StoreController {
     }
 
     // 매장 좋아요 누르기
-    /*Operation(summary = "매장 좋아요 누르기", description = "매장에 대한 좋아요를 누릅니다.")
+    @Operation(summary = "매장 좋아요 누르기", description = "매장에 대한 좋아요를 누릅니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "매장 좋아요 누르기 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}),
             @ApiResponse(responseCode = "400", description = "매장 좋아요 누르기 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
@@ -99,5 +99,5 @@ public class StoreController {
             @PathVariable Long storeId
     ) {
         return likesService.likesStore(request, storeId);
-    }*/
+    }
 }
