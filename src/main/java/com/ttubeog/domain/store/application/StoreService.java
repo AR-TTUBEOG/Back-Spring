@@ -247,7 +247,7 @@ public class StoreService {
                 .collect(Collectors.toList());
         Integer guestbookCount = guestBookRepository.countByStoreId(storeId);
         Integer likesCount = likesRepository.countByStoreId(storeId);
-        Boolean isFavorited = likesRepository.existsByMemberIdAndStoreId(memberId, storeId);
+        //Boolean isFavorited = likesRepository.existsByMemberIdAndStoreId(memberId, storeId);
 
         GetStoreDetailRes getStoreDetailRes = GetStoreDetailRes.builder()
                 .storeId(storeId)
@@ -264,7 +264,7 @@ public class StoreService {
                 .storeBenefits(storeBenefits)
                 .guestbookCount(guestbookCount)
                 .likesCount(likesCount)
-                .isFavorited(isFavorited)
+                //.isFavorited(isFavorited)
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()
