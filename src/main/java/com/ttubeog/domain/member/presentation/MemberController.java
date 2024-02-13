@@ -4,6 +4,7 @@ import com.ttubeog.domain.auth.dto.response.OAuthTokenResponse;
 import com.ttubeog.domain.member.application.MemberService;
 import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
 import com.ttubeog.domain.member.dto.response.MemberDetailRes;
+import com.ttubeog.domain.member.dto.response.MemberNicknameRes;
 import com.ttubeog.global.payload.ErrorResponse;
 import com.ttubeog.global.payload.Message;
 import io.swagger.v3.oas.annotations.Operation;
@@ -43,9 +44,9 @@ public class MemberController {
         return memberService.getCurrentUser(request);
     }
 
-    @Operation(summary = "닉네임 설정", description = "현재 접속된 멤버의 초기 닉네임을 설정합니다.")
+    @Operation(summary = "닉네임 설정", description = "현재 접속된 멤버의 초기 닉네임을 설정합니다.닉네임을 이미 변경한 유저는 isChanged == true로 반환되며, 닉네임이 업데이트 되지 않습니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "닉네임 설정", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = MemberDetailRes.class))}),
+            @ApiResponse(responseCode = "200", description = "닉네임 설정", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = MemberNicknameRes.class))}),
             @ApiResponse(responseCode = "400", description = "닉네임 설정 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @PostMapping(value = "/nickname")
