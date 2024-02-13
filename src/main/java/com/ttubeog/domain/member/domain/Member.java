@@ -64,6 +64,7 @@ public class Member extends BaseEntity {
     public boolean isRegisteredOAuthMember() {
         return nickname != null;
     }
+    public boolean isNickNameChanged() { return nicknameChange; }
 
     public void updateName(String name) {
         this.nickname = name;

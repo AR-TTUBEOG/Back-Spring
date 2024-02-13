@@ -10,6 +10,7 @@ import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
 import com.ttubeog.domain.member.dto.response.MemberDetailRes;
+import com.ttubeog.domain.member.exception.AlreadyChangeNicknameException;
 import com.ttubeog.domain.member.exception.FailureMemberDeleteException;
 import com.ttubeog.domain.member.exception.InvalidAccessTokenExpiredException;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
@@ -19,13 +20,10 @@ import com.ttubeog.global.payload.Message;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.naming.spi.ResolveResult;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,7 +84,17 @@ public class MemberService {
             return ResponseEntity.ok(apiResponse);
         }
 
-        memberRepository.updateUserNickname(produceNicknameRequest.getNickname(), memberId);
+        // 닉네임 1회 변경 여부 확인
+        Optional<Member> checkMemberIsChanged = memberRepository.findById(memberId);
+        if (checkMemberIsChanged.isPresent()) {
+            Member member = checkMemberIsChanged.get();
+            if (member.isNickNameChanged()) {
+                throw new AlreadyChangeNicknameException();
+            }
+        }
+
+        // 닉네임 업데이트
+        memberRepository.updateMemberNickname(produceNicknameRequest.getNickname(), memberId);
 
         Optional<Member> checkMember = memberRepository.findById(memberId);
 

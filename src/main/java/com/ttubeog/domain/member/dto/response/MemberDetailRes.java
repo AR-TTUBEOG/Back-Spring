@@ -21,6 +21,8 @@ public class MemberDetailRes {
 
     private Boolean isUsed;
 
+    private Boolean isChanged;
+
     public static MemberDetailRes toDto(Member member) {
         return MemberDetailRes.builder()
                 .id(member.getId())
