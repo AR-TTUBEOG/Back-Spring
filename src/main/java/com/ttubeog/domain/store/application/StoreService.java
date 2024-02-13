@@ -78,7 +78,7 @@ public class StoreService {
         for (String s : imageList) {
             CreateImageRequestDto createImageRequestDto = CreateImageRequestDto.builder()
                     .image(s)
-                    .imageType(ImageType.SPOT)
+                    .imageType(ImageType.STORE)
                     .placeId(store.getId())
                     .build();
             imageService.createImage(createImageRequestDto);
@@ -114,6 +114,7 @@ public class StoreService {
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Store store = storeRepository.findById(updateStoreReq.getStoreId()).orElseThrow(NonExistentStoreException::new);
 
+        // 현재 유저가 매장 등록 유저인지 확인
         Long storeOwnerId = store.getMember().getId();
         if (!storeOwnerId.equals(memberId)) {
             throw new UnathorizedMemberException();
@@ -143,7 +144,7 @@ public class StoreService {
         for (String s : imageStringList) {
             CreateImageRequestDto createImageRequestDto = CreateImageRequestDto.builder()
                     .image(s)
-                    .imageType(ImageType.SPOT)
+                    .imageType(ImageType.STORE)
                     .placeId(store.getId())
                     .build();
             imageService.createImage(createImageRequestDto);
@@ -177,6 +178,7 @@ public class StoreService {
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Store store = storeRepository.findById(storeId).orElseThrow(NonExistentStoreException::new);
 
+        // 현재 유저가 매장 등록 유저인지 확인
         Long storeOwnerId = store.getMember().getId();
         if (!storeOwnerId.equals(memberId)) {
             throw new UnathorizedMemberException();
