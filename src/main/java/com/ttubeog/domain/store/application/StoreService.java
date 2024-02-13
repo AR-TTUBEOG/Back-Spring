@@ -3,11 +3,17 @@ package com.ttubeog.domain.store.application;
 import com.ttubeog.domain.area.domain.DongArea;
 import com.ttubeog.domain.area.domain.repository.DongAreaRepository;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
+import com.ttubeog.domain.benefit.domain.Benefit;
+import com.ttubeog.domain.benefit.domain.repository.BenefitRepository;
+import com.ttubeog.domain.guestbook.domain.GuestBook;
+import com.ttubeog.domain.guestbook.domain.repository.GuestBookRepository;
 import com.ttubeog.domain.image.application.ImageService;
 import com.ttubeog.domain.image.domain.Image;
 import com.ttubeog.domain.image.domain.ImageType;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
 import com.ttubeog.domain.image.dto.request.CreateImageRequestDto;
+import com.ttubeog.domain.likes.domain.Likes;
+import com.ttubeog.domain.likes.domain.repository.LikesRepository;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.spot.exception.InvalidImageListSizeException;
@@ -43,6 +49,9 @@ public class StoreService {
     private final MemberRepository memberRepository;
     private final DongAreaRepository dongAreaRepository;
     private final ImageRepository imageRepository;
+    private final BenefitRepository benefitRepository;
+    private final GuestBookRepository guestBookRepository;
+    private final LikesRepository likesRepository;
     private final ImageService imageService;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -184,12 +193,23 @@ public class StoreService {
             throw new UnathorizedMemberException();
         }
 
-        storeRepository.delete(store);
+        // 해당 매장과 연관된 혜택 삭제
+        List<Benefit> benefits = benefitRepository.findByStoreId(storeId);
+        benefitRepository.deleteAll(benefits);
 
-        List<Image> imageList = imageRepository.findByStoreId(store.getId());
-        for (Image image : imageList) {
-            imageService.deleteImage(image.getId());
-        }
+        // 해당 매장과 연관된 방명록 삭제
+        List<GuestBook> guestBooks = guestBookRepository.findByStoreId(storeId);
+        guestBookRepository.deleteAll(guestBooks);
+
+        // 해당 매장과 연관된 좋아요 삭제
+        List<Likes> likes = likesRepository.findByStoreId(storeId);
+        likesRepository.deleteAll(likes);
+
+        // 해당 매장과 연관된 이미지 삭제
+        List<Image> images = imageRepository.findByStoreId(storeId);
+        imageRepository.deleteAll(images);
+
+        storeRepository.delete(store);
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
