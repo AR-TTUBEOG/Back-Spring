@@ -5,7 +5,9 @@ import com.ttubeog.domain.area.domain.repository.DongAreaRepository;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.benefit.domain.Benefit;
 import com.ttubeog.domain.benefit.domain.BenefitType;
+import com.ttubeog.domain.benefit.domain.MemberBenefit;
 import com.ttubeog.domain.benefit.domain.repository.BenefitRepository;
+import com.ttubeog.domain.benefit.domain.repository.MemberBenefitRepository;
 import com.ttubeog.domain.guestbook.domain.GuestBook;
 import com.ttubeog.domain.guestbook.domain.repository.GuestBookRepository;
 import com.ttubeog.domain.image.application.ImageService;
@@ -52,6 +54,7 @@ public class StoreService {
     private final DongAreaRepository dongAreaRepository;
     private final ImageRepository imageRepository;
     private final BenefitRepository benefitRepository;
+    private final MemberBenefitRepository memberBenefitRepository;
     private final GuestBookRepository guestBookRepository;
     private final LikesRepository likesRepository;
     private final ImageService imageService;
@@ -195,6 +198,13 @@ public class StoreService {
             throw new UnathorizedMemberException();
         }
 
+        // 특정 유저가 가진 해당 매장의 혜택 삭제
+        List<Benefit> benefitsToDelete = benefitRepository.findByStoreId(storeId);
+        for (Benefit benefit : benefitsToDelete) {
+            List<MemberBenefit> memberBenefits = memberBenefitRepository.findByBenefitId(benefit.getId());
+            memberBenefitRepository.deleteAll(memberBenefits);
+        }
+
         // 해당 매장과 연관된 혜택 삭제
         List<Benefit> benefits = benefitRepository.findByStoreId(storeId);
         benefitRepository.deleteAll(benefits);
@@ -210,6 +220,9 @@ public class StoreService {
         // 해당 매장과 연관된 이미지 삭제
         List<Image> images = imageRepository.findByStoreId(storeId);
         imageRepository.deleteAll(images);
+
+        // TODO 해당 매장과 연관된 경로 삭제
+        // TODO 해당 매장과 연관된 저장경로 삭제
 
         storeRepository.delete(store);
 

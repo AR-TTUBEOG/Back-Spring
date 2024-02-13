@@ -24,4 +24,6 @@ public interface MemberBenefitRepository extends JpaRepository<MemberBenefit, Lo
     Page<MemberBenefit> findAllByMember(Member member, PageRequest pageRequest);
 
     List<MemberBenefit> findAllByMemberAndBenefitIn(Member member, List<Benefit> benefits);
+
+    List<MemberBenefit> findByBenefitId(Long id);
 }
