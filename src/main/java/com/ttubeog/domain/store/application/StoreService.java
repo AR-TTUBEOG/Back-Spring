@@ -4,6 +4,7 @@ import com.ttubeog.domain.area.domain.DongArea;
 import com.ttubeog.domain.area.domain.repository.DongAreaRepository;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.benefit.domain.Benefit;
+import com.ttubeog.domain.benefit.domain.BenefitType;
 import com.ttubeog.domain.benefit.domain.repository.BenefitRepository;
 import com.ttubeog.domain.guestbook.domain.GuestBook;
 import com.ttubeog.domain.guestbook.domain.repository.GuestBookRepository;
@@ -37,6 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.ttubeog.domain.image.application.ImageService.getImageString;
 
@@ -226,9 +228,13 @@ public class StoreService {
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Store store = storeRepository.findById(storeId).orElseThrow(NonExistentStoreException::new);
 
-        // List<BenefitType> storeBenefits = benefitRepository.findTypeByStoreId(storeId);
-        // Integer guestbookCount = guestBookRepository.countByStoreId(storeId);
-        // Integer likesCount = likesRepository.countByStoreId(storeId);
+        List<BenefitType> storeBenefits = benefitRepository.findByStoreId(storeId)
+                .stream()
+                .map(Benefit::getType)
+                .collect(Collectors.toList());
+        Integer guestbookCount = guestBookRepository.countByStoreId(storeId);
+        Integer likesCount = likesRepository.countByStoreId(storeId);
+        Boolean isFavorited = likesRepository.existsByMemberIdAndStoreId(memberId, storeId);
 
         GetStoreDetailRes getStoreDetailRes = GetStoreDetailRes.builder()
                 .storeId(storeId)
@@ -242,9 +248,10 @@ public class StoreService {
                 .image(getImageString(imageRepository.findByStoreId(store.getId())))
                 .stars(store.getStars())
                 .type(store.getType())
-                //.storeBenefits(storeBenefits.stream().map(BenefitType::getType).collect(Collectors.toList()))
-                //.guestbookCount(guestbookCount)
-                //.likesCount(likesCount)
+                .storeBenefits(storeBenefits)
+                .guestbookCount(guestbookCount)
+                .likesCount(likesCount)
+                .isFavorited(isFavorited)
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()

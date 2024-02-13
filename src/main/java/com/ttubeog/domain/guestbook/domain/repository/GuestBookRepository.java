@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface GuestBookRepository extends JpaRepository<GuestBook, Long> {
     List<GuestBook> findByStoreId(Long storeId);
+
+    Integer countByStoreId(Long storeId);
 }
