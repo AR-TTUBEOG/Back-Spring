@@ -19,8 +19,6 @@ public class MemberDetailRes {
 
     private Platform platform;
 
-    private Boolean isUsed;
-
     private Boolean isChanged;
 
     public static MemberDetailRes toDto(Member member) {

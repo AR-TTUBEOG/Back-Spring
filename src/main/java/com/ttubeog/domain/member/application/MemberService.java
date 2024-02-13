@@ -77,15 +77,17 @@ public class MemberService {
         // 닉네임 업데이트
         memberRepository.updateMemberNickname(produceNicknameRequest.getNickname(), memberId);
 
-        Optional<Member> checkMember = memberRepository.findById(memberId);
+        // 닉네임 1회 변경 true로 변경
+        memberRepository.updateMemberNicknameChange(true, memberId);
 
+        Optional<Member> checkMember = memberRepository.findById(memberId);
         Member member = checkMember.get();
 
         MemberDetailRes memberDetailRes = MemberDetailRes.builder()
                 .id(member.getId())
                 .name(member.getNickname())
                 .platform(member.getPlatform())
-                .isUsed(true)
+                .isChanged(member.getNicknameChange())
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()

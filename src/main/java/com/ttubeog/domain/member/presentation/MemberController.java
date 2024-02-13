@@ -57,7 +57,7 @@ public class MemberController {
 
     @Operation(summary = "닉네임 중복 확인", description = "닉네임의 중복을 확인합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "닉네임 설정 가능", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = MemberDetailRes.class))}),
+            @ApiResponse(responseCode = "200", description = "닉네임 설정 가능", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = com.ttubeog.global.payload.ApiResponse.class))}),
             @ApiResponse(responseCode = "400", description = "닉네임 설정 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @PostMapping(value = "/nickname/check")
@@ -66,6 +66,7 @@ public class MemberController {
     ) {
         return memberService.postMemberNicknameCheck(request, produceNicknameRequest);
     }
+
 
     @Operation(summary = "토큰 재발급", description = "현재 접속된 멤버의 토큰을 재발급 합니다.")
     @ApiResponses(value = {
