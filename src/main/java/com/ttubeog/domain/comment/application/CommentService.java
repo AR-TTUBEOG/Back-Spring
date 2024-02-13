@@ -1,5 +1,6 @@
 package com.ttubeog.domain.comment.application;
 
+import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.comment.domain.Comment;
 import com.ttubeog.domain.comment.domain.repository.CommentRepository;
 import com.ttubeog.domain.comment.dto.request.GetCommentReq;
@@ -13,10 +14,9 @@ import com.ttubeog.domain.comment.exception.UnauthorizedMemberException;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
-import com.ttubeog.global.DefaultAssert;
-import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,8 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
 
 @RequiredArgsConstructor
 @Service
@@ -34,12 +32,14 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final MemberRepository memberRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     // 댓글 작성
     @Transactional
-    public ResponseEntity<?> writeComment(UserPrincipal userPrincipal, WriteCommentReq writeCommentReq) {
+    public ResponseEntity<?> writeComment(HttpServletRequest request, WriteCommentReq writeCommentReq) {
 
-        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         Comment comment = Comment.builder()
                 .content(writeCommentReq.getContent())
@@ -68,9 +68,10 @@ public class CommentService {
 
     // 댓글 수정
     @Transactional
-    public ResponseEntity<?> updateComment(UserPrincipal userPrincipal, UpdateCommentReq updateCommentReq) {
+    public ResponseEntity<?> updateComment(HttpServletRequest request, UpdateCommentReq updateCommentReq) {
 
-        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Comment comment = commentRepository.findById(updateCommentReq.getCommentId()).orElseThrow(NonExistentCommentException::new);
 
         Member commentWriter = comment.getMember();
@@ -95,9 +96,10 @@ public class CommentService {
 
     // 댓글 삭제
     @Transactional
-    public ResponseEntity<?> deleteComment(UserPrincipal userPrincipal, Long commentId) {
+    public ResponseEntity<?> deleteComment(HttpServletRequest request, Long commentId) {
 
-        memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Comment comment = commentRepository.findById(commentId).orElseThrow(NonExistentCommentException::new);
         commentRepository.delete(comment);
 

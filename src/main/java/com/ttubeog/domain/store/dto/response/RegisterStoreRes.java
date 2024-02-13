@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Schema(description = "매장 등록 Response")
 public class RegisterStoreRes {
@@ -28,20 +30,23 @@ public class RegisterStoreRes {
     private String detailAddress;
 
     @Schema(description = "위도")
-    private Float latitude;
+    private Double latitude;
 
     @Schema(description = "경도")
-    private Float longitude;
+    private Double longitude;
 
-    @Schema(description = "이미지")
-    private String image;
+    @Schema(description = "이미지 리스트")
+    private List<String> image;
+
+    @Schema(description = "평균 별점")
+    private Float stars;
 
     @Schema(description = "업종")
     private StoreType type;
 
     @Builder
     public RegisterStoreRes(Long storeId, Long memberId, String name, String info, Long dongAreaId,
-                            String detailAddress,Float latitude, Float longitude, String image, StoreType type) {
+                            String detailAddress, Double latitude, Double longitude, List<String> image, Float stars, StoreType type) {
         this.storeId = storeId;
         this.memberId = memberId;
         this.name = name;
@@ -51,6 +56,7 @@ public class RegisterStoreRes {
         this.latitude = latitude;
         this.longitude = longitude;
         this.image = image;
+        this.stars = stars;
         this.type = type;
     }
 }

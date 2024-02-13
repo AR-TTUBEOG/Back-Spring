@@ -1,23 +1,25 @@
 package com.ttubeog.domain.image.application;
 
+import com.ttubeog.domain.guestbook.domain.repository.GuestBookRepository;
+import com.ttubeog.domain.guestbook.exception.InvalidGuestBookIdException;
 import com.ttubeog.domain.image.domain.Image;
+import com.ttubeog.domain.image.domain.ImageType;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
 import com.ttubeog.domain.image.dto.request.CreateImageRequestDto;
 import com.ttubeog.domain.image.dto.request.UpdateImageRequestDto;
 import com.ttubeog.domain.image.dto.response.ImageResponseDto;
 import com.ttubeog.domain.image.exception.InvalidImageException;
+import com.ttubeog.domain.image.exception.InvalidImageTypeException;
 import com.ttubeog.domain.spot.domain.repository.SpotRepository;
 import com.ttubeog.domain.spot.exception.InvalidSpotIdException;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
+import com.ttubeog.domain.store.exception.InvalidStoreIdException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.ttubeog.domain.image.dto.request.ImageRequestType.SPOT;
 
 @RequiredArgsConstructor
 @Service
@@ -27,6 +29,7 @@ public class ImageService {
     private final ImageRepository imageRepository;
     private final SpotRepository spotRepository;
     private final StoreRepository storeRepository;
+    private final GuestBookRepository guestBookRepository;
 
     public static List<String> getImageString(List<Image> imageList) {
         List<String> imageString = new ArrayList<>();
@@ -38,32 +41,82 @@ public class ImageService {
         return imageString;
     }
 
+    public ImageResponseDto findById(Long imageId) {
+        Image image = imageRepository.findById(imageId).orElseThrow(InvalidImageException::new);
+        ImageResponseDto imageResponseDto = new ImageResponseDto();
+        if (image.getImageType().equals(ImageType.SPOT)) {
+            imageResponseDto = ImageResponseDto.builder()
+                    .id(image.getId())
+                    .image(image.getImage())
+                    .imageType(image.getImageType())
+                    .placeId(image.getSpot().getId())
+                    .build();
+        } else if (image.getImageType().equals(ImageType.STORE)) {
+            imageResponseDto = ImageResponseDto.builder()
+                    .id(image.getId())
+                    .image(image.getImage())
+                    .imageType(image.getImageType())
+                    .placeId(image.getStore().getId())
+                    .build();
+        } else if (image.getImageType().equals(ImageType.GUESTBOOK)) {
+            imageResponseDto = ImageResponseDto.builder()
+                    .id(image.getId())
+                    .image(image.getImage())
+                    .imageType(image.getImageType())
+                    .placeId(image.getGuestBook().getId())
+                    .build();
+        } else {
+            throw new InvalidImageTypeException();
+        }
+
+        return imageResponseDto;
+    }
+
     @Transactional
     public ImageResponseDto createImage(CreateImageRequestDto createImageRequestDto) {
 
         Image image;
         ImageResponseDto imageResponseDto;
-        if (createImageRequestDto.imageRequestType == SPOT) {
+        if (createImageRequestDto.getImageType().equals(ImageType.SPOT)) {
             image = Image.builder()
                     .image(createImageRequestDto.getImage())
+                    .imageType(createImageRequestDto.getImageType())
                     .spot(spotRepository.findById(createImageRequestDto.getPlaceId()).orElseThrow(InvalidSpotIdException::new))
                     .build();
 
             imageResponseDto = ImageResponseDto.builder()
                     .id(image.getId())
+                    .imageType(image.getImageType())
                     .placeId(image.getSpot().getId())
                     .build();
-        } else {
+        } else if (createImageRequestDto.getImageType().equals(ImageType.STORE)){
             image = Image.builder()
                     .image(createImageRequestDto.getImage())
-                    .store(storeRepository.findById(createImageRequestDto.getPlaceId()).orElseThrow(InvalidSpotIdException::new))
+                    .imageType(createImageRequestDto.getImageType())
+                    .store(storeRepository.findById(createImageRequestDto.getPlaceId()).orElseThrow(InvalidStoreIdException::new))
                     .build();
 
             imageResponseDto = ImageResponseDto.builder()
                     .id(image.getId())
+                    .imageType(image.getImageType())
                     .placeId(image.getStore().getId())
                     .build();
+        } else if (createImageRequestDto.getImageType().equals(ImageType.GUESTBOOK)) {
+            image = Image.builder()
+                    .image(createImageRequestDto.getImage())
+                    .imageType(createImageRequestDto.getImageType())
+                    .guestBook(guestBookRepository.findById(createImageRequestDto.getPlaceId()).orElseThrow(InvalidGuestBookIdException::new))
+                    .build();
+
+            imageResponseDto = ImageResponseDto.builder()
+                    .id(image.getId())
+                    .imageType(image.getImageType())
+                    .placeId(image.getGuestBook().getId())
+                    .build();
+        } else {
+            throw new InvalidImageTypeException();
         }
+
         imageRepository.save(image);
 
         return imageResponseDto;
@@ -73,20 +126,41 @@ public class ImageService {
     public ImageResponseDto updateImage(UpdateImageRequestDto updateImageRequestDto) {
 
         Image image = imageRepository.findById(updateImageRequestDto.getId()).orElseThrow(InvalidImageException::new);
+
+        if (!image.getImageType().equals(updateImageRequestDto.getImageType())) {
+            throw new InvalidImageTypeException();
+        }
+
         ImageResponseDto imageResponseDto;
 
-        if (updateImageRequestDto.imageRequestType == SPOT) {
+
+
+        if (updateImageRequestDto.getImageType().equals(ImageType.SPOT)) {
             image.updateImage(updateImageRequestDto.getImage(), spotRepository.findById(updateImageRequestDto.getPlaceId()).orElseThrow(InvalidSpotIdException::new));
+
             imageResponseDto = ImageResponseDto.builder()
                     .id(image.getId())
+                    .imageType(image.getImageType())
                     .placeId(image.getSpot().getId())
                     .build();
-        } else {
-            image.updateImage(updateImageRequestDto.getImage(), storeRepository.findById(updateImageRequestDto.getPlaceId()).orElseThrow(InvalidSpotIdException::new));
+        } else if (updateImageRequestDto.getImageType().equals(ImageType.STORE)){
+            image.updateImage(updateImageRequestDto.getImage(), storeRepository.findById(updateImageRequestDto.getPlaceId()).orElseThrow(InvalidStoreIdException::new));
+
             imageResponseDto = ImageResponseDto.builder()
                     .id(image.getId())
+                    .imageType(image.getImageType())
                     .placeId(image.getStore().getId())
                     .build();
+        } else if (updateImageRequestDto.getImageType().equals(ImageType.GUESTBOOK)) {
+            image.updateImage(updateImageRequestDto.getImage(), guestBookRepository.findById(updateImageRequestDto.getPlaceId()).orElseThrow(InvalidGuestBookIdException::new));
+
+            imageResponseDto = ImageResponseDto.builder()
+                    .id(image.getId())
+                    .imageType(image.getImageType())
+                    .placeId(image.getGuestBook().getId())
+                    .build();
+        } else {
+            throw new InvalidImageTypeException();
         }
 
         imageRepository.save(image);
