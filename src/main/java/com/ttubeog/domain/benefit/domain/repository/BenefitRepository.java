@@ -14,4 +14,6 @@ public interface BenefitRepository extends JpaRepository<Benefit, Long> {
     Optional<Benefit> findByGame(Game game);
 
     List<Benefit> findAllByGame(Game game);
+
+    List<Benefit> findByStoreId(Long storeId);
 }
