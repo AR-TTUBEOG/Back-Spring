@@ -17,12 +17,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 @Tag(name = "Member", description = "Member API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/member")
 public class MemberController {
     private final MemberService memberService;
+    private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
     @Operation(summary = "멤버 정보 확인", description = "현재 접속된 멤버 정보를 확인합니다.")
     @ApiResponses(value = {
@@ -73,4 +79,31 @@ public class MemberController {
     ) {
         return memberService.deleteLogout(request);
     }
+
+//    @Operation(summary = "회원탈퇴", description = "현재 접속된 회원이 탈퇴 합니다.")
+//    @ApiResponses(value = {
+//            @ApiResponse(responseCode = "200", description = "회원탈퇴 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}),
+//            @ApiResponse(responseCode = "400", description = "회원탈퇴 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
+//    })
+//    @DeleteMapping("/delete")
+//    public ResponseEntity<?> deleteUser(
+//            HttpServletRequest request
+//    ) {
+//        ResponseEntity<?> responseEntity = memberService.deleteUser(request);
+//
+//        if (responseEntity.getStatusCode().is2xxSuccessful()) {
+//            LocalDateTime localDateTime = LocalDateTime.now().plusDays(3);
+//
+//            scheduledExecutorService.schedule(() -> {
+//                ResponseEntity<?> deleteResponse = memberService.deleteInactiveMember();
+//
+//                if (deleteResponse.getStatusCode().is2xxSuccessful()) {
+//                    System.out.println("회원 삭제 성공");
+//                } else {
+//                    System.out.println("회원 삭제 실패");
+//                }
+//            }, 3, TimeUnit.DAYS);
+//        }
+//        return responseEntity;
+//    }
 }
