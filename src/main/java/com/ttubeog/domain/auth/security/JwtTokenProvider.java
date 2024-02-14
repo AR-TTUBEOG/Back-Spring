@@ -29,13 +29,10 @@ public class JwtTokenProvider {
     }
 
     public String createAccessToken(Long memberId) {
-        Claims claims = Jwts.claims().setSubject(String.valueOf(memberId));
-
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityAccessTokenInMilliseconds);
 
         return Jwts.builder()
-                .setClaims(claims)
                 .setSubject(String.valueOf(memberId))
                 .setIssuedAt(now)
                 .setExpiration(validity)
@@ -70,7 +67,7 @@ public class JwtTokenProvider {
         }
     }
 
-    private boolean isExpiredAccessToken (String token) {
+    public boolean isExpiredAccessToken (String token) {
         try {
             jwtParser.parseClaimsJws(token);
         } catch (ExpiredJwtException e) {

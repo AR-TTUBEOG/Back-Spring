@@ -54,6 +54,9 @@ public class Member extends BaseEntity {
         this.memberNumber = memberNumber;
     }
 
+    public Member(Status status) {
+        this.status = status;
+    }
     public boolean isRegisteredOAuthMember() {
         return nickname != null;
     }

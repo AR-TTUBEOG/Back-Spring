@@ -1,5 +1,6 @@
 package com.ttubeog.domain.member.application;
 
+import com.ttubeog.domain.auth.domain.Status;
 import com.ttubeog.domain.auth.dto.response.OAuthTokenResponse;
 import com.ttubeog.domain.auth.exception.AccessTokenExpiredException;
 import com.ttubeog.domain.auth.exception.InvalidAccessTokenException;
@@ -9,16 +10,23 @@ import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
 import com.ttubeog.domain.member.dto.response.MemberDetailRes;
+import com.ttubeog.domain.member.exception.FailureMemberDeleteException;
 import com.ttubeog.domain.member.exception.InvalidAccessTokenExpiredException;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.payload.ApiResponse;
+import com.ttubeog.global.payload.Message;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.naming.spi.ResolveResult;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -28,6 +36,9 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
+    private final RedisTemplate<String, String> redisTemplate;
+    private static final int WAITING_PERIOD_DAYS = 3;
+
 
 
     // 현재 유저 조회
@@ -52,10 +63,29 @@ public class MemberService {
         return ResponseEntity.ok(apiResponse);
     }
 
-    // 닉네임 설정
     @Transactional
     public ResponseEntity<?> postMemberNickname(HttpServletRequest request, ProduceNicknameRequest produceNicknameRequest) {
         Long memberId = jwtTokenProvider.getMemberId(request);
+
+        if (memberRepository.existsByNickname(produceNicknameRequest.getNickname())) {
+            Optional<Member> checkMember = memberRepository.findById(memberId);
+            Member member = checkMember.get();
+
+            MemberDetailRes memberDetailRes = MemberDetailRes.builder()
+                    .id(member.getId())
+                    .name(member.getNickname())
+                    .platform(member.getPlatform())
+                    .isUsed(false)
+                    .build();
+
+            ApiResponse apiResponse = ApiResponse.builder()
+                    .check(true)
+                    .information(memberDetailRes)
+                    .build();
+
+            return ResponseEntity.ok(apiResponse);
+        }
+
         memberRepository.updateUserNickname(produceNicknameRequest.getNickname(), memberId);
 
         Optional<Member> checkMember = memberRepository.findById(memberId);
@@ -66,6 +96,7 @@ public class MemberService {
                 .id(member.getId())
                 .name(member.getNickname())
                 .platform(member.getPlatform())
+                .isUsed(true)
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()
@@ -101,7 +132,6 @@ public class MemberService {
             refreshTokenService.saveTokenInfo(memberId, newRefreshToken, newAccessToken);
 
 
-
             OAuthTokenResponse oAuthTokenResponse = new OAuthTokenResponse(newAccessToken, newRefreshToken, member.isRegisteredOAuthMember());
 
             ApiResponse apiResponse = ApiResponse.builder()
@@ -111,6 +141,76 @@ public class MemberService {
             return ResponseEntity.ok(apiResponse);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(new InvalidAccessTokenExpiredException());
+        }
+    }
+
+    @Transactional
+    // 로그아웃
+    public ResponseEntity<?> deleteLogout(HttpServletRequest request) {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        deleteValueByKey(String.valueOf(memberId));
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(Message.builder().message("성공적으로 로그아웃 되었습니다.").build())
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    public void deleteValueByKey(String key) {
+        redisTemplate.delete(key);
+    }
+
+    @Transactional
+    public ResponseEntity<?> deleteUser(HttpServletRequest request) {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        Optional<Member> checkMember = memberRepository.findById(memberId);
+
+        if (checkMember.isEmpty()) {
+            throw new InvalidMemberException();
+        }
+
+        Member member = checkMember.get();
+        if (member.getStatus() != Status.INACTIVE) {
+            member = Member.builder()
+                    .id(member.getId())
+                    .oAuthId(member.getOAuthId())
+                    .nickname(member.getNickname())
+                    .memberNumber(member.getMemberNumber())
+                    .email(member.getEmail())
+                    .platformId(member.getPlatformId())
+                    .platform(member.getPlatform())
+                    .status(Status.INACTIVE)  // 상태를 비활성화로 설정
+                    .refreshToken(member.getRefreshToken())
+                    .build();
+            memberRepository.save(member);
+        }
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(Message.builder().message("성공적으로 회원탈퇴 되었습니다.").build())
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+
+
+    @Transactional
+    public ResponseEntity<?> deleteInactiveMember() {
+        try {
+            // 비활성화 된 회원 찾기
+            List<Member> memberStatus = memberRepository.findByStatus(Status.INACTIVE);
+
+            // 비활성회 된 회원 탈퇴
+            for (Member member : memberStatus) {
+                memberRepository.delete(member);
+            }
+
+            return ResponseEntity.ok("비활성화된 회원 탈퇴 완료");
+        } catch (Exception e) {
+            throw new FailureMemberDeleteException();
         }
     }
 }
