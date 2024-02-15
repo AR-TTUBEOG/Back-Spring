@@ -58,6 +58,7 @@ public class AuthService {
                     .memberNumber(String.valueOf(memberInfo.getId()))
                     .platform(Platform.KAKAO)
                     .status(Status.ACTIVE)
+                    .nicknameChange(false)
                     .build();
 
             memberRepository.save(member);
@@ -100,7 +101,7 @@ public class AuthService {
                     return new OAuthTokenResponse(accessToken, refreshToken, true);
                 })
                 .orElseGet(() -> {
-                    Member newMember = new Member(email, platform, Status.ACTIVE, platformId);
+                    Member newMember = new Member(email, platform, Status.ACTIVE, platformId, false);
                     Member savedMember = memberRepository.save(newMember);
                     String accessToken = issueAccessToken(savedMember);
                     String refreshToken = issueRefreshToken();
@@ -118,9 +119,21 @@ public class AuthService {
         return Token.createRefreshToken();
     }
 
-    private void validateStatus(final Member findMember) {
-        if (findMember.getStatus() != Status.ACTIVE) {
-            throw new InvalidMemberException();
+    private void validateStatus(final Member member) {
+
+        // 멤버가 탈퇴해서 INACTIVE 된 경우
+        if (member.getStatus() != Status.ACTIVE) {
+            Member.builder()
+                    .id(member.getId())
+                    .oAuthId(member.getOAuthId())
+                    .nickname(member.getNickname())
+                    .memberNumber(member.getMemberNumber())
+                    .email(member.getEmail())
+                    .platformId(member.getPlatformId())
+                    .platform(member.getPlatform())
+                    .status(Status.ACTIVE)  // 상태를 비활성화로 설정
+                    .refreshToken(member.getRefreshToken())
+                    .build();
         }
     }
 

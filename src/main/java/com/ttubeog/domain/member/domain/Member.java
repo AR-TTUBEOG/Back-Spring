@@ -45,13 +45,17 @@ public class Member extends BaseEntity {
     @Column(name = "refresh_token")
     private String refreshToken;
 
+    @Column(name = "nickname_changed")
+    private Boolean nicknameChange;
 
-    public Member(String email, Platform platform, Status status, String memberNumber) {
+
+    public Member(String email, Platform platform, Status status, String memberNumber, Boolean nicknameChange) {
         this.email = email;
         this.platform = platform;
         this.platformId = platformId;
         this.status = status;
         this.memberNumber = memberNumber;
+        this.nicknameChange = nicknameChange;
     }
 
     public Member(Status status) {
@@ -60,6 +64,7 @@ public class Member extends BaseEntity {
     public boolean isRegisteredOAuthMember() {
         return nickname != null;
     }
+    public boolean isNickNameChanged() { return nicknameChange; }
 
     public void updateName(String name) {
         this.nickname = name;
