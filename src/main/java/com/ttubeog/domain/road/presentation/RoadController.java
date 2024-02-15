@@ -1,18 +1,14 @@
 package com.ttubeog.domain.road.presentation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ttubeog.domain.guestbook.dto.request.CreateGuestBookRequestDto;
 import com.ttubeog.domain.road.application.RoadService;
-import com.ttubeog.domain.road.domain.repository.RoadRepository;
 import com.ttubeog.domain.road.dto.request.CreateRoadRequestDto;
 import com.ttubeog.global.config.security.token.CurrentUser;
-import io.swagger.v3.core.util.Json;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Road", description = "Road API(산책로 API)")
