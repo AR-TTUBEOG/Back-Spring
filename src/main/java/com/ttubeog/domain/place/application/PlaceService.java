@@ -9,7 +9,9 @@ import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.place.domain.PlaceType;
 import com.ttubeog.domain.place.dto.request.GetNearbyPlaceReq;
+import com.ttubeog.domain.place.dto.request.SearchPlaceReq;
 import com.ttubeog.domain.place.dto.response.GetAllPlaceRes;
+import com.ttubeog.domain.place.dto.response.SearchPlaceRes;
 import com.ttubeog.domain.spot.domain.Spot;
 import com.ttubeog.domain.spot.domain.repository.SpotRepository;
 import com.ttubeog.domain.store.domain.Store;
@@ -24,9 +26,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.ttubeog.domain.image.application.ImageService.getImageString;
 
 
 @RequiredArgsConstructor
@@ -55,8 +60,8 @@ public class PlaceService {
 
         List<Store> stores = storeRepository.findAll();
         places.addAll(stores.stream().map(store -> mapStoreToDto(request, store)).collect(Collectors.toList()));
-        // List<Spot> spots = spotRepository.findAll();
-        // places.addAll(spots.stream().map(this::mapSpotToDto).collect(Collectors.toList()));
+        List<Spot> spots = spotRepository.findAll();
+        places.addAll(spots.stream().map(spot -> mapSpotToDto(request, spot)).collect(Collectors.toList()));
         int page = pageable.getPageNumber();
         int size = pageable.getPageSize();
 
@@ -87,9 +92,9 @@ public class PlaceService {
                 .build();
     }
 
-    /*private GetAllPlaceRes mapSpotToDto(Spot spot) {
+    private GetAllPlaceRes mapSpotToDto(HttpServletRequest request, Spot spot) {
 
-        final long memberId = SecurityUtil.getCurrentMemberId();
+        Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         // 현재 로그인 유저의 좋아요 여부
@@ -101,15 +106,16 @@ public class PlaceService {
                 .placeType(placeType)
                 .memberId(spot.getMember().getId())
                 .name(spot.getName())
-                .latitude(spot.getLatitude())
-                .longitude(spot.getLongitude())
+                //위도, 경도 double로 변경 필요
+                //.latitude(spot.getLatitude())
+                //.longitude(spot.getLongitude())
                 //.image(spot.getImage())
                 .stars(spot.getStars())
-                // .guestbookCount(guestRepository.countBySpotId(spot.getID()))
+                //.guestbookCount(guestRepository.countBySpotId(spot.getID()))
                 .isFavorited(spotLiked)
                 .createdAt(spot.getCreatedAt())
                 .build();
-    }*/
+    }
 
     // 전체 조회
     @Transactional
@@ -237,6 +243,69 @@ public class PlaceService {
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
                 .information(allPlaces)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    // 장소 검색
+    public ResponseEntity<?> searchPlaces(HttpServletRequest request, SearchPlaceReq searchPlaceReq, Pageable pageable) {
+
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        List<GetAllPlaceRes> allPlaces = getAllPlaceResList(request, pageable);
+
+        // 검색어 포함 + 동일한 동ID 가진 장소 필터링
+        List<GetAllPlaceRes> searchResult = new ArrayList<>();
+        for (GetAllPlaceRes place : allPlaces) {
+            if (place.getName().contains(searchPlaceReq.getKeyword()) ||
+                    (place.getDongAreaId() != null && place.getDongAreaId().equals(searchPlaceReq.getDongAreaId()))) {
+                searchResult.add(place);
+            }
+        }
+
+        // 이름에 검색어가 포함된 장소들을 우선적으로 정렬
+        Collections.sort(searchResult, Comparator.comparing(place -> {
+            if (place.getName().contains(searchPlaceReq.getKeyword())) {
+                return 0;
+            } else {
+                return 1;
+            }
+        }));
+
+        // 페이징
+        int page = pageable.getPageNumber();
+        int size = pageable.getPageSize();
+        List<GetAllPlaceRes> paginatedResult = searchResult.stream()
+                .skip(page * size)
+                .limit(size)
+                .collect(Collectors.toList());
+
+        // 반환할 데이터가 없으면 빈 목록 반환
+        if (paginatedResult.isEmpty()) {
+            return ResponseEntity.ok().body(Collections.emptyList());
+        }
+
+        List<SearchPlaceRes> searchPlaceRes = paginatedResult.stream()
+                .map(place -> SearchPlaceRes.builder()
+                        .placeId(place.getPlaceId())
+                        .placeType(place.getPlaceType())
+                        .dongAreaId(place.getDongAreaId())
+                        .memberId(place.getMemberId())
+                        .name(place.getName())
+                        .latitude(place.getLatitude())
+                        .longitude(place.getLongitude())
+                        .image(place.getImage())
+                        .stars(place.getStars())
+                        .guestbookCount(place.getGuestbookCount())
+                        .likesCount(place.getLikesCount())
+                        .isFavorited(place.getIsFavorited())
+                        .build())
+                .collect(Collectors.toList());
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(searchPlaceRes)
                 .build();
 
         return ResponseEntity.ok(apiResponse);
