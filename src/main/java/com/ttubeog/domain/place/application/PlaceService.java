@@ -3,6 +3,7 @@ package com.ttubeog.domain.place.application;
 import com.ttubeog.domain.auth.config.SecurityUtil;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.image.application.ImageService;
+import com.ttubeog.domain.image.domain.Image;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
 import com.ttubeog.domain.likes.domain.repository.LikesRepository;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
@@ -77,6 +78,16 @@ public class PlaceService {
         Boolean storeLiked = likesRepository.existsByMemberIdAndStoreId(memberId, store.getId());
         PlaceType placeType = new PlaceType(true, false);
 
+        // 가장 인덱스가 작은 이미지 선택
+        List<Image> storeImages = imageRepository.findByStoreId(store.getId());
+        String representativeImageUrl = null;
+        if (!storeImages.isEmpty()) {
+            Image representativeImage = storeImages.stream()
+                    .min(Comparator.comparingLong(Image::getId))
+                    .orElseThrow();
+            representativeImageUrl = representativeImage.getImage();
+        }
+
         return GetAllPlaceRes.builder()
                 .placeId(store.getId())
                 .placeType(placeType)
@@ -84,6 +95,7 @@ public class PlaceService {
                 .name(store.getName())
                 .latitude(store.getLatitude())
                 .longitude(store.getLongitude())
+                .image(representativeImageUrl)
                 // .image(store.getImage())
                 .stars(store.getStars())
                 // .guestbookCount(guestRepository.countByStoreId(store.getID()))
@@ -101,6 +113,16 @@ public class PlaceService {
         Boolean spotLiked = likesRepository.existsByMemberIdAndSpotId(memberId, spot.getId());
         PlaceType placeType = new PlaceType(false, true);
 
+        // 가장 인덱스가 작은 이미지 선택
+        List<Image> spotImages = imageRepository.findBySpotId(spot.getId());
+        String representativeImageUrl = null;
+        if (!spotImages.isEmpty()) {
+            Image representativeImage = spotImages.stream()
+                    .min(Comparator.comparingLong(Image::getId))
+                    .orElseThrow();
+            representativeImageUrl = representativeImage.getImage();
+        }
+
         return GetAllPlaceRes.builder()
                 .placeId(spot.getId())
                 .placeType(placeType)
@@ -109,7 +131,7 @@ public class PlaceService {
                 //위도, 경도 double로 변경 필요
                 //.latitude(spot.getLatitude())
                 //.longitude(spot.getLongitude())
-                //.image(spot.getImage())
+                .image(representativeImageUrl)
                 .stars(spot.getStars())
                 //.guestbookCount(guestRepository.countBySpotId(spot.getID()))
                 .isFavorited(spotLiked)
