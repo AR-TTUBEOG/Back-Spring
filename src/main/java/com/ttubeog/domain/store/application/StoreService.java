@@ -3,11 +3,20 @@ package com.ttubeog.domain.store.application;
 import com.ttubeog.domain.area.domain.DongArea;
 import com.ttubeog.domain.area.domain.repository.DongAreaRepository;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
+import com.ttubeog.domain.benefit.domain.Benefit;
+import com.ttubeog.domain.benefit.domain.BenefitType;
+import com.ttubeog.domain.benefit.domain.MemberBenefit;
+import com.ttubeog.domain.benefit.domain.repository.BenefitRepository;
+import com.ttubeog.domain.benefit.domain.repository.MemberBenefitRepository;
+import com.ttubeog.domain.guestbook.domain.GuestBook;
+import com.ttubeog.domain.guestbook.domain.repository.GuestBookRepository;
 import com.ttubeog.domain.image.application.ImageService;
 import com.ttubeog.domain.image.domain.Image;
 import com.ttubeog.domain.image.domain.ImageType;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
 import com.ttubeog.domain.image.dto.request.CreateImageRequestDto;
+import com.ttubeog.domain.likes.domain.Likes;
+import com.ttubeog.domain.likes.domain.repository.LikesRepository;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.spot.exception.InvalidImageListSizeException;
@@ -31,6 +40,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.ttubeog.domain.image.application.ImageService.getImageString;
 
@@ -43,6 +53,10 @@ public class StoreService {
     private final MemberRepository memberRepository;
     private final DongAreaRepository dongAreaRepository;
     private final ImageRepository imageRepository;
+    private final BenefitRepository benefitRepository;
+    private final MemberBenefitRepository memberBenefitRepository;
+    private final GuestBookRepository guestBookRepository;
+    private final LikesRepository likesRepository;
     private final ImageService imageService;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -78,7 +92,7 @@ public class StoreService {
         for (String s : imageList) {
             CreateImageRequestDto createImageRequestDto = CreateImageRequestDto.builder()
                     .image(s)
-                    .imageType(ImageType.SPOT)
+                    .imageType(ImageType.STORE)
                     .placeId(store.getId())
                     .build();
             imageService.createImage(createImageRequestDto);
@@ -114,6 +128,7 @@ public class StoreService {
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Store store = storeRepository.findById(updateStoreReq.getStoreId()).orElseThrow(NonExistentStoreException::new);
 
+        // 현재 유저가 매장 등록 유저인지 확인
         Long storeOwnerId = store.getMember().getId();
         if (!storeOwnerId.equals(memberId)) {
             throw new UnathorizedMemberException();
@@ -143,7 +158,7 @@ public class StoreService {
         for (String s : imageStringList) {
             CreateImageRequestDto createImageRequestDto = CreateImageRequestDto.builder()
                     .image(s)
-                    .imageType(ImageType.SPOT)
+                    .imageType(ImageType.STORE)
                     .placeId(store.getId())
                     .build();
             imageService.createImage(createImageRequestDto);
@@ -177,17 +192,39 @@ public class StoreService {
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Store store = storeRepository.findById(storeId).orElseThrow(NonExistentStoreException::new);
 
+        // 현재 유저가 매장 등록 유저인지 확인
         Long storeOwnerId = store.getMember().getId();
         if (!storeOwnerId.equals(memberId)) {
             throw new UnathorizedMemberException();
         }
 
-        storeRepository.delete(store);
-
-        List<Image> imageList = imageRepository.findByStoreId(store.getId());
-        for (Image image : imageList) {
-            imageService.deleteImage(image.getId());
+        // 특정 유저가 가진 해당 매장의 혜택 삭제
+        List<Benefit> benefitsToDelete = benefitRepository.findByStoreId(storeId);
+        for (Benefit benefit : benefitsToDelete) {
+            List<MemberBenefit> memberBenefits = memberBenefitRepository.findByBenefitId(benefit.getId());
+            memberBenefitRepository.deleteAll(memberBenefits);
         }
+
+        // 해당 매장과 연관된 혜택 삭제
+        List<Benefit> benefits = benefitRepository.findByStoreId(storeId);
+        benefitRepository.deleteAll(benefits);
+
+        // 해당 매장과 연관된 방명록 삭제
+        List<GuestBook> guestBooks = guestBookRepository.findByStoreId(storeId);
+        guestBookRepository.deleteAll(guestBooks);
+
+        // 해당 매장과 연관된 좋아요 삭제
+        List<Likes> likes = likesRepository.findByStoreId(storeId);
+        likesRepository.deleteAll(likes);
+
+        // 해당 매장과 연관된 이미지 삭제
+        List<Image> images = imageRepository.findByStoreId(storeId);
+        imageRepository.deleteAll(images);
+
+        // TODO 해당 매장과 연관된 경로 삭제
+        // TODO 해당 매장과 연관된 저장경로 삭제
+
+        storeRepository.delete(store);
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
@@ -204,9 +241,13 @@ public class StoreService {
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Store store = storeRepository.findById(storeId).orElseThrow(NonExistentStoreException::new);
 
-        // List<BenefitType> storeBenefits = benefitRepository.findTypeByStoreId(storeId);
-        // Integer guestbookCount = guestBookRepository.countByStoreId(storeId);
-        // Integer likesCount = likesRepository.countByStoreId(storeId);
+        List<BenefitType> storeBenefits = benefitRepository.findByStoreId(storeId)
+                .stream()
+                .map(Benefit::getType)
+                .collect(Collectors.toList());
+        Integer guestbookCount = guestBookRepository.countByStoreId(storeId);
+        Integer likesCount = likesRepository.countByStoreId(storeId);
+        //Boolean isFavorited = likesRepository.existsByMemberIdAndStoreId(memberId, storeId);
 
         GetStoreDetailRes getStoreDetailRes = GetStoreDetailRes.builder()
                 .storeId(storeId)
@@ -220,9 +261,10 @@ public class StoreService {
                 .image(getImageString(imageRepository.findByStoreId(store.getId())))
                 .stars(store.getStars())
                 .type(store.getType())
-                //.storeBenefits(storeBenefits.stream().map(BenefitType::getType).collect(Collectors.toList()))
-                //.guestbookCount(guestbookCount)
-                //.likesCount(likesCount)
+                .storeBenefits(storeBenefits)
+                .guestbookCount(guestbookCount)
+                .likesCount(likesCount)
+                //.isFavorited(isFavorited)
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()

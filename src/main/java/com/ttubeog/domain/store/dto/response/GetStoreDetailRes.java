@@ -10,7 +10,6 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-@Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GetStoreDetailRes {
 
@@ -55,4 +54,28 @@ public class GetStoreDetailRes {
 
     @Schema(description = "좋아요 수")
     private Integer likesCount;
+
+    @Schema(description = "현재 유저의 좋아요 여부")
+    private Boolean isFavorited;
+
+    @Builder
+    public GetStoreDetailRes(Long storeId, Long memberId, String name, String info, Long dongAreaId,
+                             String detailAddress, Double latitude, Double longitude, List<String> image, Float stars,
+                             StoreType type, List<BenefitType> storeBenefits, Integer guestbookCount, Integer likesCount, Boolean isFavorited) {
+        this.storeId = storeId;
+        this.memberId = memberId;
+        this.name = name;
+        this.info = info;
+        this.dongAreaId = dongAreaId;
+        this.detailAddress = detailAddress;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.image = image;
+        this.stars = stars;
+        this.type = type;
+        this.storeBenefits = storeBenefits;
+        this.guestbookCount = guestbookCount;
+        this.likesCount = likesCount;
+        this.isFavorited = isFavorited;
+    }
 }

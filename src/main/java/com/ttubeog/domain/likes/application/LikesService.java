@@ -1,5 +1,6 @@
 package com.ttubeog.domain.likes.application;
 
+import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.likes.domain.Likes;
 import com.ttubeog.domain.likes.domain.repository.LikesRepository;
 import com.ttubeog.domain.likes.exception.AlreadyLikesException;
@@ -12,9 +13,9 @@ import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.domain.store.exception.NonExistentStoreException;
 import com.ttubeog.domain.spot.exception.NonExistentSpotException;
-import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -30,12 +31,14 @@ public class LikesService {
     private final StoreRepository storeRepository;
     private final SpotRepository spotRepository;
     private final LikesRepository likesRepository;
+    private final JwtTokenProvider jwtTokenProvider;
 
     // 매장 좋아요 누르기
     @Transactional
-    public ResponseEntity<?> likesStore(UserPrincipal userPrincipal, Long storeId) {
+    public ResponseEntity<?> likesStore(HttpServletRequest request, Long storeId) {
 
-        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Store store = storeRepository.findById(storeId).orElseThrow(NonExistentStoreException::new);
 
         if (likesRepository.existsByMemberIdAndStoreId(member.getId(), storeId)) {
@@ -51,7 +54,7 @@ public class LikesService {
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
-                .information(Message.builder().message("매장에 대한 좋아요를 눌렀습니다."))
+                .information(Message.builder().message("매장에 대한 좋아요를 눌렀습니다.").build())
                 .build();
 
         return ResponseEntity.ok(apiResponse);
@@ -59,9 +62,10 @@ public class LikesService {
 
     // 산책스팟 좋아요 누르기
     @Transactional
-    public ResponseEntity<?> likesSpot(UserPrincipal userPrincipal, Long spotId) {
+    public ResponseEntity<?> likesSpot(HttpServletRequest request, Long spotId) {
 
-        Member member = memberRepository.findById(userPrincipal.getId()).orElseThrow(InvalidMemberException::new);
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Spot spot = spotRepository.findById(spotId).orElseThrow(NonExistentSpotException::new);
 
         if (likesRepository.existsByMemberIdAndSpotId(member.getId(), spotId)) {
@@ -77,7 +81,7 @@ public class LikesService {
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
-                .information(Message.builder().message("스팟에 대한 좋아요를 눌렀습니다."))
+                .information(Message.builder().message("스팟에 대한 좋아요를 눌렀습니다.").build())
                 .build();
 
         return ResponseEntity.ok(apiResponse);

@@ -1,8 +1,8 @@
 package com.ttubeog.domain.member.domain.repository;
 
 import com.ttubeog.domain.auth.domain.Platform;
+import com.ttubeog.domain.auth.domain.Status;
 import com.ttubeog.domain.member.domain.Member;
-import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,8 +22,7 @@ public interface MemberRepository extends JpaRepository<Member,Long>{
     Optional<Member> findByEmail(String email);
     Optional<Member> findByMemberNumber(String memberNumber);
 
-    @Query("SELECT m.status FROM Member m  WHERE m.id = :memberId")
-    Optional<Member> findMemberStatus(@Param("memberId") Long memberId);
+    List<Member> findByStatus(Status status);
 
     Optional<Member> findByPlatformAndPlatformId(Platform platform, String platformId);
 
@@ -35,7 +35,12 @@ public interface MemberRepository extends JpaRepository<Member,Long>{
 
     @Modifying
     @Query("update Member as m set m.nickname = :nickName where m.id = :memberId")
-    void updateUserNickname(@Param("nickName") String nickName, @Param("memberId") Long memberId);
+    void updateMemberNickname(@Param("nickName") String nickName, @Param("memberId") Long memberId);
+
+    @Modifying
+    @Query("update Member as m set m.nicknameChange = :nicknameChange where m.id = :memberId")
+    void updateMemberNicknameChange(@Param("nicknameChange") Boolean nicknameChange, @Param("memberId") Long memberId);
+
 
     Boolean existsByNickname(String nickname);
 
