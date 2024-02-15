@@ -23,6 +23,7 @@ import com.ttubeog.domain.spot.domain.repository.SpotRepository;
 import com.ttubeog.domain.spot.exception.InvalidSpotIdException;
 import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
+import com.ttubeog.domain.store.exception.InvalidStoreIdException;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -85,7 +86,7 @@ public class GuestBookService {
     }
 
     @Transactional
-    public ResponseEntity<?> createGuestBook(HttpServletRequest request, Integer spotId, CreateGuestBookRequestDto createGuestBookRequestDto) {
+    public ResponseEntity<?> createGuestBook(HttpServletRequest request, CreateGuestBookRequestDto createGuestBookRequestDto) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -93,8 +94,11 @@ public class GuestBookService {
 
         GuestBook guestBook;
 
+        Spot spot;
+        Store store;
+
         if (createGuestBookRequestDto.getGuestBookType().equals(GuestBookType.SPOT)) {
-            Spot spot = spotRepository.findById(createGuestBookRequestDto.getSpotId()).orElseThrow(InvalidSpotIdException::new);
+            spot = spotRepository.findById(createGuestBookRequestDto.getSpotId()).orElseThrow(InvalidSpotIdException::new);
 
             guestBook = GuestBook.builder()
                     .member(member)
@@ -104,8 +108,7 @@ public class GuestBookService {
                     .star(createGuestBookRequestDto.getStar())
                     .build();
         } else if (createGuestBookRequestDto.getGuestBookType().equals(GuestBookType.STORE)) {
-            // TODO exception 교체
-            Store store = storeRepository.findById(createGuestBookRequestDto.getStoreId()).orElseThrow(InvalidSpotIdException::new);
+            store = storeRepository.findById(createGuestBookRequestDto.getStoreId()).orElseThrow(InvalidStoreIdException::new);
 
             guestBook = GuestBook.builder()
                     .member(member)
@@ -126,6 +129,38 @@ public class GuestBookService {
                 .placeId(guestBook.getId())
                 .build();
         imageService.createImage(createImageRequestDto);
+
+        if (createGuestBookRequestDto.getGuestBookType().equals(GuestBookType.SPOT)) {
+            spot = spotRepository.findById(createGuestBookRequestDto.getSpotId()).orElseThrow(InvalidSpotIdException::new);
+
+            Float originStars = guestBookRepository.sumStarBySpotId(spot.getId());
+
+            Long guestBookNum = guestBookRepository.countAllBySpot_Id(spot.getId());
+
+            float updateStarValue;
+
+            updateStarValue = ((originStars * guestBookNum) + createGuestBookRequestDto.getStar()) / (guestBookNum + 1);
+
+            spot.updateStars(updateStarValue);
+
+            spotRepository.save(spot);
+        } else if (createGuestBookRequestDto.getGuestBookType().equals(GuestBookType.STORE)) {
+            store = storeRepository.findById(createGuestBookRequestDto.getStoreId()).orElseThrow(InvalidStoreIdException::new);
+
+            Float originStars = guestBookRepository.sumStarByStoreId(store.getId());
+
+            Long guestBookNum = guestBookRepository.countAllByStore_Id(store.getId());
+
+            float updateStarValue;
+
+            updateStarValue = ((originStars * guestBookNum) + createGuestBookRequestDto.getStar()) / (guestBookNum + 1);
+
+            store.updateStars(updateStarValue);
+
+            storeRepository.save(store);
+        } else {
+            throw new InvalidGuestBookException();
+        }
 
         return getResponseEntity(guestBook);
     }

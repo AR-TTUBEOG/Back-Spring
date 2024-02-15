@@ -1,20 +1,14 @@
 package com.ttubeog.domain.guestbook.domain;
 
 import com.ttubeog.domain.common.BaseEntity;
-<<<<<<< HEAD
 import com.ttubeog.domain.image.domain.Image;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.spot.domain.Spot;
 import com.ttubeog.domain.store.domain.Store;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
-=======
-import com.ttubeog.domain.store.domain.Store;
-import jakarta.persistence.*;
->>>>>>> dev
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -31,7 +25,6 @@ public class GuestBook extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-<<<<<<< HEAD
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
@@ -69,9 +62,4 @@ public class GuestBook extends BaseEntity {
         this.star = star;
         this.image = image;
     }
-
-=======
-    @JoinColumn(name = "store_id")
-    private Store store;
->>>>>>> dev
 }

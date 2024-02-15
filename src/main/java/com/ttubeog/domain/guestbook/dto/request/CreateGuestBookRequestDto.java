@@ -6,8 +6,6 @@ import lombok.Getter;
 @Getter
 public class CreateGuestBookRequestDto {
 
-    private Long memberId;
-
     private GuestBookType guestBookType;
 
     private Long spotId;

@@ -323,7 +323,6 @@ public class SpotController {
     /**
      * 산책 스팟 방명록 작성 API
      * @param request 유저 검증
-     * @param spotId 산책 스팟 ID
      * @param createGuestBookRequestDto 방명록 작성 DTO
      * @return ResponseEntity -> GuestBookResponseDto
      * @throws JsonProcessingException JSON Processing 에러
@@ -332,12 +331,12 @@ public class SpotController {
             description = "산책 스팟을 방명록을 작성합니다.\n" +
                     "GuestBook(방명록) 기능 미구현.",
             responses = {@ApiResponse(
-                    responseCode = "200",
+                    responseCode = "201",
                     description = "OK",
                     content = {
                             @Content(
                                     mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = SpotResponseDto.class))
+                                    array = @ArraySchema(schema = @Schema(implementation = GuestBookService.class))
                             )
                     }
             ),
@@ -386,10 +385,9 @@ public class SpotController {
     @PostMapping("/{spotId}/guestbook")
     public ResponseEntity<?> createGuestBook(
             @CurrentUser HttpServletRequest request,
-            @RequestParam(name = "spotId") Integer spotId,
             @RequestBody CreateGuestBookRequestDto createGuestBookRequestDto
     ) throws JsonProcessingException {
-        return guestBookService.createGuestBook(request, spotId, createGuestBookRequestDto);
+        return guestBookService.createGuestBook(request, createGuestBookRequestDto);
     }
 
     /**
