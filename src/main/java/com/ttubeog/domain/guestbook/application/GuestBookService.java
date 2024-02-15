@@ -26,6 +26,7 @@ import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.domain.store.exception.InvalidStoreIdException;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
+import feign.Response;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
@@ -34,6 +35,8 @@ import org.apache.ibatis.jdbc.Null;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -174,6 +177,64 @@ public class GuestBookService {
         GuestBook guestBook = guestBookRepository.findById(guestBookId).orElseThrow(InvalidGuestBookIdException::new);
 
         return getResponseEntity(guestBook);
+    }
+
+    public ResponseEntity<?> findGuestBookBySpotId(HttpServletRequest request, Long spotId) {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+
+        List<GuestBook> guestBookList = guestBookRepository.findAllBySpot_Id(spotId);
+
+        List<GuestBookResponseDto> guestBookResponseDtoList = null;
+
+        for (GuestBook guestBook : guestBookList) {
+            GuestBookResponseDto guestBookResponseDto = GuestBookResponseDto.builder()
+                    .id(guestBook.getId())
+                    .content(guestBook.getContent())
+                    .guestBookType(guestBook.getGuestBookType())
+                    .spotId(guestBook.getSpot().getId())
+                    .memberId(guestBook.getMember().getId())
+                    .star(guestBook.getStar())
+                    .build();
+            guestBookResponseDtoList.add(guestBookResponseDto);
+        }
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(guestBookResponseDtoList)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    public ResponseEntity<?> findGuestBookByStoreId(HttpServletRequest request, Long storeId) {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+
+        List<GuestBook> guestBookList = guestBookRepository.findAllByStore_Id(storeId);
+
+        List<GuestBookResponseDto> guestBookResponseDtoList = null;
+
+        for (GuestBook guestBook : guestBookList) {
+            GuestBookResponseDto guestBookResponseDto = GuestBookResponseDto.builder()
+                    .id(guestBook.getId())
+                    .content(guestBook.getContent())
+                    .guestBookType(guestBook.getGuestBookType())
+                    .spotId(guestBook.getSpot().getId())
+                    .memberId(guestBook.getMember().getId())
+                    .star(guestBook.getStar())
+                    .build();
+            guestBookResponseDtoList.add(guestBookResponseDto);
+        }
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(guestBookResponseDtoList)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
 
