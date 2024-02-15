@@ -25,7 +25,4 @@ public interface GuestBookRepository extends JpaRepository<GuestBook, Long> {
     @Query("SELECT SUM(g.star) FROM GuestBook g WHERE g.store.id = :storeId")
     Float sumStarByStoreId(@Param("storeId") Long storeId);
 
-    List<GuestBook> findByStoreId(Long storeId);
-
-    Integer countByStoreId(Long storeId);
 }
