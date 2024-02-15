@@ -2,7 +2,7 @@ package com.ttubeog.domain.spot.presentation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttubeog.domain.guestbook.application.GuestBookService;
-import com.ttubeog.domain.guestbook.dto.CreateGuestBookRequestDto;
+import com.ttubeog.domain.guestbook.dto.request.CreateGuestBookRequestDto;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.spot.application.SpotService;
 import com.ttubeog.domain.spot.dto.request.CreateSpotRequestDto;
@@ -323,7 +323,6 @@ public class SpotController {
     /**
      * 산책 스팟 방명록 작성 API
      * @param request 유저 검증
-     * @param spotId 산책 스팟 ID
      * @param createGuestBookRequestDto 방명록 작성 DTO
      * @return ResponseEntity -> GuestBookResponseDto
      * @throws JsonProcessingException JSON Processing 에러
@@ -337,7 +336,7 @@ public class SpotController {
                     content = {
                             @Content(
                                     mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = SpotResponseDto.class))
+                                    array = @ArraySchema(schema = @Schema(implementation = GuestBookService.class))
                             )
                     }
             ),
@@ -386,10 +385,9 @@ public class SpotController {
     @PostMapping("/{spotId}/guestbook")
     public ResponseEntity<?> createGuestBook(
             @CurrentUser HttpServletRequest request,
-            @RequestParam(name = "spotId") Integer spotId,
             @RequestBody CreateGuestBookRequestDto createGuestBookRequestDto
     ) throws JsonProcessingException {
-        return guestBookService.createGuestBook(request, spotId, createGuestBookRequestDto);
+        return guestBookService.createGuestBook(request, createGuestBookRequestDto);
     }
 
     /**
