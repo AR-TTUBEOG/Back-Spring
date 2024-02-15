@@ -16,6 +16,9 @@ public class UpdateGiftRes {
     @Schema(description = "혜택 ID", example = "1")
     private Long benefitId;
 
+    @Schema(description = "매장ID", example = "1")
+    private Long storeId;
+
     @Schema(description = "시간제한", example = "00:01:30")
     private LocalTime timeLimit;
 
@@ -29,9 +32,10 @@ public class UpdateGiftRes {
     private BenefitType benefitType;
 
     @Builder
-    public UpdateGiftRes(Long gameId, Long benefitId, LocalTime timeLimit, Integer giftCount, String benefitContent, BenefitType benefitType) {
+    public UpdateGiftRes(Long gameId, Long benefitId, Long storeId, LocalTime timeLimit, Integer giftCount, String benefitContent, BenefitType benefitType) {
         this.gameId = gameId;
         this.benefitId = benefitId;
+        this.storeId = storeId;
         this.timeLimit = timeLimit;
         this.giftCount = giftCount;
         this.benefitContent = benefitContent;

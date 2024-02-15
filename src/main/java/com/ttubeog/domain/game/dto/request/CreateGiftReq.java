@@ -10,7 +10,8 @@ import java.time.LocalTime;
 @Schema(description = "CreateGiftGameRequest")
 public class CreateGiftReq {
 
-    //    private Long StoreId;
+    @Schema(description = "매장ID", example = "1")
+    private Long storeId;
 
     @Schema(description = "시간제한", example = "00:01:30")
     private LocalTime timeLimit;

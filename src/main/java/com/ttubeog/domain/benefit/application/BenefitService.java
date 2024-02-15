@@ -16,6 +16,7 @@ import com.ttubeog.domain.game.domain.repository.GameRepository;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
+import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
@@ -50,9 +51,10 @@ public class BenefitService {
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Benefit benefit = benefitRepository.findById(benefitId).orElseThrow(NonExistentBenefitException::new);
+        List<Benefit> checkBenefitList = benefitRepository.findByStore(benefit.getStore());
 
         //같은 benefit이고, 저장한지 한달이 지나지 않았으면 에러 호출
-        if (memberBenefitRepository.existsByBenefitAndCreatedAtIsAfter(benefit, LocalDateTime.now().minusMonths(1))) {
+        if (memberBenefitRepository.existsByBenefitInAndMemberAndCreatedAtIsAfter(checkBenefitList, member, LocalDateTime.now().minusMonths(1))) {
             throw new OverlappingBenefitException();
         }
 
@@ -68,6 +70,8 @@ public class BenefitService {
         SaveBenefitRes saveBenefitRes = SaveBenefitRes.builder()
                 .id(memberBenefit.getId())
                 .benefitId(benefit.getId())
+                .storeId(benefit.getStore().getId())
+                .storeName(benefit.getStore().getName())
                 .content(benefit.getContent())
                 .type(benefit.getType())
                 .used(memberBenefit.getUsed())
@@ -105,6 +109,8 @@ public class BenefitService {
         SaveBenefitRes saveBenefitRes = SaveBenefitRes.builder()
                 .id(memberBenefit.getId())
                 .benefitId(benefit.getId())
+                .storeId(benefit.getStore().getId())
+                .storeName(benefit.getStore().getName())
                 .used(memberBenefit.getUsed())
                 .expried(memberBenefit.getExpired())
                 .createdAt(memberBenefit.getCreatedAt())
@@ -131,6 +137,8 @@ public class BenefitService {
                 memberBenefit -> SaveBenefitRes.builder()
                         .id(memberBenefit.getId())
                         .benefitId(memberBenefit.getBenefit().getId())
+                        .storeId(memberBenefit.getBenefit().getStore().getId())
+                        .storeName(memberBenefit.getBenefit().getStore().getName())
                         .used(memberBenefit.getUsed())
                         .expried(memberBenefit.getExpired())
                         .createdAt(memberBenefit.getCreatedAt())

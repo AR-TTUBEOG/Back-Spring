@@ -16,7 +16,8 @@ public class CreateBasketballRes {
     @Schema(description = "혜택 ID", example = "1")
     private Long benefitId;
 
-    //    private Long StoreId;
+    @Schema(description = "매장ID", example = "1")
+    private Long storeId;
 
     @Schema(description = "시간제한", example = "00:01:30")
     private LocalTime timeLimit;
@@ -34,9 +35,10 @@ public class CreateBasketballRes {
     private BenefitType benefitType;
 
     @Builder
-    public CreateBasketballRes(Long gameId, Long benefitId, LocalTime timeLimit, Integer ballCount, Integer successCount, String benefitContent, BenefitType benefitType) {
+    public CreateBasketballRes(Long gameId, Long benefitId, Long storeId, LocalTime timeLimit, Integer ballCount, Integer successCount, String benefitContent, BenefitType benefitType) {
         this.gameId = gameId;
         this.benefitId = benefitId;
+        this.storeId = storeId;
         this.timeLimit = timeLimit;
         this.ballCount = ballCount;
         this.successCount = successCount;

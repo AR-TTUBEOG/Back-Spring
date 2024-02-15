@@ -12,10 +12,14 @@ import com.ttubeog.domain.game.domain.*;
 import com.ttubeog.domain.game.domain.repository.*;
 import com.ttubeog.domain.game.dto.request.*;
 import com.ttubeog.domain.game.dto.response.*;
+import com.ttubeog.domain.game.exception.AlreadyExistGameException;
 import com.ttubeog.domain.game.exception.NonExistentGameException;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
+import com.ttubeog.domain.store.domain.Store;
+import com.ttubeog.domain.store.domain.repository.StoreRepository;
+import com.ttubeog.domain.store.exception.InvalidStoreIdException;
 import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
@@ -26,7 +30,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -41,6 +48,7 @@ public class GameService {
     private final BasketBallRepository basketBallRepository;
     private final RouletteRepository rouletteRepository;
     private final MemberBenefitRepository memberBenefitRepository;
+    private final StoreRepository storeRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     // 선물게임 생성
@@ -48,8 +56,13 @@ public class GameService {
     public ResponseEntity<?> createGift(HttpServletRequest request, CreateGiftReq createGiftReq) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Store store = storeRepository.findById(createGiftReq.getStoreId()).orElseThrow(InvalidStoreIdException::new);
 
-        //TODO 연결 후 store에 이미 존재하는 gametype인지 확인
+        //store에 이미 존재하는 gametype인지 확인
+        List<Benefit> checkBenefitList = benefitRepository.findAllByStoreAndGameIsNotNull(store);
+        if (checkBenefitList.stream().anyMatch(benefit -> GameType.GIFT.equals(benefit.getGame().getType()))) {
+            throw new AlreadyExistGameException();
+        }
 
         Game game = Game.builder()
                 .type(GameType.GIFT)
@@ -58,6 +71,7 @@ public class GameService {
         gameRepository.save(game);
 
         Benefit benefit = Benefit.builder()
+                .store(store)
                 .content(createGiftReq.getBenefitContent())
                 .type(createGiftReq.getBenefitType())
                 .game(game)
@@ -76,6 +90,7 @@ public class GameService {
         CreateGiftRes createGiftRes = CreateGiftRes.builder()
                 .gameId(game.getId())
                 .benefitId(benefit.getId())
+                .storeId(store.getId())
                 .giftCount(giftGame.getGiftCount())
                 .timeLimit(giftGame.getTimeLimit())
                 .benefitType(benefit.getType())
@@ -95,6 +110,13 @@ public class GameService {
     public ResponseEntity<?> createBasketBall(HttpServletRequest request, CreateBasketballReq createBasketballReq) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Store store = storeRepository.findById(createBasketballReq.getStoreId()).orElseThrow(InvalidStoreIdException::new);
+
+        //store에 이미 존재하는 gametype인지 확인
+        List<Benefit> checkBenefitList = benefitRepository.findAllByStoreAndGameIsNotNull(store);
+        if (checkBenefitList.stream().anyMatch(benefit -> GameType.BASKETBALL.equals(benefit.getGame().getType()))) {
+            throw new AlreadyExistGameException();
+        }
 
         Game game = Game.builder()
                 .type(GameType.BASKETBALL)
@@ -103,6 +125,7 @@ public class GameService {
         gameRepository.save(game);
 
         Benefit benefit = Benefit.builder()
+                .store(store)
                 .content(createBasketballReq.getBenefitContent())
                 .type(createBasketballReq.getBenefitType())
                 .game(game)
@@ -122,6 +145,7 @@ public class GameService {
         CreateBasketballRes createBasketballRes = CreateBasketballRes.builder()
                 .gameId(game.getId())
                 .benefitId(benefit.getId())
+                .storeId(store.getId())
                 .timeLimit(basketballGame.getTimeLimit())
                 .ballCount(basketballGame.getBallCount())
                 .successCount(basketballGame.getSuccessCount())
@@ -142,6 +166,13 @@ public class GameService {
     public ResponseEntity<?> createRoulette(HttpServletRequest request, CreateRouletteReq createRouletteReq) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Store store = storeRepository.findById(createRouletteReq.getStoreId()).orElseThrow(InvalidStoreIdException::new);
+
+        //store에 이미 존재하는 gametype인지 확인
+        List<Benefit> checkBenefitList = benefitRepository.findAllByStoreAndGameIsNotNull(store);
+        if (checkBenefitList.stream().anyMatch(benefit -> GameType.ROULETTE.equals(benefit.getGame().getType()))) {
+            throw new AlreadyExistGameException();
+        }
 
         Game game = Game.builder()
                 .type(GameType.ROULETTE)
@@ -150,6 +181,7 @@ public class GameService {
 
         List<Benefit> benefitList = createRouletteReq.getOptions().stream()
                 .map(option -> Benefit.builder()
+                        .store(store)
                         .content(option)
                         .type(createRouletteReq.getBenefitType())
                         .game(game)
@@ -174,6 +206,7 @@ public class GameService {
 
         CreateRouletteRes createRouletteRes = CreateRouletteRes.builder()
                 .gameId(rouletteGame.getId())
+                .storeId(store.getId())
                 .benefits(benefitResDtoList)
                 .options(rouletteGame.getOptions())
                 .build();
@@ -194,11 +227,13 @@ public class GameService {
         GiftGame giftGame = giftGameRepository.findById(updateGiftReq.getGameId()).orElseThrow(NonExistentGameException::new);
         Benefit benefit = benefitRepository.findByGame(giftGame.getGame()).orElseThrow(NonExistentBenefitException::new);
         benefit.deleteGame();
+        Store store = storeRepository.findById(updateGiftReq.getStoreId()).orElseThrow(InvalidStoreIdException::new);
 
         giftGame.updateTimeLimit(updateGiftReq.getTimeLimit());
         giftGame.updateGiftCount(updateGiftReq.getGiftCount());
 
         Benefit newBenefit = Benefit.builder()
+                .store(store)
                 .game(giftGame.getGame())
                 .type(updateGiftReq.getBenefitType())
                 .content(updateGiftReq.getBenefitContent())
@@ -230,12 +265,14 @@ public class GameService {
         BasketballGame basketballGame = basketBallRepository.findById(updateBasketballReq.getGameId()).orElseThrow(NonExistentGameException::new);
         Benefit benefit = benefitRepository.findByGame(basketballGame.getGame()).orElseThrow(NonExistentBenefitException::new);
         benefit.deleteGame();
+        Store store = storeRepository.findById(updateBasketballReq.getStoreId()).orElseThrow(InvalidStoreIdException::new);
 
         basketballGame.updateBallCount(updateBasketballReq.getBallCount());
         basketballGame.updateSuccessCount(updateBasketballReq.getSuccessCount());
         basketballGame.updateTimeLimit(updateBasketballReq.getTimeLimit());
 
         Benefit newBenefit = Benefit.builder()
+                .store(store)
                 .game(basketballGame.getGame())
                 .type(updateBasketballReq.getBenefitType())
                 .content(updateBasketballReq.getBenefitContent())
@@ -244,6 +281,7 @@ public class GameService {
 
         UpdateBasketballRes updateBasketballRes = UpdateBasketballRes.builder()
                 .gameId(basketballGame.getId())
+                .storeId(store.getId())
                 .ballCount(basketballGame.getBallCount())
                 .timeLimit(basketballGame.getTimeLimit())
                 .successCount(basketballGame.getSuccessCount())
@@ -268,9 +306,11 @@ public class GameService {
         RouletteGame rouletteGame = rouletteRepository.findById(updateRouletteReq.getGameId()).orElseThrow(NonExistentGameException::new);
         List<Benefit> benefitList = benefitRepository.findAllByGame(rouletteGame.getGame());
         benefitList.forEach(benefit -> benefit.deleteGame());
+        Store store = storeRepository.findById(updateRouletteReq.getStoreId()).orElseThrow(InvalidStoreIdException::new);
 
         List<Benefit> newBenefitList = updateRouletteReq.getOptions().stream()
                 .map(option -> Benefit.builder()
+                        .store(store)
                         .content(option)
                         .type(updateRouletteReq.getBenefitType())
                         .game(rouletteGame.getGame())
@@ -291,6 +331,7 @@ public class GameService {
 
         UpdateRouletteRes updateRouletteRes = UpdateRouletteRes.builder()
                 .gameId(rouletteGame.getId())
+                .storeId(store.getId())
                 .options(rouletteGame.getOptions())
                 .benefits(benefitResDtoList)
                 .build();

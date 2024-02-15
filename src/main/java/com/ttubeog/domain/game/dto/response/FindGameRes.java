@@ -14,8 +14,6 @@ public class FindGameRes {
     @Schema(description = "게임 ID", example = "1")
     private Long gameId;
 
-    //private Long storeId;
-
     @Schema(description = "종류", example = "roulette")
     private GameType type;
 
@@ -35,7 +33,7 @@ public class FindGameRes {
     private List<String> options;
 
     @Builder
-    public FindGameRes(Long gameId,  GameType type, LocalTime timeLimit, Integer giftCount, Integer ballCount, Integer successCount, List<String> options) {
+    public FindGameRes(Long gameId, GameType type, LocalTime timeLimit, Integer giftCount, Integer ballCount, Integer successCount, List<String> options) {
         this.gameId = gameId;
         this.type = type;
         this.timeLimit = timeLimit;
