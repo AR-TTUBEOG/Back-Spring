@@ -35,4 +35,8 @@ public class RoadCoordinate extends BaseEntity {
         this.latitude = latitude;
         this.longitude = longitude;
     }
+
+    public void updateRoad(Road road) {
+        this.road = road;
+    }
 }

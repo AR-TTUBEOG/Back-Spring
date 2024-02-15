@@ -22,6 +22,9 @@ public class Road extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "road_type", nullable = false)
+    private RoadType roadType;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "spot_id")
     private Spot spot;
@@ -43,8 +46,9 @@ public class Road extends BaseEntity {
     @Column(name = "time", nullable = false)
     private String time;
 
-    public Road(Long id, Spot spot, Store store, Member member, String name, List<RoadCoordinate> roadCoordinateList, String time) {
+    public Road(Long id, RoadType roadType, Spot spot, Store store, Member member, String name, List<RoadCoordinate> roadCoordinateList, String time) {
         this.id = id;
+        this.roadType = roadType;
         this.spot = spot;
         this.store = store;
         this.member = member;
