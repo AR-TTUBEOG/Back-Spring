@@ -53,6 +53,8 @@ public class GuestBookService {
 
     private final JwtTokenProvider jwtTokenProvider;
 
+
+    // ResponseEntity 형식에 맞춰 빌드하는 메서드
     @NonNull
     private ResponseEntity<?> getResponseEntity(GuestBook guestBook) {
 
@@ -88,6 +90,8 @@ public class GuestBookService {
         return ResponseEntity.ok(apiResponse);
     }
 
+    // GuestBook(방명록) 을 하나 생성하는 Service Method 입니다.
+    // Spot 이나 Store Controller 혹은 Service 단에서 불러와서 사용 가능합니다.
     @Transactional
     public ResponseEntity<?> createGuestBook(HttpServletRequest request, CreateGuestBookRequestDto createGuestBookRequestDto) {
 
@@ -169,6 +173,7 @@ public class GuestBookService {
     }
 
 
+    // GuestBook 을 Id(PK) 값으로 찾는 Method 입니다. 현재 사용하지 않습니다.
     public ResponseEntity<?> findByGuestBookId(HttpServletRequest request, Long guestBookId) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -179,6 +184,7 @@ public class GuestBookService {
         return getResponseEntity(guestBook);
     }
 
+    // Spot ID 로 GuestBook 을 조회하는 Method 입니다. 현재 따로 사용하지 않습니다.
     public ResponseEntity<?> findGuestBookBySpotId(HttpServletRequest request, Long spotId) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -208,6 +214,7 @@ public class GuestBookService {
         return ResponseEntity.ok(apiResponse);
     }
 
+    // Store ID 로 GuestBook 을 조회하는 Method 입니다. 현재 따로 사용하지 않습니다.
     public ResponseEntity<?> findGuestBookByStoreId(HttpServletRequest request, Long storeId) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -238,6 +245,7 @@ public class GuestBookService {
     }
 
 
+    // GuestBook 을 Update 하는 Method 입니다. 현재 따로 사용하지 않습니다.
     @Transactional
     public ResponseEntity<?> updateGuestBook(HttpServletRequest request, Long guestBookId, UpdateGuestBookRequestDto updateGuestBookRequestDto) {
 
@@ -266,6 +274,7 @@ public class GuestBookService {
         return getResponseEntity(guestBook);
     }
 
+    // GuestBook 을 하나 Delete 하는 Method 입니다.
     @Transactional
     public ResponseEntity<?> deleteGuestBook(HttpServletRequest request, Long guestBookId) {
         Long memberId = jwtTokenProvider.getMemberId(request);
