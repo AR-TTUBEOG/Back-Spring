@@ -1,5 +1,9 @@
 package com.ttubeog.domain.store.presentation;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ttubeog.domain.benefit.application.BenefitService;
+import com.ttubeog.domain.game.application.GameService;
+import com.ttubeog.domain.game.dto.response.FindGameRes;
 import com.ttubeog.domain.likes.application.LikesService;
 import com.ttubeog.domain.store.application.StoreService;
 import com.ttubeog.domain.store.dto.request.RegisterStoreReq;
@@ -29,6 +33,7 @@ public class StoreController {
 
     private final StoreService storeService;
     private final LikesService likesService;
+    private final GameService gameService;
 
 
     // 매장 등록
@@ -99,5 +104,19 @@ public class StoreController {
             @PathVariable Long storeId
     ) {
         return likesService.likesStore(request, storeId);
+    }
+
+    //StoreId로 매장 조회
+    @Operation(summary = "매장ID로 게임 조회", description = "매장에 해당하는 모든 게임을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "게임 조회 누르기 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = FindGameRes.class))}),
+            @ApiResponse(responseCode = "400", description = "게임 조회 누르기 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
+    })
+    @PostMapping("/{storeId}/game")
+    public ResponseEntity<?> findBenefitByStore(
+            HttpServletRequest request,
+            @PathVariable Long storeId
+    ) throws JsonProcessingException {
+        return gameService.findByStore(request, storeId);
     }
 }

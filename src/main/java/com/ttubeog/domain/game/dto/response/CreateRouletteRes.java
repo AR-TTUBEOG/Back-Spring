@@ -18,10 +18,10 @@ public class CreateRouletteRes {
     @Schema(description = "매장ID", example = "1")
     private Long storeId;
 
-    private List<RouletteBenefitResDto> benefits;
+    private List<BenefitResDto> benefits;
 
     @Builder
-    public CreateRouletteRes(Long gameId, Long storeId, List<String> options, List<RouletteBenefitResDto> benefits) {
+    public CreateRouletteRes(Long gameId, Long storeId, List<String> options, List<BenefitResDto> benefits) {
         this.gameId = gameId;
         this.storeId = storeId;
         this.options = options;

@@ -1,7 +1,6 @@
 package com.ttubeog.domain.game.application;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ttubeog.domain.auth.config.SecurityUtil;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.benefit.domain.Benefit;
 import com.ttubeog.domain.benefit.domain.MemberBenefit;
@@ -20,7 +19,6 @@ import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.domain.store.exception.InvalidStoreIdException;
-import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,10 +28,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -196,8 +192,8 @@ public class GameService {
                 .build();
         rouletteRepository.save(rouletteGame);
 
-        List<RouletteBenefitResDto> benefitResDtoList = benefitList.stream()
-                .map(benefit -> RouletteBenefitResDto.builder()
+        List<BenefitResDto> benefitResDtoList = benefitList.stream()
+                .map(benefit -> BenefitResDto.builder()
                         .benefitId(benefit.getId())
                         .content(benefit.getContent())
                         .type(benefit.getType())
@@ -321,8 +317,8 @@ public class GameService {
 
         rouletteGame.updateRoulette(updateRouletteReq.getOptions());
 
-        List<RouletteBenefitResDto> benefitResDtoList = newBenefitList.stream()
-                .map(benefit -> RouletteBenefitResDto.builder()
+        List<BenefitResDto> benefitResDtoList = newBenefitList.stream()
+                .map(benefit -> BenefitResDto.builder()
                         .benefitId(benefit.getId())
                         .content(benefit.getContent())
                         .type(benefit.getType())
@@ -407,8 +403,8 @@ public class GameService {
         Game game = gameRepository.findById(gameId).orElseThrow(NonExistentGameException::new);
         List<Benefit> benefitList = benefitRepository.findAllByGame(game);
 
-        List<RouletteBenefitResDto> benefitResDtoList = benefitList.stream()
-                .map(benefit -> RouletteBenefitResDto.builder()
+        List<BenefitResDto> benefitResDtoList = benefitList.stream()
+                .map(benefit -> BenefitResDto.builder()
                         .benefitId(benefit.getId())
                         .content(benefit.getContent())
                         .type(benefit.getType())
@@ -423,4 +419,47 @@ public class GameService {
         return ResponseEntity.ok(apiResponse);
     }
 
+    //매장ID로 게임 조회
+    public ResponseEntity<?> findByStore(HttpServletRequest request, Long storeId) throws JsonProcessingException {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Store store = storeRepository.findById(storeId).orElseThrow(InvalidStoreIdException::new);
+        List<Benefit> benefitList = benefitRepository.findAllByStoreAndGameIsNotNull(store);
+        
+        List<Game> gameList = benefitList.stream()
+                .map(Benefit::getGame)
+                .distinct() // 중복 제거
+                .collect(Collectors.toList());
+
+        // 변환된 FindGameRes 리스트를 저장할 리스트
+        List<FindGameRes> findGameResList = new ArrayList<>();
+
+        for (Game game : gameList) {
+            FindGameRes.FindGameResBuilder builder = FindGameRes.builder()
+                    .gameId(game.getId())
+                    .type(game.getType());
+
+            if (game.getType() == GameType.BASKETBALL) {
+                builder.timeLimit(game.getBasketballGame().getTimeLimit())
+                        .ballCount(game.getBasketballGame().getBallCount())
+                        .successCount(game.getBasketballGame().getSuccessCount());
+            } else if (game.getType() == GameType.GIFT) {
+                builder.timeLimit(game.getGiftGame().getTimeLimit())
+                        .giftCount(game.getGiftGame().getGiftCount());
+            } else if (game.getType() == GameType.ROULETTE) {
+                Hibernate.initialize(game.getRouletteGame().getOptions()); // 명시적 초기화
+                builder.options(game.getRouletteGame().getOptions());
+            }
+
+            FindGameRes findGameRes = builder.build();
+            findGameResList.add(findGameRes);
+        }
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(findGameResList)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
 }
