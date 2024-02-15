@@ -210,14 +210,10 @@ public class SpotService {
         spotRepository.delete(spot);
 
         List<Image> imageList = imageRepository.findBySpotId(spot.getId());
-        for (Image image : imageList) {
-            imageService.deleteImage(image.getId());
-        }
+        imageRepository.deleteAll(imageList);
 
         List<GuestBook> guestBookList = guestBookRepository.findAllBySpot_Id(spotId);
-        for (GuestBook guestBook : guestBookList) {
-            guestBookService.deleteGuestBook(request, guestBook.getId());
-        }
+        guestBookRepository.deleteAll(guestBookList);
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
