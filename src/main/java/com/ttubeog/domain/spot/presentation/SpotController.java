@@ -331,7 +331,7 @@ public class SpotController {
             description = "산책 스팟을 방명록을 작성합니다.\n" +
                     "GuestBook(방명록) 기능 미구현.",
             responses = {@ApiResponse(
-                    responseCode = "201",
+                    responseCode = "200",
                     description = "OK",
                     content = {
                             @Content(
