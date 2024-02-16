@@ -51,8 +51,8 @@ public class GameService {
     @Transactional
     public ResponseEntity<?> createGift(HttpServletRequest request, CreateGiftReq createGiftReq) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
-        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
-        Store store = storeRepository.findById(createGiftReq.getStoreId()).orElseThrow(InvalidStoreIdException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Store store = storeRepository.findByIdAndMember(createGiftReq.getStoreId(), member).orElseThrow(InvalidStoreIdException::new);
 
         //store에 이미 존재하는 gametype인지 확인
         List<Benefit> checkBenefitList = benefitRepository.findAllByStoreAndGameIsNotNull(store);
@@ -105,8 +105,8 @@ public class GameService {
     @Transactional
     public ResponseEntity<?> createBasketBall(HttpServletRequest request, CreateBasketballReq createBasketballReq) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
-        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
-        Store store = storeRepository.findById(createBasketballReq.getStoreId()).orElseThrow(InvalidStoreIdException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Store store = storeRepository.findByIdAndMember(createBasketballReq.getStoreId(), member).orElseThrow(InvalidStoreIdException::new);
 
         //store에 이미 존재하는 gametype인지 확인
         List<Benefit> checkBenefitList = benefitRepository.findAllByStoreAndGameIsNotNull(store);
@@ -161,8 +161,8 @@ public class GameService {
     @Transactional
     public ResponseEntity<?> createRoulette(HttpServletRequest request, CreateRouletteReq createRouletteReq) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
-        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
-        Store store = storeRepository.findById(createRouletteReq.getStoreId()).orElseThrow(InvalidStoreIdException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Store store = storeRepository.findByIdAndMember(createRouletteReq.getStoreId(), member).orElseThrow(InvalidStoreIdException::new);
 
         //store에 이미 존재하는 gametype인지 확인
         List<Benefit> checkBenefitList = benefitRepository.findAllByStoreAndGameIsNotNull(store);
@@ -219,11 +219,11 @@ public class GameService {
     @Transactional
     public ResponseEntity<?> updateGift(HttpServletRequest request, UpdateGiftReq updateGiftReq) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
-        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Store store = storeRepository.findByIdAndMember(updateGiftReq.getStoreId(), member).orElseThrow(InvalidStoreIdException::new);
         GiftGame giftGame = giftGameRepository.findById(updateGiftReq.getGameId()).orElseThrow(NonExistentGameException::new);
         Benefit benefit = benefitRepository.findByGame(giftGame.getGame()).orElseThrow(NonExistentBenefitException::new);
         benefit.deleteGame();
-        Store store = storeRepository.findById(updateGiftReq.getStoreId()).orElseThrow(InvalidStoreIdException::new);
 
         giftGame.updateTimeLimit(updateGiftReq.getTimeLimit());
         giftGame.updateGiftCount(updateGiftReq.getGiftCount());
@@ -257,11 +257,11 @@ public class GameService {
     @Transactional
     public ResponseEntity<?> updateBasketball(HttpServletRequest request, UpdateBasketballReq updateBasketballReq) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
-        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Store store = storeRepository.findByIdAndMember(updateBasketballReq.getStoreId(), member).orElseThrow(InvalidStoreIdException::new);
         BasketballGame basketballGame = basketBallRepository.findById(updateBasketballReq.getGameId()).orElseThrow(NonExistentGameException::new);
         Benefit benefit = benefitRepository.findByGame(basketballGame.getGame()).orElseThrow(NonExistentBenefitException::new);
         benefit.deleteGame();
-        Store store = storeRepository.findById(updateBasketballReq.getStoreId()).orElseThrow(InvalidStoreIdException::new);
 
         basketballGame.updateBallCount(updateBasketballReq.getBallCount());
         basketballGame.updateSuccessCount(updateBasketballReq.getSuccessCount());
@@ -298,11 +298,11 @@ public class GameService {
     @Transactional
     public ResponseEntity<?> updateRoulette(HttpServletRequest request, UpdateRouletteReq updateRouletteReq) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
-        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Store store = storeRepository.findByIdAndMember(updateRouletteReq.getStoreId(), member).orElseThrow(InvalidStoreIdException::new);
         RouletteGame rouletteGame = rouletteRepository.findById(updateRouletteReq.getGameId()).orElseThrow(NonExistentGameException::new);
         List<Benefit> benefitList = benefitRepository.findAllByGame(rouletteGame.getGame());
         benefitList.forEach(benefit -> benefit.deleteGame());
-        Store store = storeRepository.findById(updateRouletteReq.getStoreId()).orElseThrow(InvalidStoreIdException::new);
 
         List<Benefit> newBenefitList = updateRouletteReq.getOptions().stream()
                 .map(option -> Benefit.builder()
