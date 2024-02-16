@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalTime;
+
 @Data
 public class CreateBasketballRes {
 
@@ -17,8 +19,8 @@ public class CreateBasketballRes {
     @Schema(description = "매장ID", example = "1")
     private Long storeId;
 
-    @Schema(description = "시간제한", example = "15")
-    private Integer timeLimit;
+    @Schema(description = "시간제한", example = "00:00:15")
+    private LocalTime timeLimit;
 
     @Schema(description = "공 개수", example = "10")
     private Integer ballCount;
@@ -33,7 +35,7 @@ public class CreateBasketballRes {
     private BenefitType benefitType;
 
     @Builder
-    public CreateBasketballRes(Long gameId, Long benefitId, Long storeId, Integer timeLimit, Integer ballCount, Integer successCount, String benefitContent, BenefitType benefitType) {
+    public CreateBasketballRes(Long gameId, Long benefitId, Long storeId, LocalTime timeLimit, Integer ballCount, Integer successCount, String benefitContent, BenefitType benefitType) {
         this.gameId = gameId;
         this.benefitId = benefitId;
         this.storeId = storeId;

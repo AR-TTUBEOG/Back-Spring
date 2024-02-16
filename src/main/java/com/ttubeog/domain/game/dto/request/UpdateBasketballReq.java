@@ -4,6 +4,8 @@ import com.ttubeog.domain.benefit.domain.BenefitType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.time.LocalTime;
+
 @Data
 @Schema(description = "UpdateBasketballGameRequest")
 public class UpdateBasketballReq {
@@ -14,8 +16,8 @@ public class UpdateBasketballReq {
     @Schema(description = "매장ID", example = "1")
     private Long storeId;
 
-    @Schema(description = "시간제한", example = "15")
-    private Integer timeLimit;
+    @Schema(description = "시간제한", example = "00:00:15")
+    private LocalTime timeLimit;
 
     @Schema(description = "공 개수", example = "10")
     private Integer ballCount;

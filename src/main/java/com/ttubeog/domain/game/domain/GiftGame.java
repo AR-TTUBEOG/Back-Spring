@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalTime;
+
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
@@ -23,19 +25,19 @@ public class GiftGame extends BaseEntity {
     private Game game;
 
     @Column(name = "time_limit")
-    private Integer timeLimit;
+    private LocalTime timeLimit;
 
     @Column(name = "gift_count")
     private Integer giftCount;
 
     @Builder
-    public GiftGame(Game game, int timeLimit, Integer giftCount) {
+    public GiftGame(Game game, LocalTime timeLimit, Integer giftCount) {
         this.game = game;
         this.timeLimit = timeLimit;
         this.giftCount = giftCount;
     }
 
-    public void updateTimeLimit(Integer timeLimit) {
+    public void updateTimeLimit(LocalTime timeLimit) {
         this.timeLimit = timeLimit;
     }
 
