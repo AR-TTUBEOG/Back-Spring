@@ -43,10 +43,8 @@ public class Road extends BaseEntity {
     @OneToMany(mappedBy = "road", cascade = CascadeType.ALL)
     private List<RoadCoordinate> roadCoordinateList;
 
-    @Column(name = "time", nullable = false)
-    private String time;
 
-    public Road(Long id, RoadType roadType, Spot spot, Store store, Member member, String name, List<RoadCoordinate> roadCoordinateList, String time) {
+    public Road(Long id, RoadType roadType, Spot spot, Store store, Member member, String name, List<RoadCoordinate> roadCoordinateList) {
         this.id = id;
         this.roadType = roadType;
         this.spot = spot;
@@ -54,6 +52,5 @@ public class Road extends BaseEntity {
         this.member = member;
         this.name = name;
         this.roadCoordinateList = roadCoordinateList;
-        this.time = time;
     }
 }

@@ -1,6 +1,10 @@
 package com.ttubeog.domain.road.dto.response;
 
+import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.road.domain.RoadType;
+import com.ttubeog.domain.roadcoordinate.domain.RoadCoordinate;
+import com.ttubeog.domain.spot.domain.Spot;
+import com.ttubeog.domain.store.domain.Store;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
@@ -24,8 +28,6 @@ public class RoadResponseDto {
 
     private String name;
 
-    private List<List<Double>> roadCoordinateList;
-
-    private String time;
+    private List<List<Double>> roadCoordinateDoubleList;
 
 }

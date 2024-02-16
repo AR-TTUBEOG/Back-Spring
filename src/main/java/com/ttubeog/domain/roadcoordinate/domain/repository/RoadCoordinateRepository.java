@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface RoedCoordinateRepository extends JpaRepository<RoadCoordinate, Long> {
+public interface RoadCoordinateRepository extends JpaRepository<RoadCoordinate, Long> {
 }

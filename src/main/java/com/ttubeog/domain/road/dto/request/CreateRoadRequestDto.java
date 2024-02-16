@@ -16,12 +16,8 @@ public class CreateRoadRequestDto {
 
     private Long storeId;
 
-    private Long memberId;
-
     private String name;
 
     private List<List<Double>> roadCoordinateList;
-
-    private String time;
 
 }

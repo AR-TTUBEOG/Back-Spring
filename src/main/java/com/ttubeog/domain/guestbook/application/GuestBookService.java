@@ -280,9 +280,13 @@ public class GuestBookService {
     public ResponseEntity<?> deleteGuestBook(HttpServletRequest request, Long guestBookId) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
-        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         GuestBook guestBook = guestBookRepository.findById(guestBookId).orElseThrow(InvalidGuestBookIdException::new);
+
+        if (!guestBook.getMember().equals(member)) {
+            throw new InvalidMemberException();
+        }
 
         guestBookRepository.delete(guestBook);
 

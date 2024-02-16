@@ -5,6 +5,7 @@ import com.ttubeog.domain.road.application.RoadService;
 import com.ttubeog.domain.road.dto.request.CreateRoadRequestDto;
 import com.ttubeog.global.config.security.token.CurrentUser;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class RoadController {
             @CurrentUser HttpServletRequest request,
             @RequestBody CreateRoadRequestDto createRoadRequestDto
     ) throws JsonProcessingException {
-        return roadService.createGuestBook(request, createRoadRequestDto);
+        return roadService.createRoad(request, createRoadRequestDto);
     }
 
     @GetMapping("/{spotId}&{pageNum}")
@@ -33,7 +34,7 @@ public class RoadController {
     public ResponseEntity<?> findRoadBySpotId(
             @CurrentUser HttpServletRequest request,
             @RequestParam(name = "spotId") Long spotId,
-            @RequestParam(name = "pageNum") Long pageNum
+            @RequestParam(name = "pageNum") Integer pageNum
     ) throws JsonProcessingException {
         return roadService.findRoadBySpotId(request, spotId, pageNum);
     }
@@ -43,7 +44,7 @@ public class RoadController {
     public ResponseEntity<?> findRoadByStoreId(
             @CurrentUser HttpServletRequest request,
             @RequestParam(name = "storeId") Long storeId,
-            @RequestParam(name = "pageNum") Long pageNum
+            @RequestParam(name = "pageNum") Integer pageNum
     ) throws JsonProcessingException {
         return roadService.findRoadByStoreId(request, storeId, pageNum);
     }
