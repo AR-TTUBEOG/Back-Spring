@@ -58,10 +58,13 @@ public class GetAllPlaceRes {
     @Schema(description = "사용자와의 거리")
     private Double distance;
 
+    @Schema(description = "게임 존재 여부")
+    private Boolean hasGame;
+
     @Builder
     public GetAllPlaceRes(Long placeId, PlaceType placeType, String dongName, Long memberId, String name, String info, Double latitude, Double longitude,
                           String image, Float stars, Integer guestbookCount, Integer likesCount, Boolean isFavorited,
-                          LocalDateTime createdAt, Integer recommendationScore, Double distance) {
+                          LocalDateTime createdAt, Integer recommendationScore, Double distance, Boolean hasGame) {
         this.placeId = placeId;
         this.placeType = placeType;
         this.dongName = dongName;
@@ -78,6 +81,7 @@ public class GetAllPlaceRes {
         this.createdAt = createdAt;
         this.recommendationScore = recommendationScore;
         this.distance = distance;
+        this.hasGame = hasGame;
     }
 
     public Integer getLikesCount() {

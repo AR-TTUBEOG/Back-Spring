@@ -44,9 +44,12 @@ public class SearchPlaceRes {
     @Schema(description = "좋아요 여부")
     private Boolean isFavorited;
 
+    @Schema(description = "게임 존재 여부")
+    private Boolean hasGame;
+
     @Builder
     public SearchPlaceRes(Long placeId, PlaceType placeType, String dongName, Long memberId, String name, Double latitude, Double longitude,
-                          String image, Float stars, Integer guestbookCount, Integer likesCount, Boolean isFavorited) {
+                          String image, Float stars, Integer guestbookCount, Integer likesCount, Boolean isFavorited, Boolean hasGame) {
         this.placeId = placeId;
         this.placeType = placeType;
         this.dongName = dongName;
@@ -59,5 +62,6 @@ public class SearchPlaceRes {
         this.guestbookCount = guestbookCount;
         this.likesCount = likesCount;
         this.isFavorited = isFavorited;
+        this.hasGame = hasGame;
     }
 }

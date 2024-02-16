@@ -1,6 +1,10 @@
 package com.ttubeog.domain.place.application;
 
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
+import com.ttubeog.domain.benefit.domain.Benefit;
+import com.ttubeog.domain.benefit.domain.repository.BenefitRepository;
+import com.ttubeog.domain.benefit.domain.repository.MemberBenefitRepository;
+import com.ttubeog.domain.benefit.exception.OverlappingBenefitException;
 import com.ttubeog.domain.guestbook.domain.repository.GuestBookRepository;
 import com.ttubeog.domain.image.domain.Image;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
@@ -25,6 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -45,6 +50,9 @@ public class PlaceService {
     private final LikesRepository likesRepository;
     private final ImageRepository imageRepository;
     private final GuestBookRepository guestBookRepository;
+    private final BenefitRepository benefitRepository;
+    private final MemberBenefitRepository memberBenefitRepository;
+
     private final JwtTokenProvider jwtTokenProvider;
 
     public List<GetAllPlaceRes> getPageOfPlaces(List<GetAllPlaceRes> places, int page, int size) {
@@ -62,6 +70,7 @@ public class PlaceService {
         places.addAll(stores.stream().map(store -> mapStoreToDto(request, store)).collect(Collectors.toList()));
         List<Spot> spots = spotRepository.findAll();
         places.addAll(spots.stream().map(spot -> mapSpotToDto(request, spot)).collect(Collectors.toList()));
+
         int page = pageable.getPageNumber();
         int size = pageable.getPageSize();
 
@@ -73,9 +82,17 @@ public class PlaceService {
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
+        // 장소 타입
+        PlaceType placeType = new PlaceType(true, false);
+
         // 현재 로그인 유저의 좋아요 여부
         Boolean storeLiked = likesRepository.existsByMemberAndStore(member, store);
-        PlaceType placeType = new PlaceType(true, false);
+
+        Integer likesCount = likesRepository.countByStore(store);
+
+        // 해당 매장의 혜택 여부
+        List<Benefit> checkBenefitList = benefitRepository.findByStore(store);
+        Boolean hasGame = memberBenefitRepository.existsByBenefitInAndMemberAndCreatedAtIsAfter(checkBenefitList, member, LocalDateTime.now().minusMonths(1));
 
         // 가장 인덱스가 작은 이미지 선택 (대표 이미지)
         List<Image> storeImages = imageRepository.findByStoreId(store.getId());
@@ -93,13 +110,16 @@ public class PlaceService {
                 .dongName(store.getDongArea().getDongName())
                 .memberId(store.getMember().getId())
                 .name(store.getName())
+                .info(store.getInfo())
                 .latitude(store.getLatitude())
                 .longitude(store.getLongitude())
                 .image(representativeImageUrl)
                 .stars(store.getStars())
                 .guestbookCount(intValue(guestBookRepository.countAllByStore(store)))
                 .isFavorited(storeLiked)
+                .likesCount(likesCount)
                 .createdAt(store.getCreatedAt())
+                .hasGame(hasGame)
                 .build();
     }
 
@@ -108,9 +128,12 @@ public class PlaceService {
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
+        PlaceType placeType = new PlaceType(false, true);
+
         // 현재 로그인 유저의 좋아요 여부
         Boolean spotLiked = likesRepository.existsByMemberAndSpot(member, spot);
-        PlaceType placeType = new PlaceType(false, true);
+
+        Integer likesCount = likesRepository.countBySpot(spot);
 
         // 가장 인덱스가 작은 이미지 선택 (대표 이미지)
         List<Image> spotImages = imageRepository.findBySpotId(spot.getId());
@@ -127,13 +150,15 @@ public class PlaceService {
                 .placeType(placeType)
                 .memberId(spot.getMember().getId())
                 .name(spot.getName())
-                //위도, 경도 double로 변경 필요
+                .info(spot.getInfo())
+                // 위도, 경도 double로 변경 필요
                 //.latitude(spot.getLatitude())
                 //.longitude(spot.getLongitude())
                 .image(representativeImageUrl)
                 .stars(spot.getStars())
                 .guestbookCount(intValue(guestBookRepository.countAllBySpot(spot)))
                 .isFavorited(spotLiked)
+                .likesCount(likesCount)
                 .createdAt(spot.getCreatedAt())
                 .build();
     }
@@ -322,6 +347,7 @@ public class PlaceService {
                         .guestbookCount(place.getGuestbookCount())
                         .likesCount(place.getLikesCount())
                         .isFavorited(place.getIsFavorited())
+                        .hasGame(place.getHasGame())
                         .build())
                 .collect(Collectors.toList());
 
