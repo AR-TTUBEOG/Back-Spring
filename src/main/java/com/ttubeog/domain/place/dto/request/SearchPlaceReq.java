@@ -9,6 +9,6 @@ public class SearchPlaceReq {
     @Schema(description = "검색어")
     private String keyword;
 
-    @Schema(description = "지역(동) ID")
-    private Long dongAreaId;
+    @Schema(description = "지역(동) 이름")
+    private String dongName;
 }

@@ -14,8 +14,8 @@ public class SearchPlaceRes {
     @Schema(description = "매장 또는 산책스팟")
     private PlaceType placeType;
 
-    @Schema(description = "동(지역) ID")
-    private Long dongAreaId;
+    @Schema(description = "지역(동) 이름")
+    private String dongName;
 
     @Schema(description = "등록유저 ID")
     private Long memberId;
@@ -45,11 +45,11 @@ public class SearchPlaceRes {
     private Boolean isFavorited;
 
     @Builder
-    public SearchPlaceRes(Long placeId, PlaceType placeType, Long dongAreaId, Long memberId, String name, Double latitude, Double longitude,
+    public SearchPlaceRes(Long placeId, PlaceType placeType, String dongName, Long memberId, String name, Double latitude, Double longitude,
                           String image, Float stars, Integer guestbookCount, Integer likesCount, Boolean isFavorited) {
         this.placeId = placeId;
         this.placeType = placeType;
-        this.dongAreaId = dongAreaId;
+        this.dongName = dongName;
         this.memberId = memberId;
         this.name = name;
         this.latitude = latitude;

@@ -214,7 +214,7 @@ public class StoreService {
         guestBookRepository.deleteAll(guestBooks);
 
         // 해당 매장과 연관된 좋아요 삭제
-        List<Likes> likes = likesRepository.findByStoreId(storeId);
+        List<Likes> likes = likesRepository.findByStore_Id(storeId);
         likesRepository.deleteAll(likes);
 
         // 해당 매장과 연관된 이미지 삭제
@@ -246,7 +246,7 @@ public class StoreService {
                 .map(Benefit::getType)
                 .collect(Collectors.toList());
         Integer guestbookCount = guestBookRepository.countAllByStore_Id(storeId).intValue();
-        Integer likesCount = likesRepository.countByStoreId(storeId);
+        Integer likesCount = likesRepository.countByStore_Id(storeId);
         //Boolean isFavorited = likesRepository.existsByMemberIdAndStoreId(memberId, storeId);
 
         GetStoreDetailRes getStoreDetailRes = GetStoreDetailRes.builder()

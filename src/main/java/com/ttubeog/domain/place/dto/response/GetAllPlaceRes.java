@@ -16,14 +16,17 @@ public class GetAllPlaceRes {
     @Schema(description = "매장 또는 산책스팟")
     private PlaceType placeType;
 
-    @Schema(description = "동(지역) ID")
-    private Long dongAreaId;
+    @Schema(description = "지역(동) 이름")
+    private String dongName;
 
     @Schema(description = "등록유저 ID")
     private Long memberId;
 
     @Schema(description = "장소 이름")
     private String name;
+
+    @Schema(description = "장소 설명")
+    private String info;
 
     @Schema(description = "위도")
     private Double latitude;
@@ -56,14 +59,15 @@ public class GetAllPlaceRes {
     private Double distance;
 
     @Builder
-    public GetAllPlaceRes(Long placeId, PlaceType placeType, Long dongAreaId, Long memberId, String name, Double latitude, Double longitude,
+    public GetAllPlaceRes(Long placeId, PlaceType placeType, String dongName, Long memberId, String name, String info, Double latitude, Double longitude,
                           String image, Float stars, Integer guestbookCount, Integer likesCount, Boolean isFavorited,
                           LocalDateTime createdAt, Integer recommendationScore, Double distance) {
         this.placeId = placeId;
         this.placeType = placeType;
-        this.dongAreaId = dongAreaId;
+        this.dongName = dongName;
         this.memberId = memberId;
         this.name = name;
+        this.info = info;
         this.latitude = latitude;
         this.longitude = longitude;
         this.image = image;
@@ -74,5 +78,9 @@ public class GetAllPlaceRes {
         this.createdAt = createdAt;
         this.recommendationScore = recommendationScore;
         this.distance = distance;
+    }
+
+    public Integer getLikesCount() {
+        return likesCount != null ? likesCount : 0;
     }
 }
