@@ -75,7 +75,7 @@ public class RoadController {
      * @return
      * @throws JsonProcessingException
      */
-    @Operation(summary = "산책 스팟 소속 산책로 페이징 조회 API",
+    @Operation(summary = "산책 스팟 소속 산책로 페이징 조회 API / findRoadBySpotId",
             description = "산책 스팟에 속한 산책로를 페이징하여 조회하는 API 입니다.",
             responses = {@ApiResponse(
                     responseCode = "200",
@@ -118,7 +118,7 @@ public class RoadController {
      * @return
      * @throws JsonProcessingException
      */
-    @Operation(summary = "매장 소속 산책로 페이징 조회 API",
+    @Operation(summary = "매장 소속 산책로 페이징 조회 API / findRoadByStoreId",
             description = "매장에 속한 산책로를 페이징하여 조회하는 API 입니다.",
             responses = {@ApiResponse(
                     responseCode = "200",
@@ -160,7 +160,7 @@ public class RoadController {
      * @return
      * @throws JsonProcessingException
      */
-    @Operation(summary = "산책로 삭제 API",
+    @Operation(summary = "산책로 삭제 API / deleteRoadgi",
             description = "산책로를 삭제하는 API 입니다.",
             responses = {@ApiResponse(
                     responseCode = "200",
