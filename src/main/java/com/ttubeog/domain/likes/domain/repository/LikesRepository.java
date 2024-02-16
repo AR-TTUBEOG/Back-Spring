@@ -9,12 +9,12 @@ import java.util.List;
 @Repository
 public interface LikesRepository extends JpaRepository<Likes, Long> {
   
-    List<Likes> findByStoreId(Long storeId);
+    List<Likes> findByStore_Id(Long storeId);
 
-    Integer countByStoreId(Long storeId);
+    Integer countByStore_Id(Long storeId);
   
-    boolean existsByMemberIdAndStoreId(Long memberId, Long StoreId);
+    boolean existsByMember_IdAndStore_Id(Long memberId, Long StoreId);
   
-    boolean existsByMemberIdAndSpotId(Long memberId, Long spotId);
+    boolean existsByMember_IdAndSpot_Id(Long memberId, Long spotId);
 
 }
