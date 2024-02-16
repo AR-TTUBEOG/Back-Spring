@@ -16,9 +16,10 @@ public class CreateGiftRes {
     @Schema(description = "혜택 ID", example = "1")
     private Long benefitId;
 
-    //    private Long StoreId;
+    @Schema(description = "매장ID", example = "1")
+    private Long storeId;
 
-    @Schema(description = "시간제한", example = "00:01:30")
+    @Schema(description = "시간제한", example = "00:00:15")
     private LocalTime timeLimit;
 
     @Schema(description = "선물개수", example = "3")
@@ -31,9 +32,10 @@ public class CreateGiftRes {
     private BenefitType benefitType;
 
     @Builder
-    public CreateGiftRes(Long benefitId, Long gameId, LocalTime timeLimit, Integer giftCount, String benefitContent, BenefitType benefitType) {
+    public CreateGiftRes(Long benefitId, Long gameId, Long storeId, LocalTime timeLimit, Integer giftCount, String benefitContent, BenefitType benefitType) {
         this.benefitId = benefitId;
         this.gameId = gameId;
+        this.storeId = storeId;
         this.timeLimit = timeLimit;
         this.giftCount = giftCount;
         this.benefitContent = benefitContent;

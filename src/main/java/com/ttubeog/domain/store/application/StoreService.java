@@ -199,14 +199,14 @@ public class StoreService {
         }
 
         // 특정 유저가 가진 해당 매장의 혜택 삭제
-        List<Benefit> benefitsToDelete = benefitRepository.findByStoreId(storeId);
+        List<Benefit> benefitsToDelete = benefitRepository.findByStore(store);
         for (Benefit benefit : benefitsToDelete) {
             List<MemberBenefit> memberBenefits = memberBenefitRepository.findByBenefitId(benefit.getId());
             memberBenefitRepository.deleteAll(memberBenefits);
         }
 
         // 해당 매장과 연관된 혜택 삭제
-        List<Benefit> benefits = benefitRepository.findByStoreId(storeId);
+        List<Benefit> benefits = benefitRepository.findByStore(store);
         benefitRepository.deleteAll(benefits);
 
         // 해당 매장과 연관된 방명록 삭제
@@ -241,7 +241,7 @@ public class StoreService {
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Store store = storeRepository.findById(storeId).orElseThrow(NonExistentStoreException::new);
 
-        List<BenefitType> storeBenefits = benefitRepository.findByStoreId(storeId)
+        List<BenefitType> storeBenefits = benefitRepository.findByStore(store)
                 .stream()
                 .map(Benefit::getType)
                 .collect(Collectors.toList());

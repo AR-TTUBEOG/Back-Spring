@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class RouletteBenefitResDto {
+public class BenefitResDto {
 
 
     @Schema(description = "혜택 Id", example = "1")
@@ -21,7 +21,7 @@ public class RouletteBenefitResDto {
     private BenefitType type;
 
     @Builder
-    public RouletteBenefitResDto(Long benefitId, String content, BenefitType type) {
+    public BenefitResDto(Long benefitId, String content, BenefitType type) {
         this.benefitId = benefitId;
         this.content = content;
         this.type = type;
