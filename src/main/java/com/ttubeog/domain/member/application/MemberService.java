@@ -76,7 +76,7 @@ public class MemberService {
                 MemberNicknameRes memberNicknameRes = MemberNicknameRes.builder()
                         .id(checkMember.getId())
                         .nickname(checkMember.getNickname())
-                        .isChanged(checkMember.getNicknameChange())
+                        .nicknameChanged(checkMember.getNicknameChange())
                         .build();
 
                 ApiResponse apiResponse = ApiResponse.builder()
@@ -98,7 +98,7 @@ public class MemberService {
         MemberNicknameRes memberNicknameRes = MemberNicknameRes.builder()
                 .id(member.getId())
                 .nickname(produceNicknameRequest.getNickname())
-                .isChanged(member.getNicknameChange())
+                .nicknameChanged(member.getNicknameChange())
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()

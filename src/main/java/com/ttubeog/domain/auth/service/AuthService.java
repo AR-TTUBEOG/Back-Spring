@@ -99,6 +99,11 @@ public class AuthService {
                     String refreshToken = issueRefreshToken(existingMember);
                     refreshTokenService.saveTokenInfo(existingMember.getId(), refreshToken, accessToken);
                     if(existingMember.getNickname() == null) {
+                        Member newMember = new Member(email, platform, Status.ACTIVE, platformId, false);
+                        Member savedMember = memberRepository.save(newMember);
+                        accessToken = issueAccessToken(savedMember);
+                        refreshToken = issueRefreshToken(savedMember);
+                        refreshTokenService.saveTokenInfo(savedMember.getId(), refreshToken, accessToken);
                         return new OAuthTokenResponse(accessToken, refreshToken, false);
                     } else {
                         return new OAuthTokenResponse(accessToken, refreshToken, true);
