@@ -91,8 +91,6 @@ public class MemberService {
         // 닉네임 업데이트
         memberRepository.updateMemberNickname(produceNicknameRequest.getNickname(), memberId);
 
-        // 닉네임 1회 변경 true로 변경
-        memberRepository.updateMemberNicknameChange(true, memberId);
 
         Optional<Member> checkMember = memberRepository.findById(memberId);
         Member member = checkMember.get();

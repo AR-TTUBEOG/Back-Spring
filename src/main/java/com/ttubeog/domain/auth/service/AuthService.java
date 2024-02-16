@@ -96,15 +96,19 @@ public class AuthService {
                 .map(existingMember -> {
                     validateStatus(existingMember);
                     String accessToken = issueAccessToken(existingMember);
-                    String refreshToken = issueRefreshToken();
+                    String refreshToken = issueRefreshToken(existingMember);
                     refreshTokenService.saveTokenInfo(existingMember.getId(), refreshToken, accessToken);
-                    return new OAuthTokenResponse(accessToken, refreshToken, true);
+                    if(existingMember.getNickname() == null) {
+                        return new OAuthTokenResponse(accessToken, refreshToken, false);
+                    } else {
+                        return new OAuthTokenResponse(accessToken, refreshToken, true);
+                    }
                 })
                 .orElseGet(() -> {
                     Member newMember = new Member(email, platform, Status.ACTIVE, platformId, false);
                     Member savedMember = memberRepository.save(newMember);
                     String accessToken = issueAccessToken(savedMember);
-                    String refreshToken = issueRefreshToken();
+                    String refreshToken = issueRefreshToken(savedMember);
                     refreshTokenService.saveTokenInfo(savedMember.getId(), refreshToken, accessToken);
                     return new OAuthTokenResponse(accessToken, refreshToken, false);
                 });
@@ -115,8 +119,8 @@ public class AuthService {
         return jwtTokenProvider.createAccessToken(findMember.getId());
     }
 
-    private String issueRefreshToken() {
-        return Token.createRefreshToken();
+    private String issueRefreshToken(final Member findMember) {
+        return jwtTokenProvider.createRefreshToken(findMember.getId());
     }
 
     private void validateStatus(final Member member) {

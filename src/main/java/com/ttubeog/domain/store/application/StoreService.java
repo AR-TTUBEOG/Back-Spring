@@ -226,6 +226,7 @@ public class StoreService {
 
         storeRepository.delete(store);
 
+
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
                 .information(Message.builder().message("매장 정보가 정상적으로 삭제되었습니다.").build())
