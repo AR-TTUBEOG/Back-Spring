@@ -10,6 +10,8 @@ import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
 import com.ttubeog.domain.member.dto.response.MemberDetailRes;
+import com.ttubeog.domain.member.dto.response.MemberNicknameRes;
+import com.ttubeog.domain.member.exception.AlreadyChangeNicknameException;
 import com.ttubeog.domain.member.exception.FailureMemberDeleteException;
 import com.ttubeog.domain.member.exception.InvalidAccessTokenExpiredException;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
@@ -19,13 +21,10 @@ import com.ttubeog.global.payload.Message;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.naming.spi.ResolveResult;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,43 +66,62 @@ public class MemberService {
     public ResponseEntity<?> postMemberNickname(HttpServletRequest request, ProduceNicknameRequest produceNicknameRequest) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
-        if (memberRepository.existsByNickname(produceNicknameRequest.getNickname())) {
-            Optional<Member> checkMember = memberRepository.findById(memberId);
-            Member member = checkMember.get();
+        // 닉네임 1회 변경 여부 확인
+        Optional<Member> checkMemberIsChanged = memberRepository.findById(memberId);
+        if (checkMemberIsChanged.isPresent()) {
+            Member member = checkMemberIsChanged.get();
+            if (member.isNickNameChanged()) {
+                Member checkMember = memberRepository.findById(memberId).get();
 
-            MemberDetailRes memberDetailRes = MemberDetailRes.builder()
-                    .id(member.getId())
-                    .name(member.getNickname())
-                    .platform(member.getPlatform())
-                    .isUsed(false)
-                    .build();
+                MemberNicknameRes memberNicknameRes = MemberNicknameRes.builder()
+                        .id(checkMember.getId())
+                        .nickname(checkMember.getNickname())
+                        .isChanged(checkMember.getNicknameChange())
+                        .build();
 
-            ApiResponse apiResponse = ApiResponse.builder()
-                    .check(true)
-                    .information(memberDetailRes)
-                    .build();
+                ApiResponse apiResponse = ApiResponse.builder()
+                        .check(false)
+                        .information(memberNicknameRes)
+                        .build();
 
-            return ResponseEntity.ok(apiResponse);
+                return ResponseEntity.ok(apiResponse);
+            }
         }
 
-        memberRepository.updateUserNickname(produceNicknameRequest.getNickname(), memberId);
+        // 닉네임 업데이트
+        memberRepository.updateMemberNickname(produceNicknameRequest.getNickname(), memberId);
+
+        // 닉네임 1회 변경 true로 변경
+        memberRepository.updateMemberNicknameChange(true, memberId);
 
         Optional<Member> checkMember = memberRepository.findById(memberId);
-
         Member member = checkMember.get();
 
-        MemberDetailRes memberDetailRes = MemberDetailRes.builder()
+        MemberNicknameRes memberNicknameRes = MemberNicknameRes.builder()
                 .id(member.getId())
-                .name(member.getNickname())
-                .platform(member.getPlatform())
-                .isUsed(true)
+                .nickname(produceNicknameRequest.getNickname())
+                .isChanged(member.getNicknameChange())
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
-                .information(memberDetailRes)
+                .information(memberNicknameRes)
                 .build();
 
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @Transactional
+    // 닉네임 중복 확인
+    public ResponseEntity<?> postMemberNicknameCheck(HttpServletRequest request, ProduceNicknameRequest produceNicknameRequest) {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+
+        Boolean isNicknameUsed = memberRepository.existsByNickname(produceNicknameRequest.getNickname());
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(!isNicknameUsed)
+                .information("닉네임 중복이면 check -> false, 중복이 아니면 check -> true")
+                .build();
         return ResponseEntity.ok(apiResponse);
     }
 
