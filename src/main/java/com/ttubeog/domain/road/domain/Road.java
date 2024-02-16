@@ -6,6 +6,7 @@ import com.ttubeog.domain.roadcoordinate.domain.RoadCoordinate;
 import com.ttubeog.domain.spot.domain.Spot;
 import com.ttubeog.domain.store.domain.Store;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,7 +16,7 @@ import java.util.List;
 @Entity
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Road extends BaseEntity {
 
     @Id
