@@ -124,8 +124,8 @@ public class GameController {
         return gameService.deleteGame(request, gameId);
     }
 
-    //게임 조회
-    @Operation(summary = "게임 조회", description = "게임을 조회합니다.")
+    //게임, 혜택 조회
+    @Operation(summary = "게임,혜택 조회", description = "게임과 해당 혜택을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "조회 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = FindGameRes.class) ) } ),
             @ApiResponse(responseCode = "400", description = "조회 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),

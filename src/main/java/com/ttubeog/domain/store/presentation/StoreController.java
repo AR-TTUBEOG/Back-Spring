@@ -106,8 +106,8 @@ public class StoreController {
         return likesService.likesStore(request, storeId);
     }
 
-    //StoreId로 매장 조회
-    @Operation(summary = "매장ID로 게임 조회", description = "매장에 해당하는 모든 게임을 조회합니다.")
+    //StoreId로 매장, 혜택 조회
+    @Operation(summary = "매장으로 게임, 혜택 조회", description = "매장ID에 해당하는 모든 게임과 해당 혜택을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "게임 조회 누르기 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = FindGameRes.class))}),
             @ApiResponse(responseCode = "400", description = "게임 조회 누르기 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
