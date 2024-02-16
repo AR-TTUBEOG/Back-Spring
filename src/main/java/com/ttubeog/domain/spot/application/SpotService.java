@@ -212,7 +212,7 @@ public class SpotService {
         List<Image> imageList = imageRepository.findBySpotId(spot.getId());
         imageRepository.deleteAll(imageList);
 
-        List<GuestBook> guestBookList = guestBookRepository.findAllBySpot_Id(spotId);
+        List<GuestBook> guestBookList = guestBookRepository.findAllBySpot(spot);
         guestBookRepository.deleteAll(guestBookList);
 
         ApiResponse apiResponse = ApiResponse.builder()

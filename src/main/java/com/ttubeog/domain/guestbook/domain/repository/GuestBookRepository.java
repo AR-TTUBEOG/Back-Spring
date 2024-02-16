@@ -15,7 +15,7 @@ import java.util.List;
 @Repository
 public interface GuestBookRepository extends JpaRepository<GuestBook, Long> {
 
-    List<GuestBook> findAllBySpot(Store store);
+    List<GuestBook> findAllBySpot(Spot spot);
 
     Page<GuestBook> findAllBySpot(Spot spot, PageRequest pageRequest);
 
@@ -24,7 +24,7 @@ public interface GuestBookRepository extends JpaRepository<GuestBook, Long> {
     @Query("SELECT SUM(g.star) FROM GuestBook g WHERE g.spot.id = :spotId")
     Float sumStarBySpotId(@Param("spotId") Long spotId);
 
-    List<GuestBook> findAllByStore_Id(Long storeId);
+    List<GuestBook> findAllByStore(Store store);
 
     Page<GuestBook> findAllByStore(Store store, PageRequest pageRequest);
 
