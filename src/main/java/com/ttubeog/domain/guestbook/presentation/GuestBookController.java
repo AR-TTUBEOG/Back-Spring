@@ -33,8 +33,8 @@ public class GuestBookController {
      * @return ResponseEntity -> GuestBookResponseDto
      * @throws JsonProcessingException json processing 에러
      */
-    @Operation(summary = "산책 스팟 생성",
-            description = "산책 스팟을 생성합니다.",
+    @Operation(summary = "방명록 생성 / createGuestBook",
+            description = "방명록 생성 API 입니다.",
             responses = {@ApiResponse(
                     responseCode = "200",
                     description = "OK",
@@ -67,7 +67,38 @@ public class GuestBookController {
     }
 
 
-
+    /**
+     * 산책 스팟에 속한 모든 방명록 페이징 조회 API
+     * @param request
+     * @param spotId
+     * @param pageNum
+     * @return
+     * @throws JsonProcessingException
+     */
+    @Operation(summary = "산책 스팟 소속 방명록 조회 API / findGuestBookBySpotId",
+            description = "산책 스팟에 속한 방명록을 페이징하여 조회하는 API 입니다.",
+            responses = {@ApiResponse(
+                    responseCode = "200",
+                    description = "OK",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = GuestBookResponseDto.class))
+                            )
+                    }
+            ),
+                    @ApiResponse(
+                            responseCode = "500 - InvalidMemberException",
+                            description = "멤버가 올바르지 않습니다.",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = InvalidMemberException.class))
+                                    )
+                            }
+                    )
+            }
+    )
     @GetMapping("/{spotId}&{pageNum}")
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<?> findGuestBookBySpotId(
@@ -79,6 +110,38 @@ public class GuestBookController {
     }
 
 
+    /**
+     * 매장에 속한 모든 방명록 페이징 조회 API
+     * @param request
+     * @param storeId
+     * @param pageNum
+     * @return
+     * @throws JsonProcessingException
+     */
+    @Operation(summary = "매장 소속 방명록 조회 API / findGuestBookByStoreId",
+            description = "매장에 속한 방명록을 페이징하여 조회하는 API 입니다.",
+            responses = {@ApiResponse(
+                    responseCode = "200",
+                    description = "OK",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = GuestBookResponseDto.class))
+                            )
+                    }
+            ),
+                    @ApiResponse(
+                            responseCode = "500 - InvalidMemberException",
+                            description = "멤버가 올바르지 않습니다.",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = InvalidMemberException.class))
+                                    )
+                            }
+                    )
+            }
+    )
     @GetMapping("/{storeId}&{pageNum}")
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<?> findGuestBookByStoreId(
@@ -90,6 +153,37 @@ public class GuestBookController {
     }
 
 
+    /**
+     * 방명록 삭제 API
+     * @param request
+     * @param guestBookId
+     * @return
+     * @throws JsonProcessingException
+     */
+    @Operation(summary = "방명록 삭제 API / deleteGuestBook",
+            description = " 방명록을 삭제하는 API 입니다.",
+            responses = {@ApiResponse(
+                    responseCode = "200",
+                    description = "OK",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = ResponseEntity.class))
+                            )
+                    }
+            ),
+                    @ApiResponse(
+                            responseCode = "500 - InvalidMemberException",
+                            description = "멤버가 올바르지 않습니다.",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = InvalidMemberException.class))
+                                    )
+                            }
+                    )
+            }
+    )
     @DeleteMapping("/{guestBookId}")
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<?> deleteGuestBook(

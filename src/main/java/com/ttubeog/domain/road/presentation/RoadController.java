@@ -1,11 +1,18 @@
 package com.ttubeog.domain.road.presentation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.road.application.RoadService;
+import com.ttubeog.domain.road.domain.repository.RoadRepository;
 import com.ttubeog.domain.road.dto.request.CreateRoadRequestDto;
+import com.ttubeog.domain.road.dto.response.RoadResponseDto;
 import com.ttubeog.global.config.security.token.CurrentUser;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +27,37 @@ public class RoadController {
 
     private final RoadService roadService;
 
+    /**
+     * 산책로 생성 API
+     * @param request
+     * @param createRoadRequestDto
+     * @return
+     * @throws JsonProcessingException
+     */
+    @Operation(summary = "산책로 생성 API / createRoad",
+            description = "산책로를 생성하는 API 입니다.",
+            responses = {@ApiResponse(
+                    responseCode = "200",
+                    description = "OK",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = RoadResponseDto.class))
+                            )
+                    }
+            ),
+                    @ApiResponse(
+                            responseCode = "500 - InvalidMemberException",
+                            description = "멤버가 올바르지 않습니다.",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = InvalidMemberException.class))
+                                    )
+                            }
+                    )
+            }
+    )
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
     public ResponseEntity<?> createRoad(
@@ -29,6 +67,38 @@ public class RoadController {
         return roadService.createRoad(request, createRoadRequestDto);
     }
 
+    /**
+     * 산책 스팟에 속한 산책로 페이징 조회 API
+     * @param request
+     * @param spotId
+     * @param pageNum
+     * @return
+     * @throws JsonProcessingException
+     */
+    @Operation(summary = "산책 스팟 소속 산책로 페이징 조회 API",
+            description = "산책 스팟에 속한 산책로를 페이징하여 조회하는 API 입니다.",
+            responses = {@ApiResponse(
+                    responseCode = "200",
+                    description = "OK",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = RoadRepository.class))
+                            )
+                    }
+            ),
+                    @ApiResponse(
+                            responseCode = "500 - InvalidMemberException",
+                            description = "멤버가 올바르지 않습니다.",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = InvalidMemberException.class))
+                                    )
+                            }
+                    )
+            }
+    )
     @GetMapping("/{spotId}&{pageNum}")
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<?> findRoadBySpotId(
@@ -39,6 +109,39 @@ public class RoadController {
         return roadService.findRoadBySpotId(request, spotId, pageNum);
     }
 
+
+    /**
+     * 매장 소속 산책로 페이징 조회 API
+     * @param request
+     * @param storeId
+     * @param pageNum
+     * @return
+     * @throws JsonProcessingException
+     */
+    @Operation(summary = "매장 소속 산책로 페이징 조회 API",
+            description = "매장에 속한 산책로를 페이징하여 조회하는 API 입니다.",
+            responses = {@ApiResponse(
+                    responseCode = "200",
+                    description = "OK",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = RoadRepository.class))
+                            )
+                    }
+            ),
+                    @ApiResponse(
+                            responseCode = "500 - InvalidMemberException",
+                            description = "멤버가 올바르지 않습니다.",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = InvalidMemberException.class))
+                                    )
+                            }
+                    )
+            }
+    )
     @GetMapping("/{storeId}&{pageNum}")
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<?> findRoadByStoreId(
@@ -49,6 +152,38 @@ public class RoadController {
         return roadService.findRoadByStoreId(request, storeId, pageNum);
     }
 
+
+    /**
+     * 산책로 삭제 API
+     * @param request
+     * @param roadId
+     * @return
+     * @throws JsonProcessingException
+     */
+    @Operation(summary = "산책로 삭제 API",
+            description = "산책로를 삭제하는 API 입니다.",
+            responses = {@ApiResponse(
+                    responseCode = "200",
+                    description = "OK",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = ResponseEntity.class))
+                            )
+                    }
+            ),
+                    @ApiResponse(
+                            responseCode = "500 - InvalidMemberException",
+                            description = "멤버가 올바르지 않습니다.",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = InvalidMemberException.class))
+                                    )
+                            }
+                    )
+            }
+    )
     @DeleteMapping("/{roadId}")
     @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<?> deleteRoad(
