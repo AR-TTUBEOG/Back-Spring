@@ -5,6 +5,7 @@ import com.ttubeog.domain.guestbook.domain.repository.GuestBookRepository;
 import com.ttubeog.domain.image.domain.Image;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
 import com.ttubeog.domain.likes.domain.repository.LikesRepository;
+import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.place.domain.PlaceType;
@@ -70,10 +71,10 @@ public class PlaceService {
     private GetAllPlaceRes mapStoreToDto(HttpServletRequest request, Store store) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
-        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         // 현재 로그인 유저의 좋아요 여부
-        Boolean storeLiked = likesRepository.existsByMember_IdAndStore_Id(memberId, store.getId());
+        Boolean storeLiked = likesRepository.existsByMemberAndStore(member, store);
         PlaceType placeType = new PlaceType(true, false);
 
         // 가장 인덱스가 작은 이미지 선택 (대표 이미지)
@@ -105,10 +106,10 @@ public class PlaceService {
     private GetAllPlaceRes mapSpotToDto(HttpServletRequest request, Spot spot) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
-        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         // 현재 로그인 유저의 좋아요 여부
-        Boolean spotLiked = likesRepository.existsByMember_IdAndSpot_Id(memberId, spot.getId());
+        Boolean spotLiked = likesRepository.existsByMemberAndSpot(member, spot);
         PlaceType placeType = new PlaceType(false, true);
 
         // 가장 인덱스가 작은 이미지 선택 (대표 이미지)

@@ -214,7 +214,7 @@ public class StoreService {
         guestBookRepository.deleteAll(guestBooks);
 
         // 해당 매장과 연관된 좋아요 삭제
-        List<Likes> likes = likesRepository.findByStoreId(storeId);
+        List<Likes> likes = likesRepository.findByStore(store);
         likesRepository.deleteAll(likes);
 
         // 해당 매장과 연관된 이미지 삭제
@@ -238,7 +238,7 @@ public class StoreService {
     public ResponseEntity<?> getStoreDetails(HttpServletRequest request, Long storeId) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
-        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Store store = storeRepository.findById(storeId).orElseThrow(NonExistentStoreException::new);
 
         List<BenefitType> storeBenefits = benefitRepository.findByStoreId(storeId)
@@ -246,8 +246,8 @@ public class StoreService {
                 .map(Benefit::getType)
                 .collect(Collectors.toList());
         Integer guestbookCount = guestBookRepository.countAllByStore(store).intValue();
-        Integer likesCount = likesRepository.countByStoreId(storeId);
-        //Boolean isFavorited = likesRepository.existsByMemberIdAndStoreId(memberId, storeId);
+        Integer likesCount = likesRepository.countByStore(store);
+        Boolean isFavorited = likesRepository.existsByMemberAndStore(member, store);
 
         GetStoreDetailRes getStoreDetailRes = GetStoreDetailRes.builder()
                 .storeId(storeId)
@@ -264,7 +264,7 @@ public class StoreService {
                 .storeBenefits(storeBenefits)
                 .guestbookCount(guestbookCount)
                 .likesCount(likesCount)
-                //.isFavorited(isFavorited)
+                .isFavorited(isFavorited)
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()
