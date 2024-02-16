@@ -4,7 +4,6 @@ import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.benefit.domain.Benefit;
 import com.ttubeog.domain.benefit.domain.repository.BenefitRepository;
 import com.ttubeog.domain.benefit.domain.repository.MemberBenefitRepository;
-import com.ttubeog.domain.benefit.exception.OverlappingBenefitException;
 import com.ttubeog.domain.guestbook.domain.repository.GuestBookRepository;
 import com.ttubeog.domain.image.domain.Image;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
