@@ -143,7 +143,7 @@ public class GuestBookService {
 
             Float originStars = guestBookRepository.sumStarBySpotId(spot.getId());
 
-            Long guestBookNum = guestBookRepository.countAllBySpot_Id(spot.getId());
+            Long guestBookNum = guestBookRepository.countAllBySpot(spot);
 
             float updateStarValue;
 
@@ -157,7 +157,7 @@ public class GuestBookService {
 
             Float originStars = guestBookRepository.sumStarByStoreId(store.getId());
 
-            Long guestBookNum = guestBookRepository.countAllByStore_Id(store.getId());
+            Long guestBookNum = guestBookRepository.countAllByStore(store);
 
             float updateStarValue;
 
@@ -191,7 +191,9 @@ public class GuestBookService {
 
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
-        Page<GuestBook> guestBookPage = guestBookRepository.findAllBySpot_Id(spotId, PageRequest.of(pageNum, 10));
+        Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidSpotIdException::new);
+
+        Page<GuestBook> guestBookPage = guestBookRepository.findAllBySpot(spot, PageRequest.of(pageNum, 10));
 
         List<GuestBookResponseDto> guestBookResponseDtoList = null;
 
@@ -221,7 +223,9 @@ public class GuestBookService {
 
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
-        Page<GuestBook> guestBookPage = guestBookRepository.findAllByStore_Id(storeId, PageRequest.of(pageNum, 10));
+        Store store = storeRepository.findById(storeId).orElseThrow(InvalidStoreIdException::new);
+
+        Page<GuestBook> guestBookPage = guestBookRepository.findAllByStore(store, PageRequest.of(pageNum, 10));
 
         List<GuestBookResponseDto> guestBookResponseDtoList = null;
 
