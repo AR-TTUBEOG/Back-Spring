@@ -1,10 +1,6 @@
 package com.ttubeog.domain.road.domain;
 
 import com.ttubeog.domain.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.roadcoordinate.domain.RoadCoordinate;
 import com.ttubeog.domain.spot.domain.Spot;
@@ -17,11 +13,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
 @Builder
-@Table(name = "road")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Road extends BaseEntity {
 
     @Id
@@ -49,10 +44,8 @@ public class Road extends BaseEntity {
     @OneToMany(mappedBy = "road", cascade = CascadeType.ALL)
     private List<RoadCoordinate> roadCoordinateList;
 
-    @Column(name = "time", nullable = false)
-    private String time;
 
-    public Road(Long id, RoadType roadType, Spot spot, Store store, Member member, String name, List<RoadCoordinate> roadCoordinateList, String time) {
+    public Road(Long id, RoadType roadType, Spot spot, Store store, Member member, String name, List<RoadCoordinate> roadCoordinateList) {
         this.id = id;
         this.roadType = roadType;
         this.spot = spot;
@@ -60,6 +53,5 @@ public class Road extends BaseEntity {
         this.member = member;
         this.name = name;
         this.roadCoordinateList = roadCoordinateList;
-        this.time = time;
     }
 }

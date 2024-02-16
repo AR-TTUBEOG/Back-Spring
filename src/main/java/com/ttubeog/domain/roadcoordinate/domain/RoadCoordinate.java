@@ -2,17 +2,18 @@ package com.ttubeog.domain.roadcoordinate.domain;
 
 import com.ttubeog.domain.common.BaseEntity;
 import com.ttubeog.domain.road.domain.Road;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Tag(name = "road_coordinate")
 @Entity
 @Getter
 @Builder
-@Table(name = "road_coordinate")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class RoadCoordinate extends BaseEntity {
 
     @Id
@@ -24,12 +25,12 @@ public class RoadCoordinate extends BaseEntity {
     private Road road;
 
     @Column(name = "latitude", nullable = false)
-    private Float latitude;
+    private Double latitude;
 
     @Column(name = "longitude", nullable = false)
-    private Float longitude;
+    private Double longitude;
 
-    public RoadCoordinate(Long id, Road road, Float latitude, Float longitude) {
+    public RoadCoordinate(Long id, Road road, Double latitude, Double longitude) {
         this.id = id;
         this.road = road;
         this.latitude = latitude;
