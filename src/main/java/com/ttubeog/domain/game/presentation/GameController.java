@@ -4,8 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttubeog.domain.game.application.GameService;
 import com.ttubeog.domain.game.dto.request.*;
 import com.ttubeog.domain.game.dto.response.*;
-import com.ttubeog.global.config.security.token.CurrentUser;
-import com.ttubeog.global.config.security.token.UserPrincipal;
 import com.ttubeog.global.payload.ErrorResponse;
 import com.ttubeog.global.payload.Message;
 import io.swagger.v3.oas.annotations.Operation;
@@ -126,8 +124,8 @@ public class GameController {
         return gameService.deleteGame(request, gameId);
     }
 
-    //게임 조회
-    @Operation(summary = "게임 조회", description = "게임을 조회합니다.")
+    //게임, 혜택 조회
+    @Operation(summary = "게임,혜택 조회", description = "게임과 해당 혜택을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "조회 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = FindGameRes.class) ) } ),
             @ApiResponse(responseCode = "400", description = "조회 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
@@ -143,7 +141,7 @@ public class GameController {
     //게임 조회
     @Operation(summary = "혜택 조회", description = "게임Id로 혜택 정보를 조회합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "조회 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = RouletteBenefitResDto.class) ) } ),
+            @ApiResponse(responseCode = "200", description = "조회 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = BenefitResDto.class) ) } ),
             @ApiResponse(responseCode = "400", description = "조회 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @GetMapping("/{gameId}/benefit")
