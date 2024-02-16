@@ -2,7 +2,6 @@ package com.ttubeog.domain.place.application;
 
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.guestbook.domain.repository.GuestBookRepository;
-import com.ttubeog.domain.image.application.ImageService;
 import com.ttubeog.domain.image.domain.Image;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
 import com.ttubeog.domain.likes.domain.repository.LikesRepository;
@@ -45,7 +44,6 @@ public class PlaceService {
     private final LikesRepository likesRepository;
     private final ImageRepository imageRepository;
     private final GuestBookRepository guestBookRepository;
-    private final ImageService imageService;
     private final JwtTokenProvider jwtTokenProvider;
 
     public List<GetAllPlaceRes> getPageOfPlaces(List<GetAllPlaceRes> places, int page, int size) {
@@ -98,7 +96,7 @@ public class PlaceService {
                 .longitude(store.getLongitude())
                 .image(representativeImageUrl)
                 .stars(store.getStars())
-                .guestbookCount(intValue(guestBookRepository.countAllByStore_Id(store.getId())))
+                .guestbookCount(intValue(guestBookRepository.countAllByStore(store)))
                 .isFavorited(storeLiked)
                 .createdAt(store.getCreatedAt())
                 .build();
@@ -133,7 +131,7 @@ public class PlaceService {
                 //.longitude(spot.getLongitude())
                 .image(representativeImageUrl)
                 .stars(spot.getStars())
-                .guestbookCount(intValue(guestBookRepository.countAllBySpot_Id(spot.getId())))
+                .guestbookCount(intValue(guestBookRepository.countAllBySpot(spot)))
                 .isFavorited(spotLiked)
                 .createdAt(spot.getCreatedAt())
                 .build();
