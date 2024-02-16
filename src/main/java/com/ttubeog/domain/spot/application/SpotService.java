@@ -3,6 +3,9 @@ package com.ttubeog.domain.spot.application;
 import com.ttubeog.domain.area.domain.DongArea;
 import com.ttubeog.domain.area.domain.repository.DongAreaRepository;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
+import com.ttubeog.domain.guestbook.application.GuestBookService;
+import com.ttubeog.domain.guestbook.domain.GuestBook;
+import com.ttubeog.domain.guestbook.domain.repository.GuestBookRepository;
 import com.ttubeog.domain.image.application.ImageService;
 import com.ttubeog.domain.image.domain.Image;
 import com.ttubeog.domain.image.domain.ImageType;
@@ -11,6 +14,7 @@ import com.ttubeog.domain.image.dto.request.CreateImageRequestDto;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
+import com.ttubeog.domain.member.exception.InvalidRegisterMemberException;
 import com.ttubeog.domain.spot.domain.Spot;
 import com.ttubeog.domain.spot.domain.repository.SpotRepository;
 import com.ttubeog.domain.spot.dto.request.CreateSpotRequestDto;
@@ -42,6 +46,8 @@ public class SpotService {
     private final MemberRepository memberRepository;
     private final DongAreaRepository dongAreaRepository;
     private final ImageRepository imageRepository;
+    private final GuestBookRepository guestBookRepository;
+    private final GuestBookService guestBookService;
 
     private final ImageService imageService;
 
@@ -143,6 +149,10 @@ public class SpotService {
         // 존재하는 산책 스팟을 수정하려는지 체크
         Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidSpotIdException::new);
 
+        if (spot.getMember().getId().equals(memberId)) {
+            throw new InvalidRegisterMemberException("해당 산책 스팟을 등록한 유저가 아닙니다.");
+        }
+
         // 수정하려는 이름과 중복된 이름을 가진 산책 스팟이 있는지
         if (spotRepository.findByName(updateSpotRequestDto.getName()).isPresent()) {
             Spot duplicateSpot =  spotRepository.findByName(updateSpotRequestDto.getName()).orElseThrow(InvalidSpotIdException::new);
@@ -193,12 +203,17 @@ public class SpotService {
 
         Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidSpotIdException::new);
 
+        if (spot.getMember().getId().equals(memberId)) {
+            throw new InvalidRegisterMemberException("해당 산책 스팟을 등록한 유저가 아닙니다.");
+        }
+
         spotRepository.delete(spot);
 
         List<Image> imageList = imageRepository.findBySpotId(spot.getId());
-        for (Image image : imageList) {
-            imageService.deleteImage(image.getId());
-        }
+        imageRepository.deleteAll(imageList);
+
+        List<GuestBook> guestBookList = guestBookRepository.findAllBySpot_Id(spotId);
+        guestBookRepository.deleteAll(guestBookList);
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
