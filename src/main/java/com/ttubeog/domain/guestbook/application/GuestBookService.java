@@ -26,12 +26,11 @@ import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.domain.store.exception.InvalidStoreIdException;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
-import feign.Response;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.apache.ibatis.jdbc.Null;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -130,6 +129,7 @@ public class GuestBookService {
 
         guestBookRepository.save(guestBook);
 
+
         CreateImageRequestDto createImageRequestDto = CreateImageRequestDto.builder()
                 .image(createGuestBookRequestDto.getImage())
                 .imageType(ImageType.GUESTBOOK)
@@ -137,16 +137,17 @@ public class GuestBookService {
                 .build();
         imageService.createImage(createImageRequestDto);
 
+
         if (createGuestBookRequestDto.getGuestBookType().equals(GuestBookType.SPOT)) {
             spot = spotRepository.findById(createGuestBookRequestDto.getSpotId()).orElseThrow(InvalidSpotIdException::new);
 
             Float originStars = guestBookRepository.sumStarBySpotId(spot.getId());
 
-            Long guestBookNum = guestBookRepository.countAllBySpot_Id(spot.getId());
+            Long guestBookNum = guestBookRepository.countAllBySpot(spot);
 
             float updateStarValue;
 
-            updateStarValue = ((originStars * guestBookNum) + createGuestBookRequestDto.getStar()) / (guestBookNum + 1);
+            updateStarValue = ((originStars + (float)createGuestBookRequestDto.getStar()) / (float)(guestBookNum + 1));
 
             spot.updateStars(updateStarValue);
 
@@ -156,11 +157,11 @@ public class GuestBookService {
 
             Float originStars = guestBookRepository.sumStarByStoreId(store.getId());
 
-            Long guestBookNum = guestBookRepository.countAllByStore_Id(store.getId());
+            Long guestBookNum = guestBookRepository.countAllByStore(store);
 
             float updateStarValue;
 
-            updateStarValue = ((originStars * guestBookNum) + createGuestBookRequestDto.getStar()) / (guestBookNum + 1);
+            updateStarValue = ((originStars + (float)createGuestBookRequestDto.getStar()) / (float)(guestBookNum + 1));
 
             store.updateStars(updateStarValue);
 
@@ -184,17 +185,19 @@ public class GuestBookService {
         return getResponseEntity(guestBook);
     }
 
-    // Spot ID 로 GuestBook 을 조회하는 Method 입니다. 현재 따로 사용하지 않습니다.
-    public ResponseEntity<?> findGuestBookBySpotId(HttpServletRequest request, Long spotId) {
+    // Spot ID 로 GuestBook 을 조회하는 Method 입니다.
+    public ResponseEntity<?> findGuestBookBySpotId(HttpServletRequest request, Long spotId, Integer pageNum) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
-        List<GuestBook> guestBookList = guestBookRepository.findAllBySpot_Id(spotId);
+        Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidSpotIdException::new);
+
+        Page<GuestBook> guestBookPage = guestBookRepository.findAllBySpot(spot, PageRequest.of(pageNum, 10));
 
         List<GuestBookResponseDto> guestBookResponseDtoList = null;
 
-        for (GuestBook guestBook : guestBookList) {
+        for (GuestBook guestBook : guestBookPage) {
             GuestBookResponseDto guestBookResponseDto = GuestBookResponseDto.builder()
                     .id(guestBook.getId())
                     .content(guestBook.getContent())
@@ -214,17 +217,19 @@ public class GuestBookService {
         return ResponseEntity.ok(apiResponse);
     }
 
-    // Store ID 로 GuestBook 을 조회하는 Method 입니다. 현재 따로 사용하지 않습니다.
-    public ResponseEntity<?> findGuestBookByStoreId(HttpServletRequest request, Long storeId) {
+    // Store ID 로 GuestBook 을 조회하는 Method 입니다.
+    public ResponseEntity<?> findGuestBookByStoreId(HttpServletRequest request, Long storeId, Integer pageNum) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
-        List<GuestBook> guestBookList = guestBookRepository.findAllByStore_Id(storeId);
+        Store store = storeRepository.findById(storeId).orElseThrow(InvalidStoreIdException::new);
+
+        Page<GuestBook> guestBookPage = guestBookRepository.findAllByStore(store, PageRequest.of(pageNum, 10));
 
         List<GuestBookResponseDto> guestBookResponseDtoList = null;
 
-        for (GuestBook guestBook : guestBookList) {
+        for (GuestBook guestBook : guestBookPage) {
             GuestBookResponseDto guestBookResponseDto = GuestBookResponseDto.builder()
                     .id(guestBook.getId())
                     .content(guestBook.getContent())
@@ -279,9 +284,13 @@ public class GuestBookService {
     public ResponseEntity<?> deleteGuestBook(HttpServletRequest request, Long guestBookId) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
-        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         GuestBook guestBook = guestBookRepository.findById(guestBookId).orElseThrow(InvalidGuestBookIdException::new);
+
+        if (!guestBook.getMember().equals(member)) {
+            throw new InvalidMemberException();
+        }
 
         guestBookRepository.delete(guestBook);
 

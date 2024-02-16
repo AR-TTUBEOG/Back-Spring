@@ -43,10 +43,7 @@ public class GuestBook extends BaseEntity {
 
     private Float star;
 
-    @OneToOne(mappedBy = "guestBook", cascade = CascadeType.ALL)
-    private Image image;
-
-    public GuestBook(Long id, Member member, GuestBookType guestBookType, Spot spot, Store store, String content, Float star, Image image) {
+    public GuestBook(Long id, Member member, GuestBookType guestBookType, Spot spot, Store store, String content, Float star) {
         this.id = id;
         this.member = member;
         this.guestBookType = guestBookType;
@@ -54,12 +51,10 @@ public class GuestBook extends BaseEntity {
         this.store = store;
         this.content = content;
         this.star = star;
-        this.image = image;
     }
 
     public void updateGuestBook(String content, Float star, Image image) {
         this.content = content;
         this.star = star;
-        this.image = image;
     }
 }

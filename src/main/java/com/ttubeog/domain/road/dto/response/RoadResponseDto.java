@@ -7,10 +7,12 @@ import com.ttubeog.domain.spot.domain.Spot;
 import com.ttubeog.domain.store.domain.Store;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 
 import java.util.List;
 
 @Data
+@Getter
 @Builder
 public class RoadResponseDto {
 
@@ -18,16 +20,14 @@ public class RoadResponseDto {
 
     private RoadType roadType;
 
-    private Spot spot;
+    private Long spotId;
 
-    private Store store;
+    private Long storeId;
 
-    private Member member;
+    private Long memberId;
 
     private String name;
 
-    private List<RoadCoordinate> roadCoordinate;
-
-    private String time;
+    private List<List<Double>> roadCoordinateDoubleList;
 
 }

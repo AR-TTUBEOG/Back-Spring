@@ -9,9 +9,9 @@ import com.ttubeog.domain.road.domain.RoadType;
 import com.ttubeog.domain.road.domain.repository.RoadRepository;
 import com.ttubeog.domain.road.dto.request.CreateRoadRequestDto;
 import com.ttubeog.domain.road.dto.response.RoadResponseDto;
+import com.ttubeog.domain.road.exception.DuplicateRoadNameException;
 import com.ttubeog.domain.road.exception.InvalidRoadIdException;
 import com.ttubeog.domain.road.exception.InvalidRoadTypeException;
-import com.ttubeog.domain.road.exception.NullRoadCoordinateException;
 import com.ttubeog.domain.roadcoordinate.domain.RoadCoordinate;
 import com.ttubeog.domain.roadcoordinate.domain.repository.RoadCoordinateRepository;
 import com.ttubeog.domain.spot.domain.Spot;
@@ -24,6 +24,8 @@ import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,13 +38,13 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class RoadService {
 
-    private final JwtTokenProvider jwtTokenProvider;
-
     private final RoadRepository roadRepository;
     private final RoadCoordinateRepository roadCoordinateRepository;
-    private final MemberRepository memberRepository;
     private final SpotRepository spotRepository;
     private final StoreRepository storeRepository;
+    private final MemberRepository memberRepository;
+
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
     public ResponseEntity<?> createRoad(HttpServletRequest request, CreateRoadRequestDto createRoadRequestDto) {
@@ -52,64 +54,93 @@ public class RoadService {
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         Road road;
+        Spot spot;
+        Store store;
 
         List<RoadCoordinate> roadCoordinateList = new ArrayList<>();
-        List<List<Float>> createRoadRequestDtoRoadCoordinate = createRoadRequestDto.getRoadCoordinate();
-        for (List<Float> roadCoordinateDto : createRoadRequestDtoRoadCoordinate) {
+        List<List<Double>> roadCoordinateDoubleList = createRoadRequestDto.getRoadCoordinateList();
+        for (List<Double> roadCoordinateDouble : roadCoordinateDoubleList) {
             RoadCoordinate roadCoordinate = RoadCoordinate.builder()
-                    .latitude(roadCoordinateDto.get(0))
-                    .longitude(roadCoordinateDto.get(1))
+                    .latitude(roadCoordinateDouble.get(0))
+                    .longitude(roadCoordinateDouble.get(1))
                     .build();
             roadCoordinateList.add(roadCoordinate);
         }
 
-        if (roadCoordinateList.isEmpty()) {
-            throw new NullRoadCoordinateException();
-        }
-
-
         if (createRoadRequestDto.getRoadType().equals(RoadType.SPOT)) {
-            Spot spot = spotRepository.findById(createRoadRequestDto.getSpotId()).orElseThrow(InvalidSpotIdException::new);
+
+            spot = spotRepository.findById(createRoadRequestDto.getSpotId()).orElseThrow(InvalidSpotIdException::new);
+
+            if (roadRepository.findBySpotAndName(spot, createRoadRequestDto.getName()).isPresent()) {
+                throw new DuplicateRoadNameException();
+            }
+
             road = Road.builder()
                     .roadType(RoadType.SPOT)
                     .spot(spot)
                     .member(member)
                     .name(createRoadRequestDto.getName())
                     .roadCoordinateList(roadCoordinateList)
-                    .time(createRoadRequestDto.getTime())
                     .build();
-            roadRepository.save(road);
+
         } else if (createRoadRequestDto.getRoadType().equals(RoadType.STORE)) {
-            Store store = storeRepository.findById(createRoadRequestDto.getStoreId()).orElseThrow(InvalidStoreIdException::new);
+
+            store = storeRepository.findById(createRoadRequestDto.getStoreId()).orElseThrow(InvalidStoreIdException::new);
+
+            if (roadRepository.findByStoreAndName(store, createRoadRequestDto.getName()).isPresent()) {
+                throw new DuplicateRoadNameException();
+            }
+
             road = Road.builder()
                     .roadType(RoadType.STORE)
                     .store(store)
                     .member(member)
                     .name(createRoadRequestDto.getName())
                     .roadCoordinateList(roadCoordinateList)
-                    .time(createRoadRequestDto.getTime())
                     .build();
-            roadRepository.save(road);
         } else {
             throw new InvalidRoadTypeException();
         }
 
-        for (RoadCoordinate roadCoordinate: roadCoordinateList) {
+        for (RoadCoordinate roadCoordinate : roadCoordinateList) {
             roadCoordinate.updateRoad(road);
         }
 
+        roadRepository.save(road);
+
         roadCoordinateRepository.saveAll(roadCoordinateList);
 
-        RoadResponseDto roadResponseDto = RoadResponseDto.builder()
-                .id(road.getId())
-                .roadType(road.getRoadType())
-                .spot(road.getSpot())
-                .store(road.getStore())
-                .member(road.getMember())
-                .name(road.getName())
-                .roadCoordinate(road.getRoadCoordinateList())
-                .time(road.getTime())
-                .build();
+        List<List<Double>> roadCoordinateDoubleListResponse = new ArrayList<>();
+        for (RoadCoordinate roadCoordinate : road.getRoadCoordinateList()) {
+            List<Double> roadCoordinateDoubleResponse = new ArrayList<>();
+            roadCoordinateDoubleResponse.add(roadCoordinate.getLatitude());
+            roadCoordinateDoubleResponse.add(roadCoordinate.getLongitude());
+            roadCoordinateDoubleListResponse.add(roadCoordinateDoubleResponse);
+        }
+
+        RoadResponseDto roadResponseDto;
+
+        if (road.getRoadType().equals(RoadType.SPOT)) {
+            roadResponseDto = RoadResponseDto.builder()
+                    .id(road.getId())
+                    .roadType(RoadType.SPOT)
+                    .spotId(road.getSpot().getId())
+                    .memberId(road.getMember().getId())
+                    .name(road.getName())
+                    .roadCoordinateDoubleList(roadCoordinateDoubleListResponse)
+                    .build();
+        } else if (road.getRoadType().equals(RoadType.STORE)) {
+            roadResponseDto = RoadResponseDto.builder()
+                    .id(road.getId())
+                    .roadType(RoadType.STORE)
+                    .storeId(road.getStore().getId())
+                    .memberId(road.getMember().getId())
+                    .name(road.getName())
+                    .roadCoordinateDoubleList(roadCoordinateDoubleListResponse)
+                    .build();
+        } else {
+            throw new InvalidRoadTypeException();
+        }
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
@@ -119,28 +150,77 @@ public class RoadService {
         return ResponseEntity.ok(apiResponse);
     }
 
-    public ResponseEntity<?> findById(HttpServletRequest request, Long roadId) {
+    public ResponseEntity<?> findRoadBySpotId(HttpServletRequest request, Long spotId, Integer pageNum) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
-        Road road = roadRepository.findById(roadId).orElseThrow(InvalidRoadIdException::new);
+        Page<Road> roadPage = roadRepository.findAllBySpot_Id(spotId, PageRequest.of(pageNum, 1));
 
-        RoadResponseDto roadResponseDto = RoadResponseDto.builder()
-                .id(road.getId())
-                .roadType(road.getRoadType())
-                .spot(road.getSpot())
-                .store(road.getStore())
-                .member(road.getMember())
-                .name(road.getName())
-                .roadCoordinate(road.getRoadCoordinateList())
-                .time(road.getTime())
-                .build();
+        List<RoadResponseDto> roadResponseDtoList = new ArrayList<>();
+
+        for (Road road : roadPage) {
+            List<List<Double>> roadCoordinateDoubleList = new ArrayList<>();
+            for (RoadCoordinate roadCoordinate : road.getRoadCoordinateList()) {
+                List<Double> roadCoordinateDouble = new ArrayList<>();
+                roadCoordinateDouble.add(roadCoordinate.getLatitude());
+                roadCoordinateDouble.add(roadCoordinate.getLongitude());
+                roadCoordinateDoubleList.add(roadCoordinateDouble);
+            }
+
+            RoadResponseDto roadResponseDto = RoadResponseDto.builder()
+                    .id(road.getId())
+                    .roadType(road.getRoadType())
+                    .spotId(road.getSpot().getId())
+                    .memberId(road.getMember().getId())
+                    .name(road.getName())
+                    .roadCoordinateDoubleList(roadCoordinateDoubleList)
+                    .build();
+            roadResponseDtoList.add(roadResponseDto);
+        }
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
-                .information(roadResponseDto)
+                .information(roadResponseDtoList)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    public ResponseEntity<?> findRoadByStoreId(HttpServletRequest request, Long storeId, Integer pageNum) {
+
+        Long memberId = jwtTokenProvider.getMemberId(request);
+
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+
+        Page<Road> roadPage = roadRepository.findAllByStore_Id(storeId, PageRequest.of(pageNum, 1));
+
+        List<RoadResponseDto> roadResponseDtoList = new ArrayList<>();
+
+        for (Road road : roadPage) {
+            List<List<Double>> roadCoordinateDoubleList = new ArrayList<>();
+            for (RoadCoordinate roadCoordinate : road.getRoadCoordinateList()) {
+                List<Double> roadCoordinateDouble = new ArrayList<>();
+                roadCoordinateDouble.add(roadCoordinate.getLatitude());
+                roadCoordinateDouble.add(roadCoordinate.getLongitude());
+                roadCoordinateDoubleList.add(roadCoordinateDouble);
+            }
+
+            RoadResponseDto roadResponseDto = RoadResponseDto.builder()
+                    .id(road.getId())
+                    .roadType(road.getRoadType())
+                    .storeId(road.getStore().getId())
+                    .memberId(road.getMember().getId())
+                    .name(road.getName())
+                    .roadCoordinateDoubleList(roadCoordinateDoubleList)
+                    .build();
+            roadResponseDtoList.add(roadResponseDto);
+        }
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(roadResponseDtoList)
                 .build();
 
         return ResponseEntity.ok(apiResponse);
@@ -151,11 +231,15 @@ public class RoadService {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
-        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         Road road = roadRepository.findById(roadId).orElseThrow(InvalidRoadIdException::new);
 
-        List<RoadCoordinate> roadCoordinateList = roadCoordinateRepository.findByRoad(road);
+        if (!road.getMember().equals(member)) {
+            throw new InvalidMemberException();
+        }
+
+        List<RoadCoordinate> roadCoordinateList = road.getRoadCoordinateList();
 
         roadRepository.delete(road);
 
@@ -163,7 +247,7 @@ public class RoadService {
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
-                .information(Message.builder().message("산책로를 삭제햇습니다.").build())
+                .information(Message.builder().message("산책로를 삭제했습니다.").build())
                 .build();
 
         return ResponseEntity.ok(apiResponse);

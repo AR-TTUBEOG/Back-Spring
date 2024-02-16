@@ -210,11 +210,11 @@ public class StoreService {
         benefitRepository.deleteAll(benefits);
 
         // 해당 매장과 연관된 방명록 삭제
-        List<GuestBook> guestBooks = guestBookRepository.findAllByStore_Id(storeId);
+        List<GuestBook> guestBooks = guestBookRepository.findAllByStore(store);
         guestBookRepository.deleteAll(guestBooks);
 
         // 해당 매장과 연관된 좋아요 삭제
-        List<Likes> likes = likesRepository.findByStore_Id(storeId);
+        List<Likes> likes = likesRepository.findByStoreId(storeId);
         likesRepository.deleteAll(likes);
 
         // 해당 매장과 연관된 이미지 삭제
@@ -245,8 +245,8 @@ public class StoreService {
                 .stream()
                 .map(Benefit::getType)
                 .collect(Collectors.toList());
-        Integer guestbookCount = guestBookRepository.countAllByStore_Id(storeId).intValue();
-        Integer likesCount = likesRepository.countByStore_Id(storeId);
+        Integer guestbookCount = guestBookRepository.countAllByStore(store).intValue();
+        Integer likesCount = likesRepository.countByStoreId(storeId);
         //Boolean isFavorited = likesRepository.existsByMemberIdAndStoreId(memberId, storeId);
 
         GetStoreDetailRes getStoreDetailRes = GetStoreDetailRes.builder()
