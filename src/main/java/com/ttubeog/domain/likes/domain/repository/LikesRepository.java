@@ -15,6 +15,10 @@ public interface LikesRepository extends JpaRepository<Likes, Long> {
     List<Likes> findByStore(Store store);
 
     Integer countByStore(Store store);
+
+    List<Likes> findBySpot(Spot spot);
+
+    Integer countBySpot(Spot spot);
   
     boolean existsByMemberAndStore(Member member, Store store);
   
