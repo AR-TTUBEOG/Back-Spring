@@ -12,9 +12,6 @@ public class UpdateRouletteReq {
     @Schema(description = "게임 ID", example = "1")
     private Long gameId;
 
-    @Schema(description = "매장ID", example = "1")
-    private Long storeId;
-
     @Schema(description = "혜택 타입", example = "SALE")
     private BenefitType benefitType;
 
