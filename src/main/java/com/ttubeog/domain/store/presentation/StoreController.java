@@ -112,7 +112,7 @@ public class StoreController {
             @ApiResponse(responseCode = "200", description = "게임 조회 누르기 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = FindGameRes.class))}),
             @ApiResponse(responseCode = "400", description = "게임 조회 누르기 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
-    @PostMapping("/{storeId}/game")
+    @GetMapping("/{storeId}/game")
     public ResponseEntity<?> findBenefitByStore(
             HttpServletRequest request,
             @PathVariable Long storeId
