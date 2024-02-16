@@ -30,8 +30,11 @@ public class FindGameRes {
     @Schema(description = "옵션 내용", example = "[\"꽝\",\"5% 할인\",\"아메리카노 증정\",\"꽝\"]")
     private List<String> options;
 
+    @Schema(description = "해당 혜택")
+    private List<BenefitResDto> benefits;
+
     @Builder
-    public FindGameRes(Long gameId, GameType type, Integer timeLimit, Integer giftCount, Integer ballCount, Integer successCount, List<String> options) {
+    public FindGameRes(Long gameId, GameType type, Integer timeLimit, Integer giftCount, Integer ballCount, Integer successCount, List<String> options, List<BenefitResDto> benefits) {
         this.gameId = gameId;
         this.type = type;
         this.timeLimit = timeLimit;
@@ -39,5 +42,6 @@ public class FindGameRes {
         this.ballCount = ballCount;
         this.successCount = successCount;
         this.options = options;
+        this.benefits = benefits;
     }
 }

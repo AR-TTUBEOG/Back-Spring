@@ -368,10 +368,17 @@ public class GameService {
         Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Game game = gameRepository.findById(gameId).orElseThrow(NonExistentBenefitException::new);
+        List<Benefit> benefitList = benefitRepository.findAllByGame(game);
+
+        List<BenefitResDto> benefitResDtoList = benefitList.stream()
+                .filter(benefit -> benefit.getGame() != null && benefit.getGame().getId().equals(game.getId()))
+                .map(benefit -> new BenefitResDto(benefit.getId(), benefit.getContent(), benefit.getType()))
+                .collect(Collectors.toList());
 
         FindGameRes.FindGameResBuilder builder = FindGameRes.builder()
                 .gameId(game.getId())
-                .type(game.getType());
+                .type(game.getType())
+                .benefits(benefitResDtoList);
 
         if (game.getType() == GameType.BASKETBALL) {
             builder.timeLimit(game.getBasketballGame().getTimeLimit())
@@ -431,13 +438,19 @@ public class GameService {
                 .distinct() // 중복 제거
                 .collect(Collectors.toList());
 
-        // 변환된 FindGameRes 리스트를 저장할 리스트
         List<FindGameRes> findGameResList = new ArrayList<>();
 
         for (Game game : gameList) {
             FindGameRes.FindGameResBuilder builder = FindGameRes.builder()
                     .gameId(game.getId())
                     .type(game.getType());
+
+            List<BenefitResDto> benefitResDtoList = benefitList.stream()
+                    .filter(benefit -> benefit.getGame() != null && benefit.getGame().getId().equals(game.getId()))
+                    .map(benefit -> new BenefitResDto(benefit.getId(), benefit.getContent(), benefit.getType()))
+                    .collect(Collectors.toList());
+
+            builder.benefits(benefitResDtoList);
 
             if (game.getType() == GameType.BASKETBALL) {
                 builder.timeLimit(game.getBasketballGame().getTimeLimit())
