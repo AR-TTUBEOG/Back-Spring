@@ -10,9 +10,10 @@ import java.time.LocalTime;
 @Schema(description = "CreateBasketballGameRequest")
 public class CreateBasketballReq {
 
-//    private Long StoreId;
+    @Schema(description = "매장ID", example = "1")
+    private Long storeId;
 
-    @Schema(description = "시간제한", example = "00:01:30")
+    @Schema(description = "시간제한", example = "00:00:15")
     private LocalTime timeLimit;
 
     @Schema(description = "공 개수", example = "10")
