@@ -1,13 +1,20 @@
 package com.ttubeog.domain.member.presentation;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttubeog.domain.auth.dto.response.OAuthTokenResponse;
 import com.ttubeog.domain.member.application.MemberService;
 import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
-import com.ttubeog.domain.member.dto.response.MemberDetailRes;
-import com.ttubeog.domain.member.dto.response.MemberNicknameRes;
+import com.ttubeog.domain.member.dto.response.MemberDetailDto;
+import com.ttubeog.domain.member.dto.response.MemberNicknameDto;
+import com.ttubeog.domain.member.dto.response.MemberPlaceDto;
+import com.ttubeog.domain.member.exception.InvalidMemberException;
+import com.ttubeog.domain.spot.exception.AlreadyExistsSpotException;
+import com.ttubeog.domain.spot.exception.InvalidDongAreaException;
+import com.ttubeog.global.config.security.token.CurrentUser;
 import com.ttubeog.global.payload.ErrorResponse;
 import com.ttubeog.global.payload.Message;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,10 +25,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 @Tag(name = "Member", description = "Member API")
 @RestController
@@ -33,7 +38,7 @@ public class MemberController {
 
     @Operation(summary = "멤버 정보 확인", description = "현재 접속된 멤버 정보를 확인합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "멤버 확인 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = MemberDetailRes.class))}),
+            @ApiResponse(responseCode = "200", description = "멤버 확인 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = MemberDetailDto.class))}),
             @ApiResponse(responseCode = "400", description = "멤버 확인 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @GetMapping("")
@@ -46,7 +51,7 @@ public class MemberController {
 
     @Operation(summary = "닉네임 설정", description = "현재 접속된 멤버의 초기 닉네임을 설정합니다.닉네임을 이미 변경한 유저는 isChanged == true로 반환되며, 닉네임이 업데이트 되지 않습니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "닉네임 설정", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = MemberNicknameRes.class))}),
+            @ApiResponse(responseCode = "200", description = "닉네임 설정", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = MemberNicknameDto.class))}),
             @ApiResponse(responseCode = "400", description = "닉네임 설정 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @PostMapping(value = "/nickname")
@@ -120,4 +125,82 @@ public class MemberController {
 //        }
 //        return responseEntity;
 //    }
+
+    /**
+     * 내 산책로 조회 API
+     *
+     * @param request 멤버 검증
+     * @return ResponseEntity -> SpotResponseDto
+     * @throws JsonProcessingException
+     */
+    @Operation(summary = "내 산책 스팟 조회 API",
+            description = "내가 등록한 산책 스팟을 조회합니다.\n",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = MemberPlaceDto.class))
+                                    )
+                            }
+                    ),
+                    @ApiResponse(
+                            responseCode = "500 - InvalidMemberException",
+                            description = "멤버가 올바르지 않습니다.",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = InvalidMemberException.class))
+                                    )
+                            }
+                    ),
+            }
+    )
+    @GetMapping("/spot")
+    public ResponseEntity<?> getMySpotList(
+            @CurrentUser HttpServletRequest request
+    ) throws JsonProcessingException {
+        return memberService.getMySpotList(request);
+    }
+
+    /**
+     * 내 매장 조회 API
+     *
+     * @param request 멤버 검증
+     * @return ResponseEntity -> SpotResponseDto
+     * @throws JsonProcessingException
+     */
+    @Operation(summary = "내 매장 조회 API",
+            description = "내가 등록한 매장을 조회합니다.\n",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = MemberPlaceDto.class))
+                                    )
+                            }
+                    ),
+                    @ApiResponse(
+                            responseCode = "500 - InvalidMemberException",
+                            description = "멤버가 올바르지 않습니다.",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = InvalidMemberException.class))
+                                    )
+                            }
+                    ),
+            }
+    )
+    @GetMapping("/store")
+    public ResponseEntity<?> getMyStoreList(
+            @CurrentUser HttpServletRequest request
+    ) throws JsonProcessingException {
+        return memberService.getMyStoreList(request);
+    }
 }

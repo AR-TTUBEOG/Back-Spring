@@ -1,6 +1,5 @@
 package com.ttubeog.domain.member.dto.response;
 
-import com.ttubeog.domain.auth.domain.Platform;
 import com.ttubeog.domain.member.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,21 +10,18 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberDetailRes {
+public class MemberNicknameDto {
 
     private Long id;
+    private String nickname;
 
-    private String name;
+    private Integer nicknameChanged;
 
-    private Platform platform;
-
-    private Boolean isChanged;
-
-    public static MemberDetailRes toDto(Member member) {
-        return MemberDetailRes.builder()
+    public static MemberNicknameDto toDto(Member member) {
+        return MemberNicknameDto.builder()
                 .id(member.getId())
-                .name(member.getNickname())
-                .platform(member.getPlatform())
+                .nickname(member.getNickname())
+                .nicknameChanged(member.getNicknameChange())
                 .build();
     }
 

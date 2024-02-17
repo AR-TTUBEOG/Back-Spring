@@ -56,6 +56,7 @@ public class PlaceService {
 
     public List<GetAllPlaceRes> getPageOfPlaces(List<GetAllPlaceRes> places, int page, int size) {
         int startIndex = page * size;
+        startIndex = Math.min(startIndex, places.size());
         int endIndex = Math.min(startIndex + size, places.size());
 
         return places.subList(startIndex, endIndex);
@@ -106,7 +107,7 @@ public class PlaceService {
         return GetAllPlaceRes.builder()
                 .placeId(store.getId())
                 .placeType(placeType)
-                .dongName(store.getDongArea().getDongName())
+                .dongName(store.getDongArea())
                 .memberId(store.getMember().getId())
                 .name(store.getName())
                 .info(store.getInfo())

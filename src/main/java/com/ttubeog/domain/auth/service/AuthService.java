@@ -58,7 +58,7 @@ public class AuthService {
                     .memberNumber(String.valueOf(memberInfo.getId()))
                     .platform(Platform.KAKAO)
                     .status(Status.ACTIVE)
-                    .nicknameChange(false)
+                    .nicknameChange(0)
                     .build();
 
             memberRepository.save(member);
@@ -99,7 +99,7 @@ public class AuthService {
                     String refreshToken = issueRefreshToken(existingMember);
                     refreshTokenService.saveTokenInfo(existingMember.getId(), refreshToken, accessToken);
                     if(existingMember.getNickname() == null) {
-                        Member newMember = new Member(email, platform, Status.ACTIVE, platformId, false);
+                        Member newMember = new Member(email, platform, Status.ACTIVE, platformId, 0);
                         Member savedMember = memberRepository.save(newMember);
                         accessToken = issueAccessToken(savedMember);
                         refreshToken = issueRefreshToken(savedMember);
@@ -110,7 +110,7 @@ public class AuthService {
                     }
                 })
                 .orElseGet(() -> {
-                    Member newMember = new Member(email, platform, Status.ACTIVE, platformId, false);
+                    Member newMember = new Member(email, platform, Status.ACTIVE, platformId, 0);
                     Member savedMember = memberRepository.save(newMember);
                     String accessToken = issueAccessToken(savedMember);
                     String refreshToken = issueRefreshToken(savedMember);

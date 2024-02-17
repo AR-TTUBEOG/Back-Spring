@@ -9,12 +9,14 @@ import com.ttubeog.domain.auth.service.RefreshTokenService;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
-import com.ttubeog.domain.member.dto.response.MemberDetailRes;
-import com.ttubeog.domain.member.dto.response.MemberNicknameRes;
-import com.ttubeog.domain.member.exception.AlreadyChangeNicknameException;
+import com.ttubeog.domain.member.dto.response.MemberDetailDto;
+import com.ttubeog.domain.member.dto.response.MemberNicknameDto;
+import com.ttubeog.domain.member.dto.response.MemberPlaceDto;
 import com.ttubeog.domain.member.exception.FailureMemberDeleteException;
 import com.ttubeog.domain.member.exception.InvalidAccessTokenExpiredException;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
+import com.ttubeog.domain.spot.domain.Spot;
+import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
@@ -27,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -48,7 +51,7 @@ public class MemberService {
         DefaultAssert.isOptionalPresent(checkMember);
         Member member = checkMember.get();
 
-        MemberDetailRes memberDetailRes = MemberDetailRes.builder()
+        MemberDetailDto memberDetailDto = MemberDetailDto.builder()
                 .id(member.getId())
                 .name(member.getNickname())
                 .platform(member.getPlatform())
@@ -56,7 +59,7 @@ public class MemberService {
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
-                .information(memberDetailRes)
+                .information(memberDetailDto)
                 .build();
 
         return ResponseEntity.ok(apiResponse);
@@ -70,10 +73,10 @@ public class MemberService {
         Optional<Member> checkMemberIsChanged = memberRepository.findById(memberId);
         if (checkMemberIsChanged.isPresent()) {
             Member member = checkMemberIsChanged.get();
-            if (member.isNickNameChanged()) {
+            if (member.isNickNameChanged() == 2) {
                 Member checkMember = memberRepository.findById(memberId).get();
 
-                MemberNicknameRes memberNicknameRes = MemberNicknameRes.builder()
+                MemberNicknameDto memberNicknameDto = MemberNicknameDto.builder()
                         .id(checkMember.getId())
                         .nickname(checkMember.getNickname())
                         .nicknameChanged(checkMember.getNicknameChange())
@@ -81,7 +84,7 @@ public class MemberService {
 
                 ApiResponse apiResponse = ApiResponse.builder()
                         .check(false)
-                        .information(memberNicknameRes)
+                        .information(memberNicknameDto)
                         .build();
 
                 return ResponseEntity.ok(apiResponse);
@@ -90,12 +93,15 @@ public class MemberService {
 
         // 닉네임 업데이트
         memberRepository.updateMemberNickname(produceNicknameRequest.getNickname(), memberId);
-        memberRepository.updateMemberNicknameChange(true, memberId);
 
         Optional<Member> checkMember = memberRepository.findById(memberId);
         Member member = checkMember.get();
+        Integer nickNameChanged = member.isNickNameChanged();
+        Integer newNicknameChanged = nickNameChanged += 1;
+        memberRepository.updateMemberNicknameChange(newNicknameChanged, memberId);
 
-        MemberNicknameRes memberNicknameRes = MemberNicknameRes.builder()
+
+        MemberNicknameDto memberNicknameDto = MemberNicknameDto.builder()
                 .id(member.getId())
                 .nickname(produceNicknameRequest.getNickname())
                 .nicknameChanged(member.getNicknameChange())
@@ -103,7 +109,7 @@ public class MemberService {
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
-                .information(memberNicknameRes)
+                .information(memberNicknameDto)
                 .build();
 
         return ResponseEntity.ok(apiResponse);
@@ -228,5 +234,49 @@ public class MemberService {
         } catch (Exception e) {
             throw new FailureMemberDeleteException();
         }
+    }
+
+    @Transactional
+    public ResponseEntity<?> getMySpotList(HttpServletRequest request) {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+
+        List<Spot> spotsByMemberId = memberRepository.findSpotByMemberId(memberId);
+
+        List<MemberPlaceDto> memberPlaceDtoList = spotsByMemberId.stream()
+                .map(spot -> MemberPlaceDto.builder()
+                        .id(spot.getId())
+                        .name(spot.getName())
+                        .info(spot.getInfo())
+                        .build())
+                .collect(Collectors.toList());
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(memberPlaceDtoList)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @Transactional
+    public ResponseEntity<?> getMyStoreList(HttpServletRequest request) {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+
+        List<Store> spotsByMemberId = memberRepository.findStoreByMemberId(memberId);
+
+        List<MemberPlaceDto> memberPlaceDtoList = spotsByMemberId.stream()
+                .map(store -> MemberPlaceDto.builder()
+                        .id(store.getId())
+                        .name(store.getName())
+                        .info(store.getInfo())
+                        .build())
+                .collect(Collectors.toList());
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(memberPlaceDtoList)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 }
