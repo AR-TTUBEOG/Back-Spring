@@ -128,6 +128,7 @@ public class MemberController {
      * 내 산책로 조회 API
      *
      * @param request 멤버 검증
+     * @param pageNum
      * @return ResponseEntity -> SpotResponseDto
      * @throws JsonProcessingException
      */
@@ -156,11 +157,12 @@ public class MemberController {
                     ),
             }
     )
-    @GetMapping("/spot")
+    @GetMapping("/spot&{pageNum}")
     public ResponseEntity<?> getMySpotList(
-            @CurrentUser HttpServletRequest request
+            @CurrentUser HttpServletRequest request,
+            @RequestParam(name = "pageNum") Integer pageNum
     ) throws JsonProcessingException {
-        return memberService.getMySpotList(request);
+        return memberService.getMySpotList(request, pageNum);
     }
 
     /**

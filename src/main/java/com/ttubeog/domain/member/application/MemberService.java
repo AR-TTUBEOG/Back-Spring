@@ -16,6 +16,7 @@ import com.ttubeog.domain.member.exception.FailureMemberDeleteException;
 import com.ttubeog.domain.member.exception.InvalidAccessTokenExpiredException;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.spot.domain.Spot;
+import com.ttubeog.domain.spot.domain.repository.SpotRepository;
 import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.global.DefaultAssert;
@@ -44,6 +45,7 @@ public class MemberService {
     private final RefreshTokenService refreshTokenService;
     private final RedisTemplate<String, String> redisTemplate;
     private final StoreRepository storeRepository;
+    private final SpotRepository spotRepository;
     private static final int WAITING_PERIOD_DAYS = 3;
 
 
@@ -242,18 +244,21 @@ public class MemberService {
     }
 
     @Transactional
-    public ResponseEntity<?> getMySpotList(HttpServletRequest request) {
+    public ResponseEntity<?> getMySpotList(HttpServletRequest request, Integer pageNum) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
-        List<Spot> spotsByMemberId = memberRepository.findSpotByMemberId(memberId);
+        Page<Spot> spotPage = spotRepository.findAllByMemberId(memberId, PageRequest.of(pageNum, 10));
 
-        List<MemberPlaceDto> memberPlaceDtoList = spotsByMemberId.stream()
-                .map(spot -> MemberPlaceDto.builder()
-                        .id(spot.getId())
-                        .name(spot.getName())
-                        .info(spot.getInfo())
-                        .build())
-                .collect(Collectors.toList());
+        List<MemberPlaceDto> memberPlaceDtoList = new ArrayList<>();
+
+        for (Spot spot : spotPage) {
+            MemberPlaceDto memberPlaceDto = MemberPlaceDto.builder()
+                    .id(spot.getId())
+                    .name(spot.getName())
+                    .info(spot.getInfo())
+                    .build();
+            memberPlaceDtoList.add(memberPlaceDto);
+        }
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
