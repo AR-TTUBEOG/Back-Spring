@@ -75,7 +75,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(updateCommentReq.getCommentId()).orElseThrow(NonExistentCommentException::new);
 
         Member commentWriter = comment.getMember();
-        if (commentWriter.getId() != member.getId()) {
+        if (commentWriter.getId() != memberId) {
             throw new UnauthorizedMemberException();
         }
 
@@ -118,8 +118,8 @@ public class CommentService {
     // AR뷰를 위한 댓글 조회
     public ResponseEntity<?> getCommentForAR(GetCommentReq getCommentReq) {
 
-        Float userLatitude = getCommentReq.getLatitude();
-        Float userLongitude = getCommentReq.getLongitude();
+        Double userLatitude = getCommentReq.getLatitude();
+        Double userLongitude = getCommentReq.getLongitude();
 
         List<Comment> allComments = getAllComments();
         Double radius = 20.0; // 반경값 확인 필요
@@ -127,10 +127,10 @@ public class CommentService {
 
         for (Comment comment : allComments) {
 
-            Float commentLatitude = comment.getLatitude();
-            Float commentLongitude = comment.getLongitude();
+            Double commentLatitude = comment.getLatitude();
+            Double commentLongitude = comment.getLongitude();
 
-            double distance = calculateDistance(userLatitude, userLongitude, commentLatitude, commentLongitude);
+            Double distance = calculateDistance(userLatitude, userLongitude, commentLatitude, commentLongitude);
 
             if (distance < radius) {
                 GetCommentRes getCommentRes = GetCommentRes.builder()
@@ -153,17 +153,18 @@ public class CommentService {
     }
 
     // 거리 계산
-    private double calculateDistance(Float lat1, Float lon1, Float lat2, Float lon2) {
+    private double calculateDistance(Double lat1, Double lon1, Double lat2, Double lon2) {
+
         double R = 6371; // 지구 반지름
 
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLon = Math.toRadians(lon2 - lon1);
+        Double dLat = Math.toRadians(lat2 - lat1);
+        Double dLon = Math.toRadians(lon2 - lon1);
 
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                 Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
                         Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); // 단위 km
+        Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); // 단위 km
 
         return R * c;
     }

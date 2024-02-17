@@ -7,9 +7,8 @@ import lombok.Data;
 public class GetCommentReq {
 
     @Schema(description = "사용자 위치 위도값")
-    private Float latitude;
+    private Double latitude;
 
     @Schema(description = "사용자 위치 경도값")
-    private Float longitude;
-
+    private Double longitude;
 }
