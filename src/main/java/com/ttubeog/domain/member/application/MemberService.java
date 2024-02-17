@@ -11,9 +11,11 @@ import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
 import com.ttubeog.domain.member.dto.response.MemberDetailDto;
 import com.ttubeog.domain.member.dto.response.MemberNicknameDto;
+import com.ttubeog.domain.member.dto.response.MemberPlaceDto;
 import com.ttubeog.domain.member.exception.FailureMemberDeleteException;
 import com.ttubeog.domain.member.exception.InvalidAccessTokenExpiredException;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
+import com.ttubeog.domain.spot.domain.Spot;
 import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -230,5 +233,27 @@ public class MemberService {
         } catch (Exception e) {
             throw new FailureMemberDeleteException();
         }
+    }
+
+    @Transactional
+    public ResponseEntity<?> getMySpotList(HttpServletRequest request) {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+
+        List<Spot> spotsByMemberId = memberRepository.findSpotsByMemberId(memberId);
+
+        List<MemberPlaceDto> memberPlaceDtoList = spotsByMemberId.stream()
+                .map(spot -> MemberPlaceDto.builder()
+                        .id(spot.getId())
+                        .name(spot.getName())
+                        .info(spot.getInfo())
+                        .build())
+                .collect(Collectors.toList());
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(memberPlaceDtoList)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 }

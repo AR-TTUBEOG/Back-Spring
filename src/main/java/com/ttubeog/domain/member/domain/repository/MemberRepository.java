@@ -3,6 +3,7 @@ package com.ttubeog.domain.member.domain.repository;
 import com.ttubeog.domain.auth.domain.Platform;
 import com.ttubeog.domain.auth.domain.Status;
 import com.ttubeog.domain.member.domain.Member;
+import com.ttubeog.domain.spot.domain.Spot;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,7 +25,6 @@ public interface MemberRepository extends JpaRepository<Member,Long>{
 
     List<Member> findByStatus(Status status);
 
-
     Optional<Member> findByPlatformAndPlatformId(Platform platform, String platformId);
 
     Optional<Member> findByRefreshToken(String refreshToken);
@@ -45,4 +45,7 @@ public interface MemberRepository extends JpaRepository<Member,Long>{
 
     Boolean existsByNickname(String nickname);
 
+    @Modifying
+    @Query("SELECT s FROM Spot s WHERE s.member.id = :memberId")
+    List<Spot> findSpotsByMemberId(@Param("memberId") Long memberId);
 }

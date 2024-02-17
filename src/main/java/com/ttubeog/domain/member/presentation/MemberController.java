@@ -154,33 +154,12 @@ public class MemberController {
                                     )
                             }
                     ),
-                    @ApiResponse(
-                            responseCode = "500 - AlreadyExistsSpotException",
-                            description = "이미 존재하는 산책 장소명입니다.",
-                            content = {
-                                    @Content(
-                                            mediaType = "application/json",
-                                            array = @ArraySchema(schema = @Schema(implementation = AlreadyExistsSpotException.class))
-                                    )
-                            }
-                    ),
-                    @ApiResponse(
-                            responseCode = "500 - InvalidDongAreaException",
-                            description = "유효하지 않은 지역 정보입니다.",
-                            content = {
-                                    @Content(
-                                            mediaType = "application/json",
-                                            array = @ArraySchema(schema = @Schema(implementation = InvalidDongAreaException.class))
-                                    )
-                            }
-                    ),
             }
     )
-    @GetMapping("/{memberId}/spot")
+    @GetMapping("/spot")
     public ResponseEntity<?> getMySpotList(
-            @CurrentUser HttpServletRequest request,
-            @RequestParam(name = "memberId") Long memberId
+            @CurrentUser HttpServletRequest request
     ) throws JsonProcessingException {
-        return null;
+        return memberService.getMySpotList(request);
     }
 }

@@ -21,5 +21,5 @@ public class MemberPlaceDto {
     private String info;
 
     @Schema(description = "이미지 리스트")
-    private List<String> image;
+    private String image;
 }
