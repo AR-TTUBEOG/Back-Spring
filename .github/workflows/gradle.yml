@@ -74,7 +74,8 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
-          target: /home/ubuntu
+          target: /home/ubuntu/app/spring_source
+          source: .
           command: sudo systemctl start redis-server
 
 
