@@ -59,7 +59,7 @@ public class SpotService {
         SpotResponseDto createSpotResponseDto = SpotResponseDto.builder()
                 .id(spot.getId())
                 .memberId(spot.getMember().getId())
-                .dongAreaId(spot.getDongArea().getId())
+                .dongAreaId(spot.getDongArea())
                 .detailAddress(spot.getDetailAddress())
                 .name(spot.getName())
                 .info(spot.getInfo())
@@ -91,7 +91,7 @@ public class SpotService {
         }
 
         // 지역코드가 유효한지 체크
-        DongArea dongArea = dongAreaRepository.findById(createSpotRequestDto.getDongAreaId()).orElseThrow(InvalidDongAreaException::new);
+        String dongArea = String.valueOf(dongAreaRepository.findById(Long.valueOf(createSpotRequestDto.getDongAreaId())).orElseThrow(InvalidDongAreaException::new));
 
         // 산책 스팟 이미지가 1~10개 사이인지 체크
         if (createSpotRequestDto.getImage().isEmpty() || createSpotRequestDto.getImage().size() > 10) {
@@ -162,7 +162,7 @@ public class SpotService {
         }
 
         // 수정하려는 지역코드가 유효한지 체크
-        DongArea dongArea = dongAreaRepository.findById(updateSpotRequestDto.getDongAreaId()).orElseThrow(InvalidDongAreaException::new);
+        String dongArea = String.valueOf(dongAreaRepository.findById(Long.valueOf(updateSpotRequestDto.getDongAreaId())).orElseThrow(InvalidDongAreaException::new));
 
         // 수정하려는 산책 스팟 이미지가 1~10개 사이인지 체크
         if (updateSpotRequestDto.getImage().isEmpty() || updateSpotRequestDto.getImage().size() > 10) {

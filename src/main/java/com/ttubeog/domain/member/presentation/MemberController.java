@@ -1,13 +1,21 @@
 package com.ttubeog.domain.member.presentation;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttubeog.domain.auth.dto.response.OAuthTokenResponse;
 import com.ttubeog.domain.member.application.MemberService;
 import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
 import com.ttubeog.domain.member.dto.response.MemberDetailRes;
 import com.ttubeog.domain.member.dto.response.MemberNicknameRes;
+import com.ttubeog.domain.member.exception.InvalidMemberException;
+import com.ttubeog.domain.spot.dto.response.SpotResponseDto;
+import com.ttubeog.domain.spot.exception.AlreadyExistsSpotException;
+import com.ttubeog.domain.spot.exception.InvalidDongAreaException;
+import com.ttubeog.domain.spot.exception.InvalidImageListSizeException;
+import com.ttubeog.global.config.security.token.CurrentUser;
 import com.ttubeog.global.payload.ErrorResponse;
 import com.ttubeog.global.payload.Message;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -120,4 +128,62 @@ public class MemberController {
 //        }
 //        return responseEntity;
 //    }
+
+    /**
+     * 내 산책로 조회 API
+     * @param request 유저 검증
+     * @return ResponseEntity -> SpotResponseDto
+     * @throws JsonProcessingException
+     */
+    @Operation(summary = "내 산책 스팟 조회 API",
+            description = "내가 등록한 산책 스팟을 조회합니다.\n",
+            responses = {@ApiResponse(
+                    responseCode = "200",
+                    description = "OK",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = SpotResponseDto.class))
+                            )
+                    }
+            ),
+                    @ApiResponse(
+                            responseCode = "500 - InvalidMemberException",
+                            description = "멤버가 올바르지 않습니다.",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = InvalidMemberException.class))
+                                    )
+                            }
+                    ),
+                    @ApiResponse(
+                            responseCode = "500 - AlreadyExistsSpotException",
+                            description = "이미 존재하는 산책 장소명입니다.",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = AlreadyExistsSpotException.class))
+                                    )
+                            }
+                    ),
+                    @ApiResponse(
+                            responseCode = "500 - InvalidDongAreaException",
+                            description = "유효하지 않은 지역 정보입니다.",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = InvalidDongAreaException.class))
+                                    )
+                            }
+                    ),
+            }
+    )
+    @GetMapping("/{memberId}/spot")
+    public ResponseEntity<?> getMySpotList(
+            @CurrentUser HttpServletRequest request,
+            @RequestParam(name = "memberId") Long memberId
+    ) throws JsonProcessingException {
+        return null;
+    }
 }

@@ -21,7 +21,7 @@ public class SpotResponseDto {
     private String name;
 
     @Schema(description = "지역 코드 ID", defaultValue = "1")
-    private Long dongAreaId;
+    private String dongAreaId;
 
     @Schema(description = "상세 주소", defaultValue = "1층")
     private String detailAddress;

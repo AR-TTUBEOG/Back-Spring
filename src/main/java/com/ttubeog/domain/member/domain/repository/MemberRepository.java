@@ -24,6 +24,7 @@ public interface MemberRepository extends JpaRepository<Member,Long>{
 
     List<Member> findByStatus(Status status);
 
+
     Optional<Member> findByPlatformAndPlatformId(Platform platform, String platformId);
 
     Optional<Member> findByRefreshToken(String refreshToken);
@@ -39,7 +40,7 @@ public interface MemberRepository extends JpaRepository<Member,Long>{
 
     @Modifying
     @Query("update Member as m set m.nicknameChange = :nicknameChange where m.id = :memberId")
-    void updateMemberNicknameChange(@Param("nicknameChange") Boolean nicknameChange, @Param("memberId") Long memberId);
+    void updateMemberNicknameChange(@Param("nicknameChange") Integer nicknameChange, @Param("memberId") Long memberId);
 
 
     Boolean existsByNickname(String nickname);

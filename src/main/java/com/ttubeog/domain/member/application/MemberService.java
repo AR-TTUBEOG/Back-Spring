@@ -11,7 +11,6 @@ import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
 import com.ttubeog.domain.member.dto.response.MemberDetailRes;
 import com.ttubeog.domain.member.dto.response.MemberNicknameRes;
-import com.ttubeog.domain.member.exception.AlreadyChangeNicknameException;
 import com.ttubeog.domain.member.exception.FailureMemberDeleteException;
 import com.ttubeog.domain.member.exception.InvalidAccessTokenExpiredException;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
@@ -70,7 +69,7 @@ public class MemberService {
         Optional<Member> checkMemberIsChanged = memberRepository.findById(memberId);
         if (checkMemberIsChanged.isPresent()) {
             Member member = checkMemberIsChanged.get();
-            if (member.isNickNameChanged()) {
+            if (member.isNickNameChanged() == 2) {
                 Member checkMember = memberRepository.findById(memberId).get();
 
                 MemberNicknameRes memberNicknameRes = MemberNicknameRes.builder()
@@ -90,10 +89,13 @@ public class MemberService {
 
         // 닉네임 업데이트
         memberRepository.updateMemberNickname(produceNicknameRequest.getNickname(), memberId);
-        memberRepository.updateMemberNicknameChange(true, memberId);
 
         Optional<Member> checkMember = memberRepository.findById(memberId);
         Member member = checkMember.get();
+        Integer nickNameChanged = member.isNickNameChanged();
+        Integer newNicknameChanged = nickNameChanged += 1;
+        memberRepository.updateMemberNicknameChange(newNicknameChanged, memberId);
+
 
         MemberNicknameRes memberNicknameRes = MemberNicknameRes.builder()
                 .id(member.getId())

@@ -16,7 +16,7 @@ public class MemberNicknameRes {
     private Long id;
     private String nickname;
 
-    private Boolean nicknameChanged;
+    private Integer nicknameChanged;
 
     public static MemberNicknameRes toDto(Member member) {
         return MemberNicknameRes.builder()
