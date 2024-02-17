@@ -44,31 +44,18 @@ jobs:
       - name: Copy secret
         env:
           OCCUPY_SECRET: ${{ secrets.OCCUPY_SECRET }}
-          OCCUPY_DB_SECRET: ${{ secrets.OCCUPY_DB_SECRET }}
-          OCCUPY_OAUTH_SECRET: ${{ secrets.OCCUPY_OAUTH_SECRET }}
           OCCUPY_LOGBACK_SECRET: ${{ secrets.OCCUPY_LOGBACK_SECRET }}
 
           OCCUPY_SECRET_DIR: ./src/main/resources
-          OCCUPY_DB_SECRET_DIR: ./src/main/resources/database
-          OCCUPY_OAUTH_SECRET_DIR: ./src/main/resources/oauth2
           OCCUPY_LOGBACK_SECRET_DIR: ./src/main/resources
 
           OCCUPY_SECRET_DIR_FILE_NAME: application.yml
-          OCCUPY_DB_SECRET_DIR_FILE_NAME: application-database.yml
-          OCCUPY_OAUTH_SECRET_DIR_FILE_NAME: application-oauth2.yml
           OCCUPY_LOGBACK_SECRET_DIR_FILE_NAME: logback-test.xml
         run: |
-          mkdir $OCCUPY_DB_SECRET_DIR
-          mkdir $OCCUPY_OAUTH_SECRET_DIR
-          
           touch $OCCUPY_SECRET_DIR/$OCCUPY_SECRET_DIR_FILE_NAME
-          touch $OCCUPY_DB_SECRET_DIR/$OCCUPY_DB_SECRET_DIR_FILE_NAME
-          touch $OCCUPY_OAUTH_SECRET_DIR/$OCCUPY_OAUTH_SECRET_DIR_FILE_NAME
           touch $OCCUPY_LOGBACK_SECRET_DIR/$OCCUPY_LOGBACK_SECRET_DIR_FILE_NAME
           
           echo "$OCCUPY_SECRET" > $OCCUPY_SECRET_DIR/$OCCUPY_SECRET_DIR_FILE_NAME
-          echo "$OCCUPY_DB_SECRET" > $OCCUPY_DB_SECRET_DIR/$OCCUPY_DB_SECRET_DIR_FILE_NAME
-          echo "$OCCUPY_OAUTH_SECRET" > $OCCUPY_OAUTH_SECRET_DIR/$OCCUPY_OAUTH_SECRET_DIR_FILE_NAME
           echo "$OCCUPY_LOGBACK_SECRET" > $OCCUPY_LOGBACK_SECRET_DIR/$OCCUPY_LOGBACK_SECRET_DIR_FILE_NAME
 
       # gradlew 실행 권한 부여
@@ -87,25 +74,6 @@ jobs:
           name: build-artifacts
           path: |
             build/libs/*.jar
-
-#      - name: Remove past EC2 raw sorce dir
-#        uses: appleboy/ssh-action@master
-#        with:
-#          key: ${{ secrets.EC2_KEY }}
-#          host: ${{ secrets.EC2_HOST }}
-#          username: ${{ secrets.EC2_USER }}
-#          command: sudo rm -rf /home/ubuntu/app/code
-#          port: 22
-
-      
-#      - name: Upload raw sorce to EC2
-#        uses: appleboy/scp-action@master
-#        with:
-#          key: ${{ secrets.EC2_KEY }}
-#          host: ${{ secrets.EC2_HOST }}
-#          username: ${{ secrets.EC2_USER }}
-#          source: .
-#          target: "/home/ubuntu/app/code"
 
       - name: Start redis-server
         uses: appleboy/scp-action@master
