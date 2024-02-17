@@ -1,6 +1,9 @@
 package com.ttubeog.domain.likes.domain.repository;
 
 import com.ttubeog.domain.likes.domain.Likes;
+import com.ttubeog.domain.member.domain.Member;
+import com.ttubeog.domain.spot.domain.Spot;
+import com.ttubeog.domain.store.domain.Store;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -9,12 +12,16 @@ import java.util.List;
 @Repository
 public interface LikesRepository extends JpaRepository<Likes, Long> {
   
-    List<Likes> findByStoreId(Long storeId);
+    List<Likes> findByStore(Store store);
 
-    Integer countByStoreId(Long storeId);
+    Integer countByStore(Store store);
+
+    List<Likes> findBySpot(Spot spot);
+
+    Integer countBySpot(Spot spot);
   
-    boolean existsByMemberIdAndStoreId(Long memberId, Long StoreId);
+    boolean existsByMemberAndStore(Member member, Store store);
   
-    boolean existsByMemberIdAndSpotId(Long memberId, Long spotId);
+    boolean existsByMemberAndSpot(Member member, Spot spot);
 
 }

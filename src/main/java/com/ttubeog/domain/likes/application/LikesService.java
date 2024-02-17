@@ -41,7 +41,7 @@ public class LikesService {
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Store store = storeRepository.findById(storeId).orElseThrow(NonExistentStoreException::new);
 
-        if (likesRepository.existsByMemberIdAndStoreId(member.getId(), storeId)) {
+        if (likesRepository.existsByMemberAndStore(member, store)) {
             throw new AlreadyLikesException();
         }
 
@@ -68,7 +68,7 @@ public class LikesService {
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Spot spot = spotRepository.findById(spotId).orElseThrow(NonExistentSpotException::new);
 
-        if (likesRepository.existsByMemberIdAndSpotId(member.getId(), spotId)) {
+        if (likesRepository.existsByMemberAndSpot(member, spot)) {
             throw new AlreadyLikesException();
         }
 
