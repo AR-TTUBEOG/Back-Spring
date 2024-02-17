@@ -67,7 +67,6 @@ public class StoreService {
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
-        DongArea dongArea = dongAreaRepository.findById(registerStoreReq.getDongAreaId()).orElseThrow(InvalidDongAreaException::new);
 
         if (registerStoreReq.getImage().isEmpty() || registerStoreReq.getImage().size() > 10) {
             throw new InvalidImageListSizeException();
@@ -76,7 +75,7 @@ public class StoreService {
         Store store = Store.builder()
                 .name(registerStoreReq.getName())
                 .info(registerStoreReq.getInfo())
-                .dongArea(dongArea)
+                .dongArea(registerStoreReq.getDongAreaId())
                 .member(member)
                 .detailAddress(registerStoreReq.getDetailAddress())
                 .latitude(registerStoreReq.getLatitude())
@@ -103,7 +102,7 @@ public class StoreService {
                 .memberId(member.getId())
                 .name(store.getName())
                 .info(store.getInfo())
-                .dongAreaId(store.getDongArea().getId())
+                .dongAreaId(store.getDongArea())
                 .detailAddress(store.getDetailAddress())
                 .latitude(store.getLatitude())
                 .longitude(store.getLongitude())
@@ -254,7 +253,7 @@ public class StoreService {
                 .memberId(store.getMember().getId())
                 .name(store.getName())
                 .info(store.getInfo())
-                .dongAreaId(store.getDongArea().getId())
+                .dongAreaId(store.getDongArea())
                 .detailAddress(store.getDetailAddress())
                 .latitude(store.getLatitude())
                 .longitude(store.getLongitude())
