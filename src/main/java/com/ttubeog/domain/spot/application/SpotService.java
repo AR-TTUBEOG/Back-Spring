@@ -1,9 +1,6 @@
 package com.ttubeog.domain.spot.application;
 
-import com.ttubeog.domain.area.domain.DongArea;
-import com.ttubeog.domain.area.domain.repository.DongAreaRepository;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
-import com.ttubeog.domain.guestbook.application.GuestBookService;
 import com.ttubeog.domain.guestbook.domain.GuestBook;
 import com.ttubeog.domain.guestbook.domain.repository.GuestBookRepository;
 import com.ttubeog.domain.image.application.ImageService;
@@ -21,7 +18,6 @@ import com.ttubeog.domain.spot.dto.request.CreateSpotRequestDto;
 import com.ttubeog.domain.spot.dto.request.UpdateSpotRequestDto;
 import com.ttubeog.domain.spot.dto.response.SpotResponseDto;
 import com.ttubeog.domain.spot.exception.AlreadyExistsSpotException;
-import com.ttubeog.domain.spot.exception.InvalidDongAreaException;
 import com.ttubeog.domain.spot.exception.InvalidImageListSizeException;
 import com.ttubeog.domain.spot.exception.InvalidSpotIdException;
 import com.ttubeog.global.payload.ApiResponse;
@@ -44,10 +40,8 @@ public class SpotService {
 
     private final SpotRepository spotRepository;
     private final MemberRepository memberRepository;
-    private final DongAreaRepository dongAreaRepository;
     private final ImageRepository imageRepository;
     private final GuestBookRepository guestBookRepository;
-    private final GuestBookService guestBookService;
 
     private final ImageService imageService;
 
@@ -90,9 +84,6 @@ public class SpotService {
             throw new AlreadyExistsSpotException();
         }
 
-        // 지역코드가 유효한지 체크
-        String dongArea = String.valueOf(dongAreaRepository.findById(Long.valueOf(createSpotRequestDto.getDongAreaId())).orElseThrow(InvalidDongAreaException::new));
-
         // 산책 스팟 이미지가 1~10개 사이인지 체크
         if (createSpotRequestDto.getImage().isEmpty() || createSpotRequestDto.getImage().size() > 10) {
             throw new InvalidImageListSizeException();
@@ -101,7 +92,7 @@ public class SpotService {
         // 산책 스팟 저장
         Spot spot = Spot.builder()
                 .member(member)
-                .dongArea(dongArea)
+                .dongArea(createSpotRequestDto.getDongAreaId())
                 .detailAddress(createSpotRequestDto.getDetailAddress())
                 .name(createSpotRequestDto.getName())
                 .info(createSpotRequestDto.getInfo())
@@ -161,15 +152,12 @@ public class SpotService {
             }
         }
 
-        // 수정하려는 지역코드가 유효한지 체크
-        String dongArea = String.valueOf(dongAreaRepository.findById(Long.valueOf(updateSpotRequestDto.getDongAreaId())).orElseThrow(InvalidDongAreaException::new));
-
         // 수정하려는 산책 스팟 이미지가 1~10개 사이인지 체크
         if (updateSpotRequestDto.getImage().isEmpty() || updateSpotRequestDto.getImage().size() > 10) {
             throw new InvalidImageListSizeException();
         }
 
-        spot.updateSpot(updateSpotRequestDto.getName(), updateSpotRequestDto.getInfo(), updateSpotRequestDto.getLatitude(), updateSpotRequestDto.getLongitude(), dongArea, updateSpotRequestDto.getDetailAddress());
+        spot.updateSpot(updateSpotRequestDto.getName(), updateSpotRequestDto.getInfo(), updateSpotRequestDto.getLatitude(), updateSpotRequestDto.getLongitude(), updateSpotRequestDto.getDongAreaId(), updateSpotRequestDto.getDetailAddress());
 
         spotRepository.save(spot);
 

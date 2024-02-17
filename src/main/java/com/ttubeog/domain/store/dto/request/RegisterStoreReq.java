@@ -17,7 +17,7 @@ public class RegisterStoreReq {
     private String info;
 
     @Schema(description = "지역(동) ID")
-    private Long dongAreaId;
+    private String dongAreaId;
 
     @Schema(description = "상세 주소")
     private String detailAddress;

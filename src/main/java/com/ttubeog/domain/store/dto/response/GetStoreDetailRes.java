@@ -26,7 +26,7 @@ public class GetStoreDetailRes {
     private String info;
 
     @Schema(description = "지역(동) ID")
-    private Long dongAreaId;
+    private String dongAreaId;
 
     @Schema(description = "상세 주소")
     private String detailAddress;
@@ -59,7 +59,7 @@ public class GetStoreDetailRes {
     private Boolean isFavorited;
 
     @Builder
-    public GetStoreDetailRes(Long storeId, Long memberId, String name, String info, Long dongAreaId,
+    public GetStoreDetailRes(Long storeId, Long memberId, String name, String info, String dongAreaId,
                              String detailAddress, Double latitude, Double longitude, List<String> image, Float stars,
                              StoreType type, List<BenefitType> storeBenefits, Integer guestbookCount, Integer likesCount, Boolean isFavorited) {
         this.storeId = storeId;
