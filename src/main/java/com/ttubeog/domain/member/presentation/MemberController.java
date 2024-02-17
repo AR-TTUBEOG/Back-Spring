@@ -128,22 +128,24 @@ public class MemberController {
 
     /**
      * 내 산책로 조회 API
+     *
      * @param request 멤버 검증
      * @return ResponseEntity -> SpotResponseDto
      * @throws JsonProcessingException
      */
     @Operation(summary = "내 산책 스팟 조회 API",
             description = "내가 등록한 산책 스팟을 조회합니다.\n",
-            responses = {@ApiResponse(
-                    responseCode = "200",
-                    description = "OK",
-                    content = {
-                            @Content(
-                                    mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = MemberPlaceDto.class))
-                            )
-                    }
-            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = MemberPlaceDto.class))
+                                    )
+                            }
+                    ),
                     @ApiResponse(
                             responseCode = "500 - InvalidMemberException",
                             description = "멤버가 올바르지 않습니다.",
@@ -161,5 +163,44 @@ public class MemberController {
             @CurrentUser HttpServletRequest request
     ) throws JsonProcessingException {
         return memberService.getMySpotList(request);
+    }
+
+    /**
+     * 내 매장 조회 API
+     *
+     * @param request 멤버 검증
+     * @return ResponseEntity -> SpotResponseDto
+     * @throws JsonProcessingException
+     */
+    @Operation(summary = "내 매장 조회 API",
+            description = "내가 등록한 매장을 조회합니다.\n",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "OK",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = MemberPlaceDto.class))
+                                    )
+                            }
+                    ),
+                    @ApiResponse(
+                            responseCode = "500 - InvalidMemberException",
+                            description = "멤버가 올바르지 않습니다.",
+                            content = {
+                                    @Content(
+                                            mediaType = "application/json",
+                                            array = @ArraySchema(schema = @Schema(implementation = InvalidMemberException.class))
+                                    )
+                            }
+                    ),
+            }
+    )
+    @GetMapping("/store")
+    public ResponseEntity<?> getMyStoreList(
+            @CurrentUser HttpServletRequest request
+    ) throws JsonProcessingException {
+        return memberService.getMyStoreList(request);
     }
 }

@@ -4,6 +4,7 @@ import com.ttubeog.domain.auth.domain.Platform;
 import com.ttubeog.domain.auth.domain.Status;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.spot.domain.Spot;
+import com.ttubeog.domain.store.domain.Store;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -47,5 +48,9 @@ public interface MemberRepository extends JpaRepository<Member,Long>{
 
     @Modifying
     @Query("SELECT s FROM Spot s WHERE s.member.id = :memberId")
-    List<Spot> findSpotsByMemberId(@Param("memberId") Long memberId);
+    List<Spot> findSpotByMemberId(@Param("memberId") Long memberId);
+
+    @Modifying
+    @Query("SELECT s FROM Store s WHERE s.member.id = :memberId")
+    List<Store> findStoreByMemberId(@Param("memberId") Long memberId);
 }

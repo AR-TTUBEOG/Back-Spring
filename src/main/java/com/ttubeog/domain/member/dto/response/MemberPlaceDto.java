@@ -11,10 +11,10 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class MemberPlaceDto {
-    @Schema(description = "산책 스팟 ID", defaultValue = "1")
+    @Schema(description = "장소 ID", defaultValue = "1")
     private Long id;
 
-    @Schema(description = "산책 스팟 이름", defaultValue = "나의 산책 스팟")
+    @Schema(description = "장소 이름", defaultValue = "나의 산책 스팟")
     private String name;
 
     @Schema(description = "세부 정보", defaultValue = "연인, 친구들과 산책하기 좋은 장소입니다.")

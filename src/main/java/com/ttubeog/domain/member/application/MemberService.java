@@ -16,6 +16,7 @@ import com.ttubeog.domain.member.exception.FailureMemberDeleteException;
 import com.ttubeog.domain.member.exception.InvalidAccessTokenExpiredException;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.spot.domain.Spot;
+import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
@@ -239,13 +240,35 @@ public class MemberService {
     public ResponseEntity<?> getMySpotList(HttpServletRequest request) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
-        List<Spot> spotsByMemberId = memberRepository.findSpotsByMemberId(memberId);
+        List<Spot> spotsByMemberId = memberRepository.findSpotByMemberId(memberId);
 
         List<MemberPlaceDto> memberPlaceDtoList = spotsByMemberId.stream()
                 .map(spot -> MemberPlaceDto.builder()
                         .id(spot.getId())
                         .name(spot.getName())
                         .info(spot.getInfo())
+                        .build())
+                .collect(Collectors.toList());
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(memberPlaceDtoList)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @Transactional
+    public ResponseEntity<?> getMyStoreList(HttpServletRequest request) {
+        Long memberId = jwtTokenProvider.getMemberId(request);
+
+        List<Store> spotsByMemberId = memberRepository.findStoreByMemberId(memberId);
+
+        List<MemberPlaceDto> memberPlaceDtoList = spotsByMemberId.stream()
+                .map(store -> MemberPlaceDto.builder()
+                        .id(store.getId())
+                        .name(store.getName())
+                        .info(store.getInfo())
                         .build())
                 .collect(Collectors.toList());
 
