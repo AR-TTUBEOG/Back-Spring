@@ -151,9 +151,8 @@ public class PlaceService {
                 .memberId(spot.getMember().getId())
                 .name(spot.getName())
                 .info(spot.getInfo())
-                // 위도, 경도 double로 변경 필요
-                //.latitude(spot.getLatitude())
-                //.longitude(spot.getLongitude())
+                .latitude(spot.getLatitude())
+                .longitude(spot.getLongitude())
                 .image(representativeImageUrl)
                 .stars(spot.getStars())
                 .guestbookCount(intValue(guestBookRepository.countAllBySpot(spot)))
