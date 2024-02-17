@@ -76,7 +76,7 @@ public class MemberService {
                 MemberNicknameRes memberNicknameRes = MemberNicknameRes.builder()
                         .id(checkMember.getId())
                         .nickname(checkMember.getNickname())
-                        .isChanged(checkMember.getNicknameChange())
+                        .nicknameChanged(checkMember.getNicknameChange())
                         .build();
 
                 ApiResponse apiResponse = ApiResponse.builder()
@@ -90,8 +90,6 @@ public class MemberService {
 
         // 닉네임 업데이트
         memberRepository.updateMemberNickname(produceNicknameRequest.getNickname(), memberId);
-
-        // 닉네임 1회 변경 true로 변경
         memberRepository.updateMemberNicknameChange(true, memberId);
 
         Optional<Member> checkMember = memberRepository.findById(memberId);
@@ -100,7 +98,7 @@ public class MemberService {
         MemberNicknameRes memberNicknameRes = MemberNicknameRes.builder()
                 .id(member.getId())
                 .nickname(produceNicknameRequest.getNickname())
-                .isChanged(member.getNicknameChange())
+                .nicknameChanged(member.getNicknameChange())
                 .build();
 
         ApiResponse apiResponse = ApiResponse.builder()

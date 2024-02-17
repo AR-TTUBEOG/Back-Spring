@@ -16,13 +16,13 @@ public class MemberNicknameRes {
     private Long id;
     private String nickname;
 
-    private Boolean isChanged;
+    private Boolean nicknameChanged;
 
     public static MemberNicknameRes toDto(Member member) {
         return MemberNicknameRes.builder()
                 .id(member.getId())
                 .nickname(member.getNickname())
-                .isChanged(member.getNicknameChange())
+                .nicknameChanged(member.getNicknameChange())
                 .build();
     }
 
