@@ -11,18 +11,21 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberNicknameRes {
+public class MemberDetailDto {
 
     private Long id;
-    private String nickname;
 
-    private Boolean nicknameChanged;
+    private String name;
 
-    public static MemberNicknameRes toDto(Member member) {
-        return MemberNicknameRes.builder()
+    private Platform platform;
+
+    private Boolean isChanged;
+
+    public static MemberDetailDto toDto(Member member) {
+        return MemberDetailDto.builder()
                 .id(member.getId())
-                .nickname(member.getNickname())
-                .nicknameChanged(member.getNicknameChange())
+                .name(member.getNickname())
+                .platform(member.getPlatform())
                 .build();
     }
 
