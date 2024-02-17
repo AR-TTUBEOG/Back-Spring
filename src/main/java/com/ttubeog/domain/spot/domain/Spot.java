@@ -53,15 +53,14 @@ public class Spot extends BaseEntity {
     private Member member;
 
     @Schema(description = "지역 코드", example = "DongArea Entity")
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dong_area_id", nullable = false)
-    private DongArea dongArea;
+    @Column(name = "dong_area_id", nullable = false)
+    private String dongArea;
 
     @Schema(description = "상세 주소", example = "301호")
     @Column(name = "detail_address", nullable = false)
     private String detailAddress;
 
-    public Spot(Long id, String name, String info, Float latitude, Float longitude, Float stars, Member member, DongArea dongArea, String detailAddress) {
+    public Spot(Long id, String name, String info, Float latitude, Float longitude, Float stars, Member member, String dongArea, String detailAddress) {
         this.id = id;
         this.name = name;
         this.info = info;
@@ -73,7 +72,7 @@ public class Spot extends BaseEntity {
         this.detailAddress = detailAddress;
     }
 
-    public void updateSpot(String name, String info, Float latitude, Float longitude, DongArea dongArea, String detailAddress) {
+    public void updateSpot(String name, String info, Float latitude, Float longitude, String dongArea, String detailAddress) {
         this.name = name;
         this.info = info;
         this.latitude = latitude;

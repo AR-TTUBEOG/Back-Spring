@@ -106,7 +106,7 @@ public class PlaceService {
         return GetAllPlaceRes.builder()
                 .placeId(store.getId())
                 .placeType(placeType)
-                .dongName(store.getDongArea().getDongName())
+                .dongName(store.getDongArea())
                 .memberId(store.getMember().getId())
                 .name(store.getName())
                 .info(store.getInfo())

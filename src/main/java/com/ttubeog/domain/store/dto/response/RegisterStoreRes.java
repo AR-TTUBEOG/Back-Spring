@@ -24,7 +24,7 @@ public class RegisterStoreRes {
     private String info;
 
     @Schema(description = "지역(동) ID")
-    private Long dongAreaId;
+    private String dongAreaId;
 
     @Schema(description = "상세 주소")
     private String detailAddress;
@@ -45,7 +45,7 @@ public class RegisterStoreRes {
     private StoreType type;
 
     @Builder
-    public RegisterStoreRes(Long storeId, Long memberId, String name, String info, Long dongAreaId,
+    public RegisterStoreRes(Long storeId, Long memberId, String name, String info, String dongAreaId,
                             String detailAddress, Double latitude, Double longitude, List<String> image, Float stars, StoreType type) {
         this.storeId = storeId;
         this.memberId = memberId;
