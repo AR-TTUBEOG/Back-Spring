@@ -9,8 +9,8 @@ import com.ttubeog.domain.auth.service.RefreshTokenService;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
-import com.ttubeog.domain.member.dto.response.MemberDetailRes;
-import com.ttubeog.domain.member.dto.response.MemberNicknameRes;
+import com.ttubeog.domain.member.dto.response.MemberDetailDto;
+import com.ttubeog.domain.member.dto.response.MemberNicknameDto;
 import com.ttubeog.domain.member.exception.FailureMemberDeleteException;
 import com.ttubeog.domain.member.exception.InvalidAccessTokenExpiredException;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
@@ -47,7 +47,7 @@ public class MemberService {
         DefaultAssert.isOptionalPresent(checkMember);
         Member member = checkMember.get();
 
-        MemberDetailRes memberDetailRes = MemberDetailRes.builder()
+        MemberDetailDto memberDetailDto = MemberDetailDto.builder()
                 .id(member.getId())
                 .name(member.getNickname())
                 .platform(member.getPlatform())
@@ -55,7 +55,7 @@ public class MemberService {
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
-                .information(memberDetailRes)
+                .information(memberDetailDto)
                 .build();
 
         return ResponseEntity.ok(apiResponse);
@@ -72,7 +72,7 @@ public class MemberService {
             if (member.isNickNameChanged() == 2) {
                 Member checkMember = memberRepository.findById(memberId).get();
 
-                MemberNicknameRes memberNicknameRes = MemberNicknameRes.builder()
+                MemberNicknameDto memberNicknameDto = MemberNicknameDto.builder()
                         .id(checkMember.getId())
                         .nickname(checkMember.getNickname())
                         .nicknameChanged(checkMember.getNicknameChange())
@@ -80,7 +80,7 @@ public class MemberService {
 
                 ApiResponse apiResponse = ApiResponse.builder()
                         .check(false)
-                        .information(memberNicknameRes)
+                        .information(memberNicknameDto)
                         .build();
 
                 return ResponseEntity.ok(apiResponse);
@@ -97,7 +97,7 @@ public class MemberService {
         memberRepository.updateMemberNicknameChange(newNicknameChanged, memberId);
 
 
-        MemberNicknameRes memberNicknameRes = MemberNicknameRes.builder()
+        MemberNicknameDto memberNicknameDto = MemberNicknameDto.builder()
                 .id(member.getId())
                 .nickname(produceNicknameRequest.getNickname())
                 .nicknameChanged(member.getNicknameChange())
@@ -105,7 +105,7 @@ public class MemberService {
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
-                .information(memberNicknameRes)
+                .information(memberNicknameDto)
                 .build();
 
         return ResponseEntity.ok(apiResponse);

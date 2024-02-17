@@ -4,13 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttubeog.domain.auth.dto.response.OAuthTokenResponse;
 import com.ttubeog.domain.member.application.MemberService;
 import com.ttubeog.domain.member.dto.request.ProduceNicknameRequest;
-import com.ttubeog.domain.member.dto.response.MemberDetailRes;
-import com.ttubeog.domain.member.dto.response.MemberNicknameRes;
+import com.ttubeog.domain.member.dto.response.MemberDetailDto;
+import com.ttubeog.domain.member.dto.response.MemberNicknameDto;
+import com.ttubeog.domain.member.dto.response.MemberPlaceDto;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
-import com.ttubeog.domain.spot.dto.response.SpotResponseDto;
 import com.ttubeog.domain.spot.exception.AlreadyExistsSpotException;
 import com.ttubeog.domain.spot.exception.InvalidDongAreaException;
-import com.ttubeog.domain.spot.exception.InvalidImageListSizeException;
 import com.ttubeog.global.config.security.token.CurrentUser;
 import com.ttubeog.global.payload.ErrorResponse;
 import com.ttubeog.global.payload.Message;
@@ -26,10 +25,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 @Tag(name = "Member", description = "Member API")
 @RestController
@@ -41,7 +38,7 @@ public class MemberController {
 
     @Operation(summary = "멤버 정보 확인", description = "현재 접속된 멤버 정보를 확인합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "멤버 확인 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = MemberDetailRes.class))}),
+            @ApiResponse(responseCode = "200", description = "멤버 확인 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = MemberDetailDto.class))}),
             @ApiResponse(responseCode = "400", description = "멤버 확인 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @GetMapping("")
@@ -54,7 +51,7 @@ public class MemberController {
 
     @Operation(summary = "닉네임 설정", description = "현재 접속된 멤버의 초기 닉네임을 설정합니다.닉네임을 이미 변경한 유저는 isChanged == true로 반환되며, 닉네임이 업데이트 되지 않습니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "닉네임 설정", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = MemberNicknameRes.class))}),
+            @ApiResponse(responseCode = "200", description = "닉네임 설정", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = MemberNicknameDto.class))}),
             @ApiResponse(responseCode = "400", description = "닉네임 설정 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @PostMapping(value = "/nickname")
@@ -131,7 +128,7 @@ public class MemberController {
 
     /**
      * 내 산책로 조회 API
-     * @param request 유저 검증
+     * @param request 멤버 검증
      * @return ResponseEntity -> SpotResponseDto
      * @throws JsonProcessingException
      */
@@ -143,7 +140,7 @@ public class MemberController {
                     content = {
                             @Content(
                                     mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = SpotResponseDto.class))
+                                    array = @ArraySchema(schema = @Schema(implementation = MemberPlaceDto.class))
                             )
                     }
             ),
