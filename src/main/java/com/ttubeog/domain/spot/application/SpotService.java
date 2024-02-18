@@ -131,7 +131,6 @@ public class SpotService {
                 .detailAddress(spot.getDetailAddress())
                 .latitude(spot.getLatitude())
                 .longitude(spot.getLongitude())
-                .image(getImageString(imageRepository.findBySpotId(spot.getId())))
                 .stars(spot.getStars())
                 .guestbookCount(guestbookCount)
                 .likesCount(likesCount)
