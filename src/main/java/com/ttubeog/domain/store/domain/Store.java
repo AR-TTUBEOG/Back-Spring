@@ -45,7 +45,7 @@ public class Store extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private StoreType type;
 
-    @Column(name = "dong_area_id")
+    @Column(name = "dong_area")
     private String dongArea;
 
     @ManyToOne(fetch = FetchType.LAZY)
