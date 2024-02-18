@@ -37,9 +37,6 @@ public class GetStoreDetailRes {
     @Schema(description = "경도")
     private Double longitude;
 
-    @Schema(description = "이미지 리스트")
-    private List<String> image;
-
     @Schema(description = "별점")
     private Float stars;
 
@@ -60,7 +57,7 @@ public class GetStoreDetailRes {
 
     @Builder
     public GetStoreDetailRes(Long storeId, Long memberId, String name, String info, String dongAreaId,
-                             String detailAddress, Double latitude, Double longitude, List<String> image, Float stars,
+                             String detailAddress, Double latitude, Double longitude, Float stars,
                              StoreType type, List<BenefitType> storeBenefits, Integer guestbookCount, Integer likesCount, Boolean isFavorited) {
         this.storeId = storeId;
         this.memberId = memberId;
@@ -70,7 +67,6 @@ public class GetStoreDetailRes {
         this.detailAddress = detailAddress;
         this.latitude = latitude;
         this.longitude = longitude;
-        this.image = image;
         this.stars = stars;
         this.type = type;
         this.storeBenefits = storeBenefits;
