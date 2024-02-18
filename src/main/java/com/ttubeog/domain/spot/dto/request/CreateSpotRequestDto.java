@@ -31,7 +31,7 @@ public class CreateSpotRequestDto {
     @Schema(description = "경도", defaultValue = "126.9275718")
     private Double longitude;
 
-    @Schema(description = "이미지 리스트")
-    private List<String> image;
+    // @Schema(description = "이미지 리스트")
+    // private List<String> image;
 
 }
