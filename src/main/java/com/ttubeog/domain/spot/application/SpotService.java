@@ -1,8 +1,6 @@
 package com.ttubeog.domain.spot.application;
 
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
-import com.ttubeog.domain.benefit.domain.Benefit;
-import com.ttubeog.domain.benefit.domain.BenefitType;
 import com.ttubeog.domain.benefit.domain.repository.BenefitRepository;
 import com.ttubeog.domain.guestbook.domain.GuestBook;
 import com.ttubeog.domain.guestbook.domain.repository.GuestBookRepository;
@@ -25,8 +23,6 @@ import com.ttubeog.domain.spot.dto.response.SpotResponseDto;
 import com.ttubeog.domain.spot.exception.AlreadyExistsSpotException;
 import com.ttubeog.domain.spot.exception.InvalidImageListSizeException;
 import com.ttubeog.domain.spot.exception.InvalidSpotIdException;
-import com.ttubeog.domain.store.domain.Store;
-import com.ttubeog.domain.store.dto.response.GetStoreDetailRes;
 import com.ttubeog.domain.store.exception.NonExistentStoreException;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
@@ -38,7 +34,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.ttubeog.domain.image.application.ImageService.getImageString;
 
@@ -245,10 +240,5 @@ public class SpotService {
                 .build();
 
         return ResponseEntity.ok(apiResponse);
-    }
-
-    @Transactional
-    public ResponseEntity<?> likeSpot(HttpServletRequest request, Integer spotId) {
-        return null;
     }
 }
