@@ -17,13 +17,13 @@ public class WriteCommentRes {
     private String content;
 
     @Schema(description = "위도")
-    private Float latitude;
+    private Double latitude;
 
     @Schema(description = "경도")
-    private Float longitude;
+    private Double longitude;
 
     @Builder
-    public WriteCommentRes(Long commentId, Long memberId, String content, Float latitude, Float longitude) {
+    public WriteCommentRes(Long commentId, Long memberId, String content, Double latitude, Double longitude) {
         this.commentId = commentId;
         this.memberId = memberId;
         this.content = content;
