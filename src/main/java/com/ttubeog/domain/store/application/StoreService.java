@@ -14,6 +14,10 @@ import com.ttubeog.domain.likes.domain.Likes;
 import com.ttubeog.domain.likes.domain.repository.LikesRepository;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
+import com.ttubeog.domain.road.domain.Road;
+import com.ttubeog.domain.road.domain.repository.RoadRepository;
+import com.ttubeog.domain.roadcoordinate.domain.RoadCoordinate;
+import com.ttubeog.domain.roadcoordinate.domain.repository.RoadCoordinateRepository;
 import com.ttubeog.domain.spot.exception.InvalidImageListSizeException;
 import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
@@ -49,6 +53,9 @@ public class StoreService {
     private final MemberBenefitRepository memberBenefitRepository;
     private final GuestBookRepository guestBookRepository;
     private final LikesRepository likesRepository;
+    private final RoadRepository roadRepository;
+    private final RoadCoordinateRepository roadCoordinateRepository;
+
     private final JwtTokenProvider jwtTokenProvider;
 
     // 매장 등록
@@ -183,11 +190,18 @@ public class StoreService {
         List<Image> images = imageRepository.findByStoreId(storeId);
         imageRepository.deleteAll(images);
 
-        // TODO 해당 매장과 연관된 경로 삭제
-        // TODO 해당 매장과 연관된 저장경로 삭제
+        // 특정 경로와 연관된 좌표 삭제
+        List<Road> roadsToDelete = roadRepository.findByStore(store);
+        for (Road road : roadsToDelete) {
+            List<RoadCoordinate> roadCoordinates = roadCoordinateRepository.findByRoad(road);
+            roadCoordinateRepository.deleteAll(roadCoordinates);
+        }
+
+        // 해당 매장과 연관된 경로 삭제
+        List<Road> roads = roadRepository.findByStore(store);
+        roadRepository.deleteAll(roads);
 
         storeRepository.delete(store);
-
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
