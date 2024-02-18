@@ -2,6 +2,7 @@ package com.ttubeog.domain.spot.presentation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttubeog.domain.guestbook.application.GuestBookService;
+import com.ttubeog.domain.likes.application.LikesService;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.spot.application.SpotService;
 import com.ttubeog.domain.spot.dto.request.CreateSpotRequestDto;
@@ -30,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 public class SpotController {
 
     private final SpotService spotService;
+    private final LikesService likesService;
 
 
     /**
@@ -383,8 +385,8 @@ public class SpotController {
     @PatchMapping("/{spotId}/likes")
     public ResponseEntity<?> likeSpot(
             @CurrentUser HttpServletRequest request,
-            @RequestParam(name = "spotId") Integer spotId
+            @RequestParam(name = "spotId") Long spotId
     ) throws JsonProcessingException {
-        return spotService.likeSpot(request, spotId);
+        return likesService.likesSpot(request, spotId);
     }
 }

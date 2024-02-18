@@ -35,6 +35,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -66,6 +67,7 @@ public class GuestBookService {
                     .guestBookType(guestBook.getGuestBookType())
                     .spotId(guestBook.getSpot().getId())
                     .memberId(guestBook.getMember().getId())
+                    .memberName(guestBook.getMember().getNickname())
                     .star(guestBook.getStar())
                     .build();
         } else if (guestBook.getGuestBookType().equals(GuestBookType.STORE)) {
@@ -75,6 +77,7 @@ public class GuestBookService {
                     .guestBookType(guestBook.getGuestBookType())
                     .storeId(guestBook.getStore().getId())
                     .memberId(guestBook.getMember().getId())
+                    .memberName(guestBook.getMember().getNickname())
                     .star(guestBook.getStar())
                     .build();
         } else {
@@ -195,19 +198,17 @@ public class GuestBookService {
 
         Page<GuestBook> guestBookPage = guestBookRepository.findAllBySpot(spot, PageRequest.of(pageNum, 10));
 
-        List<GuestBookResponseDto> guestBookResponseDtoList = null;
-
-        for (GuestBook guestBook : guestBookPage) {
-            GuestBookResponseDto guestBookResponseDto = GuestBookResponseDto.builder()
-                    .id(guestBook.getId())
-                    .content(guestBook.getContent())
-                    .guestBookType(guestBook.getGuestBookType())
-                    .spotId(guestBook.getSpot().getId())
-                    .memberId(guestBook.getMember().getId())
-                    .star(guestBook.getStar())
-                    .build();
-            guestBookResponseDtoList.add(guestBookResponseDto);
-        }
+        List<GuestBookResponseDto> guestBookResponseDtoList = guestBookPage.stream().map(
+                guestBook -> GuestBookResponseDto.builder()
+                        .id(guestBook.getId())
+                        .content(guestBook.getContent())
+                        .guestBookType(guestBook.getGuestBookType())
+                        .spotId(guestBook.getSpot().getId())
+                        .memberId(guestBook.getMember().getId())
+                        .memberName(guestBook.getMember().getNickname())
+                        .star(guestBook.getStar())
+                        .build()
+        ).toList();
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
@@ -227,19 +228,17 @@ public class GuestBookService {
 
         Page<GuestBook> guestBookPage = guestBookRepository.findAllByStore(store, PageRequest.of(pageNum, 10));
 
-        List<GuestBookResponseDto> guestBookResponseDtoList = null;
-
-        for (GuestBook guestBook : guestBookPage) {
-            GuestBookResponseDto guestBookResponseDto = GuestBookResponseDto.builder()
-                    .id(guestBook.getId())
-                    .content(guestBook.getContent())
-                    .guestBookType(guestBook.getGuestBookType())
-                    .spotId(guestBook.getSpot().getId())
-                    .memberId(guestBook.getMember().getId())
-                    .star(guestBook.getStar())
-                    .build();
-            guestBookResponseDtoList.add(guestBookResponseDto);
-        }
+        List<GuestBookResponseDto> guestBookResponseDtoList = guestBookPage.stream().map(
+                guestBook -> GuestBookResponseDto.builder()
+                        .id(guestBook.getId())
+                        .content(guestBook.getContent())
+                        .guestBookType(guestBook.getGuestBookType())
+                        .storeId(guestBook.getStore().getId())
+                        .memberId(guestBook.getMember().getId())
+                        .memberName(guestBook.getMember().getNickname())
+                        .star(guestBook.getStar())
+                        .build()
+        ).toList();
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)

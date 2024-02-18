@@ -10,7 +10,7 @@ public class WriteCommentReq {
     @Schema(description = "댓글 내용")
     private String content;
     @Schema(description = "위도")
-    private Float latitude;
+    private Double latitude;
     @Schema(description = "경도")
-    private Float longitude;
+    private Double longitude;
 }
