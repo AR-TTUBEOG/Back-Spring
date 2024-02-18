@@ -126,6 +126,7 @@ public class RoadService {
                     .roadType(RoadType.SPOT)
                     .spotId(road.getSpot().getId())
                     .memberId(road.getMember().getId())
+                    .memberName(road.getMember().getNickname())
                     .name(road.getName())
                     .roadCoordinateDoubleList(roadCoordinateDoubleListResponse)
                     .build();
@@ -135,6 +136,7 @@ public class RoadService {
                     .roadType(RoadType.STORE)
                     .storeId(road.getStore().getId())
                     .memberId(road.getMember().getId())
+                    .memberName(road.getMember().getNickname())
                     .name(road.getName())
                     .roadCoordinateDoubleList(roadCoordinateDoubleListResponse)
                     .build();
@@ -154,7 +156,7 @@ public class RoadService {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
-        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         Page<Road> roadPage = roadRepository.findAllBySpot_Id(spotId, PageRequest.of(pageNum, 1));
 
@@ -174,6 +176,7 @@ public class RoadService {
                     .roadType(road.getRoadType())
                     .spotId(road.getSpot().getId())
                     .memberId(road.getMember().getId())
+                    .memberName(road.getMember().getNickname())
                     .name(road.getName())
                     .roadCoordinateDoubleList(roadCoordinateDoubleList)
                     .build();
@@ -212,6 +215,7 @@ public class RoadService {
                     .roadType(road.getRoadType())
                     .storeId(road.getStore().getId())
                     .memberId(road.getMember().getId())
+                    .memberName(road.getMember().getNickname())
                     .name(road.getName())
                     .roadCoordinateDoubleList(roadCoordinateDoubleList)
                     .build();
