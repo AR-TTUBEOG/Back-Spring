@@ -35,7 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.ttubeog.domain.image.application.ImageService.getImageString;
 
 @RequiredArgsConstructor
 @Service
@@ -65,7 +64,6 @@ public class SpotService {
                 .info(spot.getInfo())
                 .latitude(spot.getLatitude())
                 .longitude(spot.getLongitude())
-                .image(getImageString(imageRepository.findBySpotId(spot.getId())))
                 .stars(spot.getStars())
                 .build();
 
@@ -110,17 +108,6 @@ public class SpotService {
 
         spotRepository.save(spot);
 
-        // 이미지 저장
-        List<String> imageList = createSpotRequestDto.getImage();
-        for (String s : imageList) {
-            CreateImageRequestDto createImageRequestDto = CreateImageRequestDto.builder()
-                    .image(s)
-                    .imageType(ImageType.SPOT)
-                    .placeId(spot.getId())
-                    .build();
-            imageService.createImage(createImageRequestDto);
-        }
-
         return getResponseEntity(spot);
     }
 
@@ -144,7 +131,6 @@ public class SpotService {
                 .detailAddress(spot.getDetailAddress())
                 .latitude(spot.getLatitude())
                 .longitude(spot.getLongitude())
-                .image(getImageString(imageRepository.findBySpotId(spot.getId())))
                 .stars(spot.getStars())
                 .guestbookCount(guestbookCount)
                 .likesCount(likesCount)
@@ -190,23 +176,6 @@ public class SpotService {
         spot.updateSpot(updateSpotRequestDto.getName(), updateSpotRequestDto.getInfo(), updateSpotRequestDto.getLatitude(), updateSpotRequestDto.getLongitude(), updateSpotRequestDto.getDongAreaId(), updateSpotRequestDto.getDetailAddress());
 
         spotRepository.save(spot);
-
-        List<Image> imageList = imageRepository.findBySpotId(spotId);
-
-        for (Image image : imageList) {
-            imageService.deleteImage(image.getId());
-        }
-
-        List<String> imageStringList = updateSpotRequestDto.getImage();
-
-        for (String s : imageStringList) {
-            CreateImageRequestDto createImageRequestDto = CreateImageRequestDto.builder()
-                    .image(s)
-                    .imageType(ImageType.SPOT)
-                    .placeId(spotId)
-                    .build();
-            imageService.createImage(createImageRequestDto);
-        }
 
         return getResponseEntity(spot);
     }

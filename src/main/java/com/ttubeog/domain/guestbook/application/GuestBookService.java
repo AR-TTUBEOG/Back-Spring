@@ -1,20 +1,17 @@
 package com.ttubeog.domain.guestbook.application;
 
+import com.ttubeog.domain.UuidImage.domain.UuidImage;
+import com.ttubeog.domain.UuidImage.domain.repository.UuidImageRepository;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
+import com.ttubeog.domain.aws.s3.AmazonS3Manager;
 import com.ttubeog.domain.guestbook.domain.GuestBook;
 import com.ttubeog.domain.guestbook.domain.GuestBookType;
 import com.ttubeog.domain.guestbook.domain.repository.GuestBookRepository;
 import com.ttubeog.domain.guestbook.dto.request.CreateGuestBookRequestDto;
-import com.ttubeog.domain.guestbook.dto.request.UpdateGuestBookRequestDto;
 import com.ttubeog.domain.guestbook.dto.response.GuestBookResponseDto;
 import com.ttubeog.domain.guestbook.exception.InvalidGuestBookException;
 import com.ttubeog.domain.guestbook.exception.InvalidGuestBookIdException;
-import com.ttubeog.domain.image.application.ImageService;
-import com.ttubeog.domain.image.domain.Image;
-import com.ttubeog.domain.image.domain.ImageType;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
-import com.ttubeog.domain.image.dto.request.CreateImageRequestDto;
-import com.ttubeog.domain.image.exception.InvalidImageException;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
@@ -37,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -48,8 +46,11 @@ public class GuestBookService {
     private final SpotRepository spotRepository;
     private final StoreRepository storeRepository;
     private final ImageRepository imageRepository;
+    private final UuidImageRepository uuidImageRepository;
 
-    private final ImageService imageService;
+    //private final ImageService imageService;
+
+    private final AmazonS3Manager amazonS3Manager;
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -133,14 +134,6 @@ public class GuestBookService {
         guestBookRepository.save(guestBook);
 
 
-        CreateImageRequestDto createImageRequestDto = CreateImageRequestDto.builder()
-                .image(createGuestBookRequestDto.getImage())
-                .imageType(ImageType.GUESTBOOK)
-                .placeId(guestBook.getId())
-                .build();
-        imageService.createImage(createImageRequestDto);
-
-
         if (createGuestBookRequestDto.getGuestBookType().equals(GuestBookType.SPOT)) {
             spot = spotRepository.findById(createGuestBookRequestDto.getSpotId()).orElseThrow(InvalidSpotIdException::new);
 
@@ -176,25 +169,13 @@ public class GuestBookService {
         return getResponseEntity(guestBook);
     }
 
-
-    // GuestBook 을 Id(PK) 값으로 찾는 Method 입니다. 현재 사용하지 않습니다.
-    public ResponseEntity<?> findByGuestBookId(HttpServletRequest request, Long guestBookId) {
-        Long memberId = jwtTokenProvider.getMemberId(request);
-
-        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
-
-        GuestBook guestBook = guestBookRepository.findById(guestBookId).orElseThrow(InvalidGuestBookIdException::new);
-
-        return getResponseEntity(guestBook);
-    }
-
     // Spot ID 로 GuestBook 을 조회하는 Method 입니다.
     public ResponseEntity<?> findGuestBookBySpotId(HttpServletRequest request, Long spotId, Integer pageNum) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
-        Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidSpotIdException::new);
+        Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidStoreIdException::new);
 
         Page<GuestBook> guestBookPage = guestBookRepository.findAllBySpot(spot, PageRequest.of(pageNum, 10));
 
@@ -217,6 +198,7 @@ public class GuestBookService {
 
         return ResponseEntity.ok(apiResponse);
     }
+
 
     // Store ID 로 GuestBook 을 조회하는 Method 입니다.
     public ResponseEntity<?> findGuestBookByStoreId(HttpServletRequest request, Long storeId, Integer pageNum) {
@@ -249,35 +231,6 @@ public class GuestBookService {
     }
 
 
-    // GuestBook 을 Update 하는 Method 입니다. 현재 따로 사용하지 않습니다.
-    @Transactional
-    public ResponseEntity<?> updateGuestBook(HttpServletRequest request, Long guestBookId, UpdateGuestBookRequestDto updateGuestBookRequestDto) {
-
-        Long memberId = jwtTokenProvider.getMemberId(request);
-
-        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
-
-        GuestBook guestBook = guestBookRepository.findById(guestBookId).orElseThrow(InvalidGuestBookIdException::new);
-
-        Image image = imageRepository.findByGuestBookId(guestBook.getId()).orElseThrow(InvalidImageException::new);
-
-        imageService.deleteImage(image.getId());
-
-        CreateImageRequestDto createImageRequestDto = CreateImageRequestDto.builder()
-                .image(updateGuestBookRequestDto.getImage())
-                .imageType(ImageType.GUESTBOOK)
-                .placeId(guestBookId)
-                .build();
-
-        Image newImage = imageRepository.findById(imageService.createImage(createImageRequestDto).getId()).orElseThrow(InvalidImageException::new);
-
-        guestBook.updateGuestBook(updateGuestBookRequestDto.getContent(), updateGuestBookRequestDto.getStar(), newImage);
-
-        guestBookRepository.save(guestBook);
-
-        return getResponseEntity(guestBook);
-    }
-
     // GuestBook 을 하나 Delete 하는 Method 입니다.
     @Transactional
     public ResponseEntity<?> deleteGuestBook(HttpServletRequest request, Long guestBookId) {
@@ -293,7 +246,7 @@ public class GuestBookService {
 
         guestBookRepository.delete(guestBook);
 
-        imageService.deleteImage(imageRepository.findByGuestBookId(guestBookId).orElseThrow(InvalidImageException::new).getId());
+        //imageService.deleteImage(imageRepository.findByGuestBookId(guestBookId).orElseThrow(InvalidImageException::new).getId());
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
