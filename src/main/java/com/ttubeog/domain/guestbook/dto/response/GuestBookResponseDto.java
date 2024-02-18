@@ -14,6 +14,8 @@ public class GuestBookResponseDto {
 
     private Long memberId;
 
+    private String memberName;
+
     private GuestBookType guestBookType;
 
     private Long spotId;
@@ -24,9 +26,10 @@ public class GuestBookResponseDto {
 
     private Float star;
 
-    public GuestBookResponseDto(Long id, Long memberId, GuestBookType guestBookType, Long spotId, Long storeId, String content, Float star) {
+    public GuestBookResponseDto(Long id, Long memberId, String memberName, GuestBookType guestBookType, Long spotId, Long storeId, String content, Float star) {
         this.id = id;
         this.memberId = memberId;
+        this.memberName = memberName;
         this.guestBookType = guestBookType;
         this.spotId = spotId;
         this.storeId = storeId;

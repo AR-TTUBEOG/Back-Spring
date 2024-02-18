@@ -24,6 +24,9 @@ public class Image extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "uuid", unique = true)
+    private String uuid;
+
     @Column(name = "image", nullable = false)
     private String image;
 
@@ -42,8 +45,9 @@ public class Image extends BaseEntity {
     @JoinColumn(name = "guestbook_id")
     private GuestBook guestBook;
 
-    public Image(Long id, String image, ImageType imageType, Spot spot, Store store, GuestBook guestBook) {
+    public Image(Long id, String uuid, String image, ImageType imageType, Spot spot, Store store, GuestBook guestBook) {
         this.id = id;
+        this.uuid = uuid;
         this.image = image;
         this.imageType = imageType;
         this.spot = spot;
@@ -64,5 +68,9 @@ public class Image extends BaseEntity {
     public void updateImage(String image, GuestBook guestBook) {
         this.image = image;
         this.guestBook = guestBook;
+    }
+
+    public void updateImageUrl(String image) {
+        this.image = image;
     }
 }

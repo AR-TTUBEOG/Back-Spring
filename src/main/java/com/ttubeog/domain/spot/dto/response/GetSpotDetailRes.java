@@ -1,4 +1,4 @@
-package com.ttubeog.domain.store.dto.response;
+package com.ttubeog.domain.spot.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ttubeog.domain.benefit.domain.BenefitType;
@@ -11,10 +11,10 @@ import java.util.List;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class GetStoreDetailRes {
+public class GetSpotDetailRes {
 
-    @Schema(description = "매장 ID")
-    private Long storeId;
+    @Schema(description = "산책 스팟 ID")
+    private Long spotId;
 
     @Schema(description = "등록 유저 ID")
     private Long memberId;
@@ -37,14 +37,11 @@ public class GetStoreDetailRes {
     @Schema(description = "경도")
     private Double longitude;
 
+    @Schema(description = "이미지 리스트")
+    private List<String> image;
+
     @Schema(description = "별점")
     private Float stars;
-
-    @Schema(description = "업종")
-    private StoreType type;
-
-    @Schema(description = "혜택 목록")
-    private List<BenefitType> storeBenefits;
 
     @Schema(description = "방명록 수")
     private Integer guestbookCount;
@@ -56,10 +53,8 @@ public class GetStoreDetailRes {
     private Boolean isFavorited;
 
     @Builder
-    public GetStoreDetailRes(Long storeId, Long memberId, String name, String info, String dongAreaId,
-                             String detailAddress, Double latitude, Double longitude, Float stars,
-                             StoreType type, List<BenefitType> storeBenefits, Integer guestbookCount, Integer likesCount, Boolean isFavorited) {
-        this.storeId = storeId;
+    public GetSpotDetailRes(Long spotId, Long memberId, String name, String info, String dongAreaId, String detailAddress, Double latitude, Double longitude, List<String> image, Float stars, Integer guestbookCount, Integer likesCount, Boolean isFavorited) {
+        this.spotId = spotId;
         this.memberId = memberId;
         this.name = name;
         this.info = info;
@@ -67,9 +62,8 @@ public class GetStoreDetailRes {
         this.detailAddress = detailAddress;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.image = image;
         this.stars = stars;
-        this.type = type;
-        this.storeBenefits = storeBenefits;
         this.guestbookCount = guestbookCount;
         this.likesCount = likesCount;
         this.isFavorited = isFavorited;

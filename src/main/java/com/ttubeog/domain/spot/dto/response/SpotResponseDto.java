@@ -38,9 +38,6 @@ public class SpotResponseDto {
     @Schema(description = "경도", defaultValue = "126.9275718")
     private Double longitude;
 
-    @Schema(description = "이미지 리스트")
-    private List<String> image;
-
     @Schema(description = "평균 별점", defaultValue = "4.5")
     private Float stars;
 

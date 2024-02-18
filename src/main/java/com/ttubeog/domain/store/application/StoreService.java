@@ -1,7 +1,5 @@
 package com.ttubeog.domain.store.application;
 
-import com.ttubeog.domain.area.domain.DongArea;
-import com.ttubeog.domain.area.domain.repository.DongAreaRepository;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.benefit.domain.Benefit;
 import com.ttubeog.domain.benefit.domain.BenefitType;
@@ -10,11 +8,8 @@ import com.ttubeog.domain.benefit.domain.repository.BenefitRepository;
 import com.ttubeog.domain.benefit.domain.repository.MemberBenefitRepository;
 import com.ttubeog.domain.guestbook.domain.GuestBook;
 import com.ttubeog.domain.guestbook.domain.repository.GuestBookRepository;
-import com.ttubeog.domain.image.application.ImageService;
 import com.ttubeog.domain.image.domain.Image;
-import com.ttubeog.domain.image.domain.ImageType;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
-import com.ttubeog.domain.image.dto.request.CreateImageRequestDto;
 import com.ttubeog.domain.likes.domain.Likes;
 import com.ttubeog.domain.likes.domain.repository.LikesRepository;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
@@ -27,7 +22,6 @@ import com.ttubeog.domain.store.dto.request.UpdateStoreReq;
 import com.ttubeog.domain.store.dto.response.GetStoreDetailRes;
 import com.ttubeog.domain.store.dto.response.RegisterStoreRes;
 import com.ttubeog.domain.store.dto.response.UpdateStoreRes;
-import com.ttubeog.domain.store.exception.InvalidDongAreaException;
 import com.ttubeog.domain.store.exception.UnathorizedMemberException;
 import com.ttubeog.domain.store.exception.NonExistentStoreException;
 import com.ttubeog.domain.member.domain.Member;
@@ -42,7 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.ttubeog.domain.image.application.ImageService.getImageString;
 
 @RequiredArgsConstructor
 @Service
@@ -51,13 +44,11 @@ public class StoreService {
 
     private final StoreRepository storeRepository;
     private final MemberRepository memberRepository;
-    private final DongAreaRepository dongAreaRepository;
     private final ImageRepository imageRepository;
     private final BenefitRepository benefitRepository;
     private final MemberBenefitRepository memberBenefitRepository;
     private final GuestBookRepository guestBookRepository;
     private final LikesRepository likesRepository;
-    private final ImageService imageService;
     private final JwtTokenProvider jwtTokenProvider;
 
     // 매장 등록
@@ -86,16 +77,6 @@ public class StoreService {
 
         storeRepository.save(store);
 
-        // 이미지 저장
-        List<String> imageList = registerStoreReq.getImage();
-        for (String s : imageList) {
-            CreateImageRequestDto createImageRequestDto = CreateImageRequestDto.builder()
-                    .image(s)
-                    .imageType(ImageType.STORE)
-                    .placeId(store.getId())
-                    .build();
-            imageService.createImage(createImageRequestDto);
-        }
 
         RegisterStoreRes registerStoreRes = RegisterStoreRes.builder()
                 .storeId(store.getId())
@@ -106,7 +87,6 @@ public class StoreService {
                 .detailAddress(store.getDetailAddress())
                 .latitude(store.getLatitude())
                 .longitude(store.getLongitude())
-                .image(getImageString(imageRepository.findByStoreId(store.getId())))
                 .stars(store.getStars())
                 .type(store.getType())
                 .build();
@@ -146,22 +126,6 @@ public class StoreService {
 
         storeRepository.save(store);
 
-        List<Image> imageList = imageRepository.findByStoreId(store.getId());
-
-        for (Image image : imageList) {
-            imageService.deleteImage(image.getId());
-        }
-
-        List<String> imageStringList = updateStoreReq.getImage();
-
-        for (String s : imageStringList) {
-            CreateImageRequestDto createImageRequestDto = CreateImageRequestDto.builder()
-                    .image(s)
-                    .imageType(ImageType.STORE)
-                    .placeId(store.getId())
-                    .build();
-            imageService.createImage(createImageRequestDto);
-        }
 
         UpdateStoreRes updateStoreRes = UpdateStoreRes.builder()
                 .storeId(store.getId())
@@ -170,7 +134,6 @@ public class StoreService {
                 .detailAddress(store.getDetailAddress())
                 .latitude(store.getLatitude())
                 .longitude(store.getLongitude())
-                .image(getImageString(imageRepository.findByStoreId(store.getId())))
                 .stars(store.getStars())
                 .type(store.getType())
                 .build();
@@ -258,7 +221,6 @@ public class StoreService {
                 .detailAddress(store.getDetailAddress())
                 .latitude(store.getLatitude())
                 .longitude(store.getLongitude())
-                .image(getImageString(imageRepository.findByStoreId(store.getId())))
                 .stars(store.getStars())
                 .type(store.getType())
                 .storeBenefits(storeBenefits)

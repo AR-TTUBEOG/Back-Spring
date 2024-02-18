@@ -75,7 +75,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(updateCommentReq.getCommentId()).orElseThrow(NonExistentCommentException::new);
 
         Member commentWriter = comment.getMember();
-        if (commentWriter.getId() != memberId) {
+        if (commentWriter.getId() != member.getId()) {
             throw new UnauthorizedMemberException();
         }
 
@@ -130,7 +130,7 @@ public class CommentService {
             Double commentLatitude = comment.getLatitude();
             Double commentLongitude = comment.getLongitude();
 
-            Double distance = calculateDistance(userLatitude, userLongitude, commentLatitude, commentLongitude);
+            double distance = calculateDistance(userLatitude, userLongitude, commentLatitude, commentLongitude);
 
             if (distance < radius) {
                 GetCommentRes getCommentRes = GetCommentRes.builder()
@@ -154,17 +154,16 @@ public class CommentService {
 
     // 거리 계산
     private double calculateDistance(Double lat1, Double lon1, Double lat2, Double lon2) {
-
         double R = 6371; // 지구 반지름
 
-        Double dLat = Math.toRadians(lat2 - lat1);
-        Double dLon = Math.toRadians(lon2 - lon1);
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
 
-        Double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
                 Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
                         Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
-        Double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); // 단위 km
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)); // 단위 km
 
         return R * c;
     }

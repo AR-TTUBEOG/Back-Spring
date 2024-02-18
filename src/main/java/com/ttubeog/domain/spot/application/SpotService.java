@@ -1,6 +1,7 @@
 package com.ttubeog.domain.spot.application;
 
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
+import com.ttubeog.domain.benefit.domain.repository.BenefitRepository;
 import com.ttubeog.domain.guestbook.domain.GuestBook;
 import com.ttubeog.domain.guestbook.domain.repository.GuestBookRepository;
 import com.ttubeog.domain.image.application.ImageService;
@@ -8,6 +9,7 @@ import com.ttubeog.domain.image.domain.Image;
 import com.ttubeog.domain.image.domain.ImageType;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
 import com.ttubeog.domain.image.dto.request.CreateImageRequestDto;
+import com.ttubeog.domain.likes.domain.repository.LikesRepository;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
@@ -16,10 +18,12 @@ import com.ttubeog.domain.spot.domain.Spot;
 import com.ttubeog.domain.spot.domain.repository.SpotRepository;
 import com.ttubeog.domain.spot.dto.request.CreateSpotRequestDto;
 import com.ttubeog.domain.spot.dto.request.UpdateSpotRequestDto;
+import com.ttubeog.domain.spot.dto.response.GetSpotDetailRes;
 import com.ttubeog.domain.spot.dto.response.SpotResponseDto;
 import com.ttubeog.domain.spot.exception.AlreadyExistsSpotException;
 import com.ttubeog.domain.spot.exception.InvalidImageListSizeException;
 import com.ttubeog.domain.spot.exception.InvalidSpotIdException;
+import com.ttubeog.domain.store.exception.NonExistentStoreException;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,7 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.ttubeog.domain.image.application.ImageService.getImageString;
 
 @RequiredArgsConstructor
 @Service
@@ -42,6 +45,8 @@ public class SpotService {
     private final MemberRepository memberRepository;
     private final ImageRepository imageRepository;
     private final GuestBookRepository guestBookRepository;
+    private final LikesRepository likesRepository;
+    private final BenefitRepository benefitRepository;
 
     private final ImageService imageService;
 
@@ -59,7 +64,6 @@ public class SpotService {
                 .info(spot.getInfo())
                 .latitude(spot.getLatitude())
                 .longitude(spot.getLongitude())
-                .image(getImageString(imageRepository.findBySpotId(spot.getId())))
                 .stars(spot.getStars())
                 .build();
 
@@ -71,6 +75,7 @@ public class SpotService {
         return ResponseEntity.ok(apiResponse);
     }
 
+    //Spot 생성 Method
     @Transactional
     public ResponseEntity<?> createSpot(HttpServletRequest request, CreateSpotRequestDto createSpotRequestDto) {
 
@@ -103,30 +108,41 @@ public class SpotService {
 
         spotRepository.save(spot);
 
-        // 이미지 저장
-        List<String> imageList = createSpotRequestDto.getImage();
-        for (String s : imageList) {
-            CreateImageRequestDto createImageRequestDto = CreateImageRequestDto.builder()
-                    .image(s)
-                    .imageType(ImageType.SPOT)
-                    .placeId(spot.getId())
-                    .build();
-            imageService.createImage(createImageRequestDto);
-        }
-
         return getResponseEntity(spot);
     }
 
+    //ID로 스팟 조회 Method
     public ResponseEntity<?> findBySpotId(HttpServletRequest request, Long spotId) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Spot spot = spotRepository.findById(spotId).orElseThrow(NonExistentStoreException::new);
 
-        // 유효한 사용자 로그인 상태인지 체크
-        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+        Integer guestbookCount = guestBookRepository.countAllBySpot(spot).intValue();
+        Integer likesCount = likesRepository.countBySpot(spot);
+        Boolean isFavorited = likesRepository.existsByMemberAndSpot(member, spot);
 
-        Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidSpotIdException::new);
+        GetSpotDetailRes getSpotDetailRes = GetSpotDetailRes.builder()
+                .spotId(spotId)
+                .memberId(spot.getMember().getId())
+                .name(spot.getName())
+                .info(spot.getInfo())
+                .dongAreaId(spot.getDongArea())
+                .detailAddress(spot.getDetailAddress())
+                .latitude(spot.getLatitude())
+                .longitude(spot.getLongitude())
+                .stars(spot.getStars())
+                .guestbookCount(guestbookCount)
+                .likesCount(likesCount)
+                .isFavorited(isFavorited)
+                .build();
 
-        return getResponseEntity(spot);
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(getSpotDetailRes)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
     @Transactional
@@ -161,26 +177,10 @@ public class SpotService {
 
         spotRepository.save(spot);
 
-        List<Image> imageList = imageRepository.findBySpotId(spotId);
-
-        for (Image image : imageList) {
-            imageService.deleteImage(image.getId());
-        }
-
-        List<String> imageStringList = updateSpotRequestDto.getImage();
-
-        for (String s : imageStringList) {
-            CreateImageRequestDto createImageRequestDto = CreateImageRequestDto.builder()
-                    .image(s)
-                    .imageType(ImageType.SPOT)
-                    .placeId(spotId)
-                    .build();
-            imageService.createImage(createImageRequestDto);
-        }
-
         return getResponseEntity(spot);
     }
 
+    //Spot 삭제 Method
     @Transactional
     public ResponseEntity<?> deleteSpot(HttpServletRequest request, Long spotId) {
 
@@ -209,10 +209,5 @@ public class SpotService {
                 .build();
 
         return ResponseEntity.ok(apiResponse);
-    }
-
-    @Transactional
-    public ResponseEntity<?> likeSpot(HttpServletRequest request, Integer spotId) {
-        return null;
     }
 }

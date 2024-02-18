@@ -11,4 +11,5 @@ public class GetCommentReq {
 
     @Schema(description = "사용자 위치 경도값")
     private Double longitude;
+
 }

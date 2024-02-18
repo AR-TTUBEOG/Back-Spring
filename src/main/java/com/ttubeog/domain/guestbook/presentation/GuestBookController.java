@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "GuestBook", description = "GuestBook API(방명록 API)")
 @RequiredArgsConstructor
@@ -61,7 +62,7 @@ public class GuestBookController {
     @ResponseStatus(value = HttpStatus.CREATED)
     public ResponseEntity<?> createGuestBook(
             @CurrentUser HttpServletRequest request,
-            @RequestBody CreateGuestBookRequestDto createGuestBookRequestDto
+            @RequestPart CreateGuestBookRequestDto createGuestBookRequestDto
     ) throws JsonProcessingException {
         return guestBookService.createGuestBook(request, createGuestBookRequestDto);
     }
