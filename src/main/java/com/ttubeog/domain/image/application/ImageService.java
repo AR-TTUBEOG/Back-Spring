@@ -1,5 +1,8 @@
 package com.ttubeog.domain.image.application;
 
+import com.ttubeog.domain.auth.security.JwtTokenProvider;
+import com.ttubeog.domain.aws.s3.AmazonS3Manager;
+import com.ttubeog.domain.guestbook.domain.GuestBook;
 import com.ttubeog.domain.guestbook.domain.repository.GuestBookRepository;
 import com.ttubeog.domain.guestbook.exception.InvalidGuestBookIdException;
 import com.ttubeog.domain.image.domain.Image;
@@ -10,16 +13,26 @@ import com.ttubeog.domain.image.dto.request.UpdateImageRequestDto;
 import com.ttubeog.domain.image.dto.response.ImageResponseDto;
 import com.ttubeog.domain.image.exception.InvalidImageException;
 import com.ttubeog.domain.image.exception.InvalidImageTypeException;
+import com.ttubeog.domain.member.domain.repository.MemberRepository;
+import com.ttubeog.domain.member.exception.InvalidMemberException;
+import com.ttubeog.domain.spot.domain.Spot;
 import com.ttubeog.domain.spot.domain.repository.SpotRepository;
 import com.ttubeog.domain.spot.exception.InvalidSpotIdException;
+import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.domain.store.exception.InvalidStoreIdException;
+import com.ttubeog.global.payload.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -30,149 +43,269 @@ public class ImageService {
     private final SpotRepository spotRepository;
     private final StoreRepository storeRepository;
     private final GuestBookRepository guestBookRepository;
+    private final MemberRepository memberRepository;
 
-    public static List<String> getImageString(List<Image> imageList) {
-        List<String> imageString = new ArrayList<>();
+    private final JwtTokenProvider jwtTokenProvider;
 
-        for (Image image : imageList) {
-            imageString.add(imageString.size(), image.getImage());
-        }
+    private final AmazonS3Manager amazonS3Manager;
 
-        return imageString;
-    }
-
-    public ImageResponseDto findById(Long imageId) {
-        Image image = imageRepository.findById(imageId).orElseThrow(InvalidImageException::new);
-        ImageResponseDto imageResponseDto = new ImageResponseDto();
-        if (image.getImageType().equals(ImageType.SPOT)) {
-            imageResponseDto = ImageResponseDto.builder()
-                    .id(image.getId())
-                    .image(image.getImage())
-                    .imageType(image.getImageType())
-                    .placeId(image.getSpot().getId())
-                    .build();
-        } else if (image.getImageType().equals(ImageType.STORE)) {
-            imageResponseDto = ImageResponseDto.builder()
-                    .id(image.getId())
-                    .image(image.getImage())
-                    .imageType(image.getImageType())
-                    .placeId(image.getStore().getId())
-                    .build();
-        } else if (image.getImageType().equals(ImageType.GUESTBOOK)) {
-            imageResponseDto = ImageResponseDto.builder()
-                    .id(image.getId())
-                    .image(image.getImage())
-                    .imageType(image.getImageType())
-                    .placeId(image.getGuestBook().getId())
-                    .build();
-        } else {
-            throw new InvalidImageTypeException();
-        }
-
-        return imageResponseDto;
-    }
 
     @Transactional
-    public ImageResponseDto createImage(CreateImageRequestDto createImageRequestDto) {
+    public ResponseEntity<?> createSpotImage(HttpServletRequest request, Long spotId, List<MultipartFile> fileList) {
 
-        Image image;
-        ImageResponseDto imageResponseDto;
-        if (createImageRequestDto.getImageType().equals(ImageType.SPOT)) {
-            image = Image.builder()
-                    .image(createImageRequestDto.getImage())
-                    .imageType(createImageRequestDto.getImageType())
-                    .spot(spotRepository.findById(createImageRequestDto.getPlaceId()).orElseThrow(InvalidSpotIdException::new))
+        Long memberId = jwtTokenProvider.getMemberId(request);
+
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+
+        Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidSpotIdException::new);
+
+        List<ImageResponseDto> imageResponseDtoList = fileList.stream().map(multipartFile -> {
+            String uuid = UUID.randomUUID().toString();
+
+            Image image = Image.builder()
+                    .uuid(uuid)
+                    .imageType(ImageType.SPOT)
+                    .spot(spot)
                     .build();
 
-            imageResponseDto = ImageResponseDto.builder()
-                    .id(image.getId())
-                    .imageType(image.getImageType())
-                    .placeId(image.getSpot().getId())
-                    .build();
-        } else if (createImageRequestDto.getImageType().equals(ImageType.STORE)){
-            image = Image.builder()
-                    .image(createImageRequestDto.getImage())
-                    .imageType(createImageRequestDto.getImageType())
-                    .store(storeRepository.findById(createImageRequestDto.getPlaceId()).orElseThrow(InvalidStoreIdException::new))
-                    .build();
+            String imageUrl = amazonS3Manager.uploadFile(amazonS3Manager.generateStoreKeyName(image), multipartFile);
+            image.updateImageUrl(imageUrl);
+            Image savedImage = imageRepository.save(image);
 
-            imageResponseDto = ImageResponseDto.builder()
-                    .id(image.getId())
-                    .imageType(image.getImageType())
-                    .placeId(image.getStore().getId())
+            return ImageResponseDto.builder()
+                    .id(savedImage.getId())
+                    .uuid(savedImage.getUuid())
+                    .image(savedImage.getImage())
+                    .imageType(ImageType.SPOT)
+                    .placeId(savedImage.getSpot().getId())
                     .build();
-        } else if (createImageRequestDto.getImageType().equals(ImageType.GUESTBOOK)) {
-            image = Image.builder()
-                    .image(createImageRequestDto.getImage())
-                    .imageType(createImageRequestDto.getImageType())
-                    .guestBook(guestBookRepository.findById(createImageRequestDto.getPlaceId()).orElseThrow(InvalidGuestBookIdException::new))
-                    .build();
+        }).collect(Collectors.toList());
 
-            imageResponseDto = ImageResponseDto.builder()
-                    .id(image.getId())
-                    .imageType(image.getImageType())
-                    .placeId(image.getGuestBook().getId())
-                    .build();
-        } else {
-            throw new InvalidImageTypeException();
-        }
 
-        imageRepository.save(image);
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(imageResponseDtoList)
+                .build();
 
-        return imageResponseDto;
+        return ResponseEntity.ok(apiResponse);
     }
+
 
     @Transactional
-    public ImageResponseDto updateImage(UpdateImageRequestDto updateImageRequestDto) {
+    public ResponseEntity<?> createStoreImage(HttpServletRequest request, Long storeId, List<MultipartFile> fileList) {
 
-        Image image = imageRepository.findById(updateImageRequestDto.getId()).orElseThrow(InvalidImageException::new);
+        Long memberId = jwtTokenProvider.getMemberId(request);
 
-        if (!image.getImageType().equals(updateImageRequestDto.getImageType())) {
-            throw new InvalidImageTypeException();
-        }
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
-        ImageResponseDto imageResponseDto;
+        Store store = storeRepository.findById(storeId).orElseThrow(InvalidStoreIdException::new);
 
+        List<ImageResponseDto> imageResponseDtoList = fileList.stream().map(multipartFile -> {
+            String uuid = UUID.randomUUID().toString();
 
-
-        if (updateImageRequestDto.getImageType().equals(ImageType.SPOT)) {
-            image.updateImage(updateImageRequestDto.getImage(), spotRepository.findById(updateImageRequestDto.getPlaceId()).orElseThrow(InvalidSpotIdException::new));
-
-            imageResponseDto = ImageResponseDto.builder()
-                    .id(image.getId())
-                    .imageType(image.getImageType())
-                    .placeId(image.getSpot().getId())
+            Image image = Image.builder()
+                    .uuid(uuid)
+                    .imageType(ImageType.STORE)
+                    .store(store)
                     .build();
-        } else if (updateImageRequestDto.getImageType().equals(ImageType.STORE)){
-            image.updateImage(updateImageRequestDto.getImage(), storeRepository.findById(updateImageRequestDto.getPlaceId()).orElseThrow(InvalidStoreIdException::new));
 
-            imageResponseDto = ImageResponseDto.builder()
-                    .id(image.getId())
-                    .imageType(image.getImageType())
-                    .placeId(image.getStore().getId())
+            String imageUrl = amazonS3Manager.uploadFile(amazonS3Manager.generateStoreKeyName(image), multipartFile);
+            image.updateImageUrl(imageUrl);
+            Image savedImage = imageRepository.save(image);
+
+            return ImageResponseDto.builder()
+                    .id(savedImage.getId())
+                    .uuid(savedImage.getUuid())
+                    .image(savedImage.getImage())
+                    .imageType(ImageType.STORE)
+                    .placeId(savedImage.getStore().getId())
                     .build();
-        } else if (updateImageRequestDto.getImageType().equals(ImageType.GUESTBOOK)) {
-            image.updateImage(updateImageRequestDto.getImage(), guestBookRepository.findById(updateImageRequestDto.getPlaceId()).orElseThrow(InvalidGuestBookIdException::new));
+        }).collect(Collectors.toList());
 
-            imageResponseDto = ImageResponseDto.builder()
-                    .id(image.getId())
-                    .imageType(image.getImageType())
-                    .placeId(image.getGuestBook().getId())
-                    .build();
-        } else {
-            throw new InvalidImageTypeException();
-        }
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(imageResponseDtoList)
+                .build();
 
-        imageRepository.save(image);
-
-        return imageResponseDto;
+        return ResponseEntity.ok(apiResponse);
     }
+
 
     @Transactional
-    public void deleteImage(Long imageId) {
+    public ResponseEntity<?> createGuestBookImage(HttpServletRequest request, Long guestBookId, List<MultipartFile> fileList) {
 
-        Image image = imageRepository.findById(imageId).orElseThrow(InvalidImageException::new);
-        imageRepository.delete(image);
+        Long memberId = jwtTokenProvider.getMemberId(request);
 
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+
+        GuestBook guestBook = guestBookRepository.findById(guestBookId).orElseThrow(InvalidStoreIdException::new);
+
+        List<ImageResponseDto> imageResponseDtoList = fileList.stream().map(multipartFile -> {
+            String uuid = UUID.randomUUID().toString();
+
+            Image image = Image.builder()
+                    .uuid(uuid)
+                    .imageType(ImageType.GUESTBOOK)
+                    .guestBook(guestBook)
+                    .build();
+
+            String imageUrl = amazonS3Manager.uploadFile(amazonS3Manager.generateStoreKeyName(image), multipartFile);
+            image.updateImageUrl(imageUrl);
+            Image savedImage = imageRepository.save(image);
+
+            return ImageResponseDto.builder()
+                    .id(savedImage.getId())
+                    .uuid(savedImage.getUuid())
+                    .image(savedImage.getImage())
+                    .imageType(ImageType.GUESTBOOK)
+                    .placeId(savedImage.getGuestBook().getId())
+                    .build();
+        }).collect(Collectors.toList());
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(imageResponseDtoList)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
     }
+
+
+    public ResponseEntity<?> findImageBySpotId(HttpServletRequest request, Long spotId) {
+
+        Long memberId = jwtTokenProvider.getMemberId(request);
+
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+
+        Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidSpotIdException::new);
+
+        List<Image> imageList = imageRepository.findAllBySpot(spot);
+
+        List<ImageResponseDto> imageResponseDtoList = imageList.stream().map(
+                image -> ImageResponseDto.builder()
+                        .id(image.getId())
+                        .uuid(image.getUuid())
+                        .image(image.getImage())
+                        .imageType(ImageType.SPOT)
+                        .placeId(image.getSpot().getId())
+                        .build()
+        ).toList();
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(imageResponseDtoList)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+
+    public ResponseEntity<?> findImageByStoreId(HttpServletRequest request, Long storeId) {
+
+        Long memberId = jwtTokenProvider.getMemberId(request);
+
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+
+        Store store = storeRepository.findById(storeId).orElseThrow(InvalidSpotIdException::new);
+
+        List<Image> imageList = imageRepository.findAllByStore(store);
+
+        List<ImageResponseDto> imageResponseDtoList = imageList.stream().map(
+                image -> ImageResponseDto.builder()
+                        .id(image.getId())
+                        .uuid(image.getUuid())
+                        .image(image.getImage())
+                        .imageType(ImageType.STORE)
+                        .placeId(image.getStore().getId())
+                        .build()
+        ).toList();
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(imageResponseDtoList)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+
+    public ResponseEntity<?> findImageByGuestBookId(HttpServletRequest request, Long guestBookId) {
+
+        Long memberId = jwtTokenProvider.getMemberId(request);
+
+        memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
+
+        GuestBook guestBook = guestBookRepository.findById(guestBookId).orElseThrow(InvalidSpotIdException::new);
+
+        List<Image> imageList = imageRepository.findAllByGuestBook(guestBook);
+
+        List<ImageResponseDto> imageResponseDtoList = imageList.stream().map(
+                image -> ImageResponseDto.builder()
+                        .id(image.getId())
+                        .uuid(image.getUuid())
+                        .image(image.getImage())
+                        .imageType(ImageType.GUESTBOOK)
+                        .placeId(image.getGuestBook().getId())
+                        .build()
+        ).toList();
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information(imageResponseDtoList)
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+
+    @Transactional
+    public ResponseEntity<?> deleteImageBySpotId(Long spotId) {
+
+        Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidSpotIdException::new);
+
+        List<Image> imageList = imageRepository.findAllBySpot(spot);
+        imageRepository.deleteAll(imageList);
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information("정상적으로 삭제되었습니다.")
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+
+    @Transactional
+    public ResponseEntity<?> deleteImageByStoreId(Long storeId) {
+
+        Store store = storeRepository.findById(storeId).orElseThrow(InvalidStoreIdException::new);
+
+        List<Image> imageList = imageRepository.findAllByStore(store);
+        imageRepository.deleteAll(imageList);
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information("정상적으로 삭제되었습니다.")
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+
+    @Transactional
+    public ResponseEntity<?> deleteImageByGuestBookId(Long guestBookId) {
+
+        GuestBook guestBook = guestBookRepository.findById(guestBookId).orElseThrow(InvalidSpotIdException::new);
+
+        List<Image> imageList = imageRepository.findAllByGuestBook(guestBook);
+        imageRepository.deleteAll(imageList);
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .check(true)
+                .information("정상적으로 삭제되었습니다.")
+                .build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
 }

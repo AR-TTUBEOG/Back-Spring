@@ -1,6 +1,5 @@
 package com.ttubeog.domain.store.application;
 
-import com.ttubeog.domain.area.domain.DongArea;
 import com.ttubeog.domain.area.domain.repository.DongAreaRepository;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.benefit.domain.Benefit;
@@ -27,7 +26,6 @@ import com.ttubeog.domain.store.dto.request.UpdateStoreReq;
 import com.ttubeog.domain.store.dto.response.GetStoreDetailRes;
 import com.ttubeog.domain.store.dto.response.RegisterStoreRes;
 import com.ttubeog.domain.store.dto.response.UpdateStoreRes;
-import com.ttubeog.domain.store.exception.InvalidDongAreaException;
 import com.ttubeog.domain.store.exception.UnathorizedMemberException;
 import com.ttubeog.domain.store.exception.NonExistentStoreException;
 import com.ttubeog.domain.member.domain.Member;
@@ -43,6 +41,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.ttubeog.domain.image.application.ImageService.getImageString;
+
+//import static com.ttubeog.domain.image.application.ImageService.getImageString;
 
 @RequiredArgsConstructor
 @Service
