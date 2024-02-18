@@ -83,7 +83,7 @@ public class RoadController {
                     content = {
                             @Content(
                                     mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = RoadRepository.class))
+                                    array = @ArraySchema(schema = @Schema(implementation = RoadResponseDto.class))
                             )
                     }
             ),
@@ -126,7 +126,7 @@ public class RoadController {
                     content = {
                             @Content(
                                     mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = RoadRepository.class))
+                                    array = @ArraySchema(schema = @Schema(implementation = RoadResponseDto.class))
                             )
                     }
             ),

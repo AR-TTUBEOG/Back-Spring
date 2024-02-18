@@ -7,6 +7,7 @@ import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.spot.application.SpotService;
 import com.ttubeog.domain.spot.dto.request.CreateSpotRequestDto;
 import com.ttubeog.domain.spot.dto.request.UpdateSpotRequestDto;
+import com.ttubeog.domain.spot.dto.response.GetSpotDetailRes;
 import com.ttubeog.domain.spot.dto.response.SpotResponseDto;
 import com.ttubeog.domain.spot.exception.AlreadyExistsSpotException;
 import com.ttubeog.domain.spot.exception.InvalidDongAreaException;
@@ -121,7 +122,7 @@ public class SpotController {
                     content = {
                             @Content(
                                     mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = SpotResponseDto.class))
+                                    array = @ArraySchema(schema = @Schema(implementation = GetSpotDetailRes.class))
                             )
                     }
             ),
