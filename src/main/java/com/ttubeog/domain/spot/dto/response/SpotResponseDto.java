@@ -33,10 +33,10 @@ public class SpotResponseDto {
     private String info;
 
     @Schema(description = "위도", defaultValue = "36.5642886")
-    private Float latitude;
+    private Double latitude;
 
     @Schema(description = "경도", defaultValue = "126.9275718")
-    private Float longitude;
+    private Double longitude;
 
     @Schema(description = "평균 별점", defaultValue = "4.5")
     private Float stars;

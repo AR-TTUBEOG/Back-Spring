@@ -37,11 +37,11 @@ public class Spot extends BaseEntity {
 
     @Schema(description = "위도", example = "36.5642886")
     @Column(name = "latitude", nullable = false)
-    private Float latitude;
+    private Double latitude;
 
     @Schema(description = "경도", example = "126.9275718")
     @Column(name = "longitude", nullable = false)
-    private Float longitude;
+    private Double longitude;
 
     @Schema(description = "별점 평균", example = "3.4")
     @Column(name = "stars")
@@ -60,7 +60,7 @@ public class Spot extends BaseEntity {
     @Column(name = "detail_address", nullable = false)
     private String detailAddress;
 
-    public Spot(Long id, String name, String info, Float latitude, Float longitude, Float stars, Member member, String dongArea, String detailAddress) {
+    public Spot(Long id, String name, String info, Double latitude, Double longitude, Float stars, Member member, String dongArea, String detailAddress) {
         this.id = id;
         this.name = name;
         this.info = info;
@@ -72,7 +72,7 @@ public class Spot extends BaseEntity {
         this.detailAddress = detailAddress;
     }
 
-    public void updateSpot(String name, String info, Float latitude, Float longitude, String dongArea, String detailAddress) {
+    public void updateSpot(String name, String info, Double latitude, Double longitude, String dongArea, String detailAddress) {
         this.name = name;
         this.info = info;
         this.latitude = latitude;

@@ -118,8 +118,8 @@ public class CommentService {
     // AR뷰를 위한 댓글 조회
     public ResponseEntity<?> getCommentForAR(GetCommentReq getCommentReq) {
 
-        Float userLatitude = getCommentReq.getLatitude();
-        Float userLongitude = getCommentReq.getLongitude();
+        Double userLatitude = getCommentReq.getLatitude();
+        Double userLongitude = getCommentReq.getLongitude();
 
         List<Comment> allComments = getAllComments();
         Double radius = 20.0; // 반경값 확인 필요
@@ -127,8 +127,8 @@ public class CommentService {
 
         for (Comment comment : allComments) {
 
-            Float commentLatitude = comment.getLatitude();
-            Float commentLongitude = comment.getLongitude();
+            Double commentLatitude = comment.getLatitude();
+            Double commentLongitude = comment.getLongitude();
 
             double distance = calculateDistance(userLatitude, userLongitude, commentLatitude, commentLongitude);
 
@@ -153,7 +153,7 @@ public class CommentService {
     }
 
     // 거리 계산
-    private double calculateDistance(Float lat1, Float lon1, Float lat2, Float lon2) {
+    private double calculateDistance(Double lat1, Double lon1, Double lat2, Double lon2) {
         double R = 6371; // 지구 반지름
 
         double dLat = Math.toRadians(lat2 - lat1);

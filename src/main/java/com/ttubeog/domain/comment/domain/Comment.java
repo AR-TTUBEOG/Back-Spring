@@ -21,10 +21,10 @@ public class Comment extends BaseEntity {
     private String content;
 
     @Column(name = "latitude")
-    private Float latitude;
+    private Double latitude;
 
     @Column(name = "longitude")
-    private Float longitude;
+    private Double longitude;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
