@@ -17,7 +17,7 @@ public class MemberPlaceDto {
     @Schema(description = "장소 이름", defaultValue = "나의 산책 스팟")
     private String name;
 
-    @Schema(description = "세부 정보", defaultValue = "연인, 친구들과 산책하기 좋은 장소입니다.")
+    @Schema(description = "세부 정보", defaultValue = "내 장소의 세부 정보")
     private String info;
 
     @Schema(description = "이미지 리스트")

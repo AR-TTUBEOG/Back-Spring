@@ -8,8 +8,6 @@ import com.ttubeog.domain.member.dto.response.MemberDetailDto;
 import com.ttubeog.domain.member.dto.response.MemberNicknameDto;
 import com.ttubeog.domain.member.dto.response.MemberPlaceDto;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
-import com.ttubeog.domain.spot.exception.AlreadyExistsSpotException;
-import com.ttubeog.domain.spot.exception.InvalidDongAreaException;
 import com.ttubeog.global.config.security.token.CurrentUser;
 import com.ttubeog.global.payload.ErrorResponse;
 import com.ttubeog.global.payload.Message;
@@ -130,6 +128,7 @@ public class MemberController {
      * 내 산책로 조회 API
      *
      * @param request 멤버 검증
+     * @param pageNum
      * @return ResponseEntity -> SpotResponseDto
      * @throws JsonProcessingException
      */
@@ -158,17 +157,19 @@ public class MemberController {
                     ),
             }
     )
-    @GetMapping("/spot")
+    @GetMapping("/spot&{pageNum}")
     public ResponseEntity<?> getMySpotList(
-            @CurrentUser HttpServletRequest request
+            @CurrentUser HttpServletRequest request,
+            @RequestParam(name = "pageNum") Integer pageNum
     ) throws JsonProcessingException {
-        return memberService.getMySpotList(request);
+        return memberService.getMySpotList(request, pageNum);
     }
 
     /**
      * 내 매장 조회 API
      *
      * @param request 멤버 검증
+     * @param pageNum
      * @return ResponseEntity -> SpotResponseDto
      * @throws JsonProcessingException
      */
@@ -197,10 +198,11 @@ public class MemberController {
                     ),
             }
     )
-    @GetMapping("/store")
+    @GetMapping("/store&{pageNum}")
     public ResponseEntity<?> getMyStoreList(
-            @CurrentUser HttpServletRequest request
+            @CurrentUser HttpServletRequest request,
+            @RequestParam(name = "pageNum") Integer pageNum
     ) throws JsonProcessingException {
-        return memberService.getMyStoreList(request);
+        return memberService.getMyStoreList(request, pageNum);
     }
 }

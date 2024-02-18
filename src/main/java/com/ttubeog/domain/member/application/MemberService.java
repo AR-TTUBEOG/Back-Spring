@@ -16,17 +16,22 @@ import com.ttubeog.domain.member.exception.FailureMemberDeleteException;
 import com.ttubeog.domain.member.exception.InvalidAccessTokenExpiredException;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.spot.domain.Spot;
+import com.ttubeog.domain.spot.domain.repository.SpotRepository;
 import com.ttubeog.domain.store.domain.Store;
+import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,6 +44,8 @@ public class MemberService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenService refreshTokenService;
     private final RedisTemplate<String, String> redisTemplate;
+    private final StoreRepository storeRepository;
+    private final SpotRepository spotRepository;
     private static final int WAITING_PERIOD_DAYS = 3;
 
 
@@ -237,18 +244,21 @@ public class MemberService {
     }
 
     @Transactional
-    public ResponseEntity<?> getMySpotList(HttpServletRequest request) {
+    public ResponseEntity<?> getMySpotList(HttpServletRequest request, Integer pageNum) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
-        List<Spot> spotsByMemberId = memberRepository.findSpotByMemberId(memberId);
+        Page<Spot> spotPage = spotRepository.findAllByMemberId(memberId, PageRequest.of(pageNum, 10));
 
-        List<MemberPlaceDto> memberPlaceDtoList = spotsByMemberId.stream()
-                .map(spot -> MemberPlaceDto.builder()
-                        .id(spot.getId())
-                        .name(spot.getName())
-                        .info(spot.getInfo())
-                        .build())
-                .collect(Collectors.toList());
+        List<MemberPlaceDto> memberPlaceDtoList = new ArrayList<>();
+
+        for (Spot spot : spotPage) {
+            MemberPlaceDto memberPlaceDto = MemberPlaceDto.builder()
+                    .id(spot.getId())
+                    .name(spot.getName())
+                    .info(spot.getInfo())
+                    .build();
+            memberPlaceDtoList.add(memberPlaceDto);
+        }
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
@@ -259,18 +269,23 @@ public class MemberService {
     }
 
     @Transactional
-    public ResponseEntity<?> getMyStoreList(HttpServletRequest request) {
+    public ResponseEntity<?> getMyStoreList(HttpServletRequest request, Integer pageNum) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
         List<Store> spotsByMemberId = memberRepository.findStoreByMemberId(memberId);
 
-        List<MemberPlaceDto> memberPlaceDtoList = spotsByMemberId.stream()
-                .map(store -> MemberPlaceDto.builder()
-                        .id(store.getId())
-                        .name(store.getName())
-                        .info(store.getInfo())
-                        .build())
-                .collect(Collectors.toList());
+        Page<Store> storePage = storeRepository.findAllByMemberId(memberId, PageRequest.of(pageNum, 10));
+
+        List<MemberPlaceDto> memberPlaceDtoList = new ArrayList<>();
+
+        for (Store store : storePage) {
+            MemberPlaceDto memberPlaceDto = MemberPlaceDto.builder()
+                    .id(store.getId())
+                    .name(store.getName())
+                    .info(store.getInfo())
+                    .build();
+            memberPlaceDtoList.add(memberPlaceDto);
+        }
 
         ApiResponse apiResponse = ApiResponse.builder()
                 .check(true)
