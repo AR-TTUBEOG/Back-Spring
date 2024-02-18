@@ -26,7 +26,7 @@ import java.util.List;
 @Tag(name = "Image", description = "Image API(이미지 API)")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/v1/image")
+@RequestMapping("/api/v1/image")
 public class ImageController {
 
     private final ImageService imageService;
