@@ -90,9 +90,9 @@ public class SpotService {
         }
 
         // 산책 스팟 이미지가 1~10개 사이인지 체크
-        if (createSpotRequestDto.getImage().isEmpty() || createSpotRequestDto.getImage().size() > 10) {
-            throw new InvalidImageListSizeException();
-        }
+        // if (createSpotRequestDto.getImage().isEmpty() || createSpotRequestDto.getImage().size() > 10) {
+        //     throw new InvalidImageListSizeException();
+        // }
         
         // 산책 스팟 저장
         Spot spot = Spot.builder()
