@@ -62,7 +62,7 @@ public class GuestBookController {
     @ResponseStatus(value = HttpStatus.CREATED)
     public ResponseEntity<?> createGuestBook(
             @CurrentUser HttpServletRequest request,
-            @RequestPart CreateGuestBookRequestDto createGuestBookRequestDto
+            @RequestBody CreateGuestBookRequestDto createGuestBookRequestDto
     ) throws JsonProcessingException {
         return guestBookService.createGuestBook(request, createGuestBookRequestDto);
     }
