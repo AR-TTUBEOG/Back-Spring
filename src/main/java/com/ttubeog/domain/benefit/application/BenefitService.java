@@ -41,7 +41,7 @@ public class BenefitService {
 
     //게임 성공 후 혜택 저장
     @Transactional
-    public ResponseEntity<?> saveBenefit(HttpServletRequest request, Long benefitId) throws JsonProcessingException {
+    public ApiResponse saveBenefit(HttpServletRequest request, Long benefitId) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Benefit benefit = benefitRepository.findById(benefitId).orElseThrow(NonExistentBenefitException::new);
@@ -73,18 +73,13 @@ public class BenefitService {
                 .createdAt(memberBenefit.getCreatedAt())
                 .build();
 
-        ApiResponse apiResponse = ApiResponse.builder()
-                .check(true)
-                .information(saveBenefitRes)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new ApiResponse(true, saveBenefitRes);
     }
 
 
     //혜택 사용
     @Transactional
-    public ResponseEntity<?> useBenefit(HttpServletRequest request, Long benefitId) throws JsonProcessingException {
+    public ApiResponse useBenefit(HttpServletRequest request, Long benefitId) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Benefit benefit = benefitRepository.findById(benefitId).orElseThrow(NonExistentBenefitException::new);
@@ -112,16 +107,11 @@ public class BenefitService {
                 .type(benefit.getType())
                 .build();
 
-        ApiResponse apiResponse = ApiResponse.builder()
-                .check(true)
-                .information(saveBenefitRes)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new ApiResponse(true, saveBenefitRes);
     }
 
     //혜택 조회(사용 가능, 사용 완료, 만료 혜택 모두 조회)
-    public ResponseEntity<?> findMyBenefit(HttpServletRequest request, Integer page) throws JsonProcessingException {
+    public ApiResponse findMyBenefit(HttpServletRequest request, Integer page) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
@@ -141,12 +131,7 @@ public class BenefitService {
                         .build()
         ).toList();
 
-        ApiResponse apiResponse = ApiResponse.builder()
-                .check(true)
-                .information(saveBenefitRes)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new ApiResponse(true, saveBenefitRes);
     }
 
     //한달지나면 expired true로 만들기

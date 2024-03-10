@@ -34,7 +34,7 @@ public class BenefitController {
             HttpServletRequest request,
             @PathVariable(value = "benefitId") Long benefitId
     ) throws JsonProcessingException {
-        return benefitService.saveBenefit(request, benefitId);
+        return ResponseEntity.ok(benefitService.saveBenefit(request, benefitId));
     }
 
     //혜택 사용
@@ -48,7 +48,7 @@ public class BenefitController {
             HttpServletRequest request,
             @PathVariable(value = "benefitId") Long benefitId
     ) throws JsonProcessingException {
-        return benefitService.useBenefit(request, benefitId);
+        return ResponseEntity.ok(benefitService.useBenefit(request, benefitId));
     }
 
     //혜택 조회
@@ -62,6 +62,6 @@ public class BenefitController {
             HttpServletRequest request,
             @RequestParam(name = "page") Integer page
     ) throws JsonProcessingException {
-        return benefitService.findMyBenefit(request, page);
+        return ResponseEntity.ok(benefitService.findMyBenefit(request, page));
     }
 }
