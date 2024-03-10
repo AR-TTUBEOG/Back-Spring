@@ -49,7 +49,7 @@ public class GameService {
 
     // 선물게임 생성
     @Transactional
-    public ResponseEntity<?> createGift(HttpServletRequest request, CreateGiftReq createGiftReq) throws JsonProcessingException {
+    public CommonDto createGift(HttpServletRequest request, CreateGiftReq createGiftReq) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Store store = storeRepository.findByIdAndMember(createGiftReq.getStoreId(), member).orElseThrow(InvalidStoreIdException::new);
@@ -93,17 +93,12 @@ public class GameService {
                 .benefitContent(benefit.getContent())
                 .build();
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(createGiftRes)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, createGiftRes);
     }
 
     // 농구게임 생성
     @Transactional
-    public ResponseEntity<?> createBasketBall(HttpServletRequest request, CreateBasketballReq createBasketballReq) throws JsonProcessingException {
+    public CommonDto createBasketBall(HttpServletRequest request, CreateBasketballReq createBasketballReq) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Store store = storeRepository.findByIdAndMember(createBasketballReq.getStoreId(), member).orElseThrow(InvalidStoreIdException::new);
@@ -149,17 +144,12 @@ public class GameService {
                 .benefitContent(benefit.getContent())
                 .build();
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(createBasketballRes)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, createBasketballRes);
     }
 
     //돌림판 게임 생성
     @Transactional
-    public ResponseEntity<?> createRoulette(HttpServletRequest request, CreateRouletteReq createRouletteReq) throws JsonProcessingException {
+    public CommonDto createRoulette(HttpServletRequest request, CreateRouletteReq createRouletteReq) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Store store = storeRepository.findByIdAndMember(createRouletteReq.getStoreId(), member).orElseThrow(InvalidStoreIdException::new);
@@ -207,17 +197,12 @@ public class GameService {
                 .options(rouletteGame.getOptions())
                 .build();
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(createRouletteRes)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, createRouletteRes);
     }
 
     //선물게임 수정
     @Transactional
-    public ResponseEntity<?> updateGift(HttpServletRequest request, UpdateGiftReq updateGiftReq) throws JsonProcessingException {
+    public CommonDto updateGift(HttpServletRequest request, UpdateGiftReq updateGiftReq) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         GiftGame giftGame = giftGameRepository.findById(updateGiftReq.getGameId()).orElseThrow(NonExistentGameException::new);
@@ -250,17 +235,12 @@ public class GameService {
                 .benefitType(newBenefit.getType())
                 .build();
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(updateGiftRes)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, updateGiftRes);
     }
 
     //농구게임 수정
     @Transactional
-    public ResponseEntity<?> updateBasketball(HttpServletRequest request, UpdateBasketballReq updateBasketballReq) throws JsonProcessingException {
+    public CommonDto updateBasketball(HttpServletRequest request, UpdateBasketballReq updateBasketballReq) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         BasketballGame basketballGame = basketBallRepository.findById(updateBasketballReq.getGameId()).orElseThrow(NonExistentGameException::new);
@@ -296,17 +276,12 @@ public class GameService {
                 .benefitType(newBenefit.getType())
                 .build();
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(updateBasketballRes)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, updateBasketballRes);
     }
 
     //돌림판 게임 수정
     @Transactional
-    public ResponseEntity<?> updateRoulette(HttpServletRequest request, UpdateRouletteReq updateRouletteReq) throws JsonProcessingException {
+    public CommonDto updateRoulette(HttpServletRequest request, UpdateRouletteReq updateRouletteReq) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         RouletteGame rouletteGame = rouletteRepository.findById(updateRouletteReq.getGameId()).orElseThrow(NonExistentGameException::new);
@@ -347,17 +322,12 @@ public class GameService {
                 .benefits(benefitResDtoList)
                 .build();
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(updateRouletteRes)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, updateRouletteRes);
     }
 
     //게임 삭제
     @Transactional
-    public ResponseEntity<?> deleteGame(HttpServletRequest request, Long gameId) throws JsonProcessingException {
+    public CommonDto deleteGame(HttpServletRequest request, Long gameId) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Game game = gameRepository.findById(gameId).orElseThrow(NonExistentGameException::new);
@@ -369,17 +339,12 @@ public class GameService {
 
         gameRepository.delete(game);
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(Message.builder().message("게임을 삭제했습니다.").build())
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, Message.builder().message("게임을 삭제했습니다.").build());
     }
 
     //게임 조회
     @Transactional
-    public ResponseEntity<?> findGame(HttpServletRequest request, Long gameId) throws JsonProcessingException {
+    public CommonDto findGame(HttpServletRequest request, Long gameId) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Game game = gameRepository.findById(gameId).orElseThrow(NonExistentBenefitException::new);
@@ -409,17 +374,12 @@ public class GameService {
 
         FindGameRes findGameRes = builder.build();
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(findGameRes)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, findGameRes);
     }
 
     //게임ID로 혜택 조회
     @Transactional
-    public ResponseEntity<?> findBenefit(HttpServletRequest request, Long gameId) throws JsonProcessingException {
+    public CommonDto findBenefit(HttpServletRequest request, Long gameId) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Game game = gameRepository.findById(gameId).orElseThrow(NonExistentGameException::new);
@@ -433,16 +393,11 @@ public class GameService {
                         .build())
                 .collect(Collectors.toList());
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(benefitResDtoList)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, benefitResDtoList);
     }
 
     //매장ID로 게임 조회
-    public ResponseEntity<?> findByStore(HttpServletRequest request, Long storeId) throws JsonProcessingException {
+    public CommonDto findByStore(HttpServletRequest request, Long storeId) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Store store = storeRepository.findById(storeId).orElseThrow(InvalidStoreIdException::new);
@@ -483,11 +438,6 @@ public class GameService {
             findGameResList.add(findGameRes);
         }
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(findGameResList)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, findGameResList);
     }
 }
