@@ -15,12 +15,11 @@ import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
-import com.ttubeog.global.payload.ApiResponse;
+import com.ttubeog.global.payload.CommonDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,7 +40,7 @@ public class BenefitService {
 
     //게임 성공 후 혜택 저장
     @Transactional
-    public ApiResponse saveBenefit(HttpServletRequest request, Long benefitId) throws JsonProcessingException {
+    public CommonDto saveBenefit(HttpServletRequest request, Long benefitId) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Benefit benefit = benefitRepository.findById(benefitId).orElseThrow(NonExistentBenefitException::new);
@@ -73,13 +72,13 @@ public class BenefitService {
                 .createdAt(memberBenefit.getCreatedAt())
                 .build();
 
-        return new ApiResponse(true, saveBenefitRes);
+        return new CommonDto(true, saveBenefitRes);
     }
 
 
     //혜택 사용
     @Transactional
-    public ApiResponse useBenefit(HttpServletRequest request, Long benefitId) throws JsonProcessingException {
+    public CommonDto useBenefit(HttpServletRequest request, Long benefitId) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Benefit benefit = benefitRepository.findById(benefitId).orElseThrow(NonExistentBenefitException::new);
@@ -107,11 +106,11 @@ public class BenefitService {
                 .type(benefit.getType())
                 .build();
 
-        return new ApiResponse(true, saveBenefitRes);
+        return new CommonDto(true, saveBenefitRes);
     }
 
     //혜택 조회(사용 가능, 사용 완료, 만료 혜택 모두 조회)
-    public ApiResponse findMyBenefit(HttpServletRequest request, Integer page) throws JsonProcessingException {
+    public CommonDto findMyBenefit(HttpServletRequest request, Integer page) throws JsonProcessingException {
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
@@ -131,7 +130,7 @@ public class BenefitService {
                         .build()
         ).toList();
 
-        return new ApiResponse(true, saveBenefitRes);
+        return new CommonDto(true, saveBenefitRes);
     }
 
     //한달지나면 expired true로 만들기

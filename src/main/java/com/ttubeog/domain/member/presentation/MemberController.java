@@ -9,6 +9,7 @@ import com.ttubeog.domain.member.dto.response.MemberNicknameDto;
 import com.ttubeog.domain.member.dto.response.MemberPlaceDto;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.global.config.security.token.CurrentUser;
+import com.ttubeog.global.payload.CommonDto;
 import com.ttubeog.global.payload.ErrorResponse;
 import com.ttubeog.global.payload.Message;
 import io.swagger.v3.oas.annotations.Operation;
@@ -61,7 +62,7 @@ public class MemberController {
 
     @Operation(summary = "닉네임 중복 확인", description = "닉네임의 중복을 확인합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "닉네임 설정 가능", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = com.ttubeog.global.payload.ApiResponse.class))}),
+            @ApiResponse(responseCode = "200", description = "닉네임 설정 가능", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CommonDto.class))}),
             @ApiResponse(responseCode = "400", description = "닉네임 설정 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @PostMapping(value = "/nickname/check")

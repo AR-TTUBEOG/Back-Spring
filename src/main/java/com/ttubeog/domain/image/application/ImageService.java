@@ -4,15 +4,10 @@ import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.aws.s3.AmazonS3Manager;
 import com.ttubeog.domain.guestbook.domain.GuestBook;
 import com.ttubeog.domain.guestbook.domain.repository.GuestBookRepository;
-import com.ttubeog.domain.guestbook.exception.InvalidGuestBookIdException;
 import com.ttubeog.domain.image.domain.Image;
 import com.ttubeog.domain.image.domain.ImageType;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
-import com.ttubeog.domain.image.dto.request.CreateImageRequestDto;
-import com.ttubeog.domain.image.dto.request.UpdateImageRequestDto;
 import com.ttubeog.domain.image.dto.response.ImageResponseDto;
-import com.ttubeog.domain.image.exception.InvalidImageException;
-import com.ttubeog.domain.image.exception.InvalidImageTypeException;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.spot.domain.Spot;
@@ -21,7 +16,7 @@ import com.ttubeog.domain.spot.exception.InvalidSpotIdException;
 import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.domain.store.exception.InvalidStoreIdException;
-import com.ttubeog.global.payload.ApiResponse;
+import com.ttubeog.global.payload.CommonDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -82,7 +76,7 @@ public class ImageService {
         }).collect(Collectors.toList());
 
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(imageResponseDtoList)
                 .build();
@@ -122,7 +116,7 @@ public class ImageService {
                     .build();
         }).collect(Collectors.toList());
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(imageResponseDtoList)
                 .build();
@@ -162,7 +156,7 @@ public class ImageService {
                     .build();
         }).collect(Collectors.toList());
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(imageResponseDtoList)
                 .build();
@@ -191,7 +185,7 @@ public class ImageService {
                         .build()
         ).toList();
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(imageResponseDtoList)
                 .build();
@@ -220,7 +214,7 @@ public class ImageService {
                         .build()
         ).toList();
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(imageResponseDtoList)
                 .build();
@@ -249,7 +243,7 @@ public class ImageService {
                         .build()
         ).toList();
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(imageResponseDtoList)
                 .build();
@@ -266,7 +260,7 @@ public class ImageService {
         List<Image> imageList = imageRepository.findAllBySpot(spot);
         imageRepository.deleteAll(imageList);
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information("정상적으로 삭제되었습니다.")
                 .build();
@@ -283,7 +277,7 @@ public class ImageService {
         List<Image> imageList = imageRepository.findAllByStore(store);
         imageRepository.deleteAll(imageList);
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information("정상적으로 삭제되었습니다.")
                 .build();
@@ -300,7 +294,7 @@ public class ImageService {
         List<Image> imageList = imageRepository.findAllByGuestBook(guestBook);
         imageRepository.deleteAll(imageList);
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information("정상적으로 삭제되었습니다.")
                 .build();

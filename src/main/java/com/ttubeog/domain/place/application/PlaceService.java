@@ -20,7 +20,7 @@ import com.ttubeog.domain.spot.domain.Spot;
 import com.ttubeog.domain.spot.domain.repository.SpotRepository;
 import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
-import com.ttubeog.global.payload.ApiResponse;
+import com.ttubeog.global.payload.CommonDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -171,7 +171,7 @@ public class PlaceService {
 
         List<GetAllPlaceRes> allPlaces = getAllPlaceResList(request, pageable);
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(allPlaces)
                 .build();
@@ -226,7 +226,7 @@ public class PlaceService {
 
         allPlaces.sort(Comparator.comparingInt(GetAllPlaceRes::getRecommendationScore).reversed());
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(allPlaces)
                 .build();
@@ -268,7 +268,7 @@ public class PlaceService {
 
         allPlaces.sort(Comparator.comparingDouble(GetAllPlaceRes::getDistance));
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(allPlaces)
                 .build();
@@ -285,7 +285,7 @@ public class PlaceService {
         List<GetAllPlaceRes> allPlaces = getAllPlaceResList(request, pageable);
         allPlaces.sort(Comparator.comparing(GetAllPlaceRes::getCreatedAt).reversed());
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(allPlaces)
                 .build();
@@ -350,7 +350,7 @@ public class PlaceService {
                         .build())
                 .collect(Collectors.toList());
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(searchPlaceRes)
                 .build();

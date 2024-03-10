@@ -20,7 +20,7 @@ import com.ttubeog.domain.spot.exception.InvalidSpotIdException;
 import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.domain.store.exception.InvalidStoreIdException;
-import com.ttubeog.global.payload.ApiResponse;
+import com.ttubeog.global.payload.CommonDto;
 import com.ttubeog.global.payload.Message;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -144,7 +144,7 @@ public class RoadService {
             throw new InvalidRoadTypeException();
         }
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(roadResponseDto)
                 .build();
@@ -183,7 +183,7 @@ public class RoadService {
             roadResponseDtoList.add(roadResponseDto);
         }
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(roadResponseDtoList)
                 .build();
@@ -222,7 +222,7 @@ public class RoadService {
             roadResponseDtoList.add(roadResponseDto);
         }
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(roadResponseDtoList)
                 .build();
@@ -249,7 +249,7 @@ public class RoadService {
 
         roadCoordinateRepository.deleteAll(roadCoordinateList);
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(Message.builder().message("산책로를 삭제했습니다.").build())
                 .build();

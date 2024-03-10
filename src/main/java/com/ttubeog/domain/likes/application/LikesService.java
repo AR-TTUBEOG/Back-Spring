@@ -13,7 +13,7 @@ import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.domain.store.exception.NonExistentStoreException;
 import com.ttubeog.domain.spot.exception.NonExistentSpotException;
-import com.ttubeog.global.payload.ApiResponse;
+import com.ttubeog.global.payload.CommonDto;
 import com.ttubeog.global.payload.Message;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +52,7 @@ public class LikesService {
 
         likesRepository.save(likes);
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(Message.builder().message("매장에 대한 좋아요를 눌렀습니다.").build())
                 .build();
@@ -79,7 +79,7 @@ public class LikesService {
 
         likesRepository.save(likes);
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(Message.builder().message("스팟에 대한 좋아요를 눌렀습니다.").build())
                 .build();

@@ -20,7 +20,7 @@ import com.ttubeog.domain.spot.domain.repository.SpotRepository;
 import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.global.DefaultAssert;
-import com.ttubeog.global.payload.ApiResponse;
+import com.ttubeog.global.payload.CommonDto;
 import com.ttubeog.global.payload.Message;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -64,7 +63,7 @@ public class MemberService {
                 .platform(member.getPlatform())
                 .build();
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(memberDetailDto)
                 .build();
@@ -89,7 +88,7 @@ public class MemberService {
                         .nicknameChanged(checkMember.getNicknameChange())
                         .build();
 
-                ApiResponse apiResponse = ApiResponse.builder()
+                CommonDto apiResponse = CommonDto.builder()
                         .check(false)
                         .information(memberNicknameDto)
                         .build();
@@ -114,7 +113,7 @@ public class MemberService {
                 .nicknameChanged(member.getNicknameChange())
                 .build();
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(memberNicknameDto)
                 .build();
@@ -129,7 +128,7 @@ public class MemberService {
 
         Boolean isNicknameUsed = memberRepository.existsByNickname(produceNicknameRequest.getNickname());
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(!isNicknameUsed)
                 .information("닉네임 중복이면 check -> false, 중복이 아니면 check -> true")
                 .build();
@@ -163,7 +162,7 @@ public class MemberService {
 
             OAuthTokenResponse oAuthTokenResponse = new OAuthTokenResponse(newAccessToken, newRefreshToken, member.isRegisteredOAuthMember());
 
-            ApiResponse apiResponse = ApiResponse.builder()
+            CommonDto apiResponse = CommonDto.builder()
                     .check(true)
                     .information(oAuthTokenResponse)
                     .build();
@@ -179,7 +178,7 @@ public class MemberService {
         Long memberId = jwtTokenProvider.getMemberId(request);
         deleteValueByKey(String.valueOf(memberId));
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(Message.builder().message("성공적으로 로그아웃 되었습니다.").build())
                 .build();
@@ -216,7 +215,7 @@ public class MemberService {
             memberRepository.save(member);
         }
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(Message.builder().message("성공적으로 회원탈퇴 되었습니다.").build())
                 .build();
@@ -260,7 +259,7 @@ public class MemberService {
             memberPlaceDtoList.add(memberPlaceDto);
         }
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(memberPlaceDtoList)
                 .build();
@@ -287,7 +286,7 @@ public class MemberService {
             memberPlaceDtoList.add(memberPlaceDto);
         }
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(memberPlaceDtoList)
                 .build();

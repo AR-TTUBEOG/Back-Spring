@@ -19,7 +19,7 @@ import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.domain.store.exception.InvalidStoreIdException;
-import com.ttubeog.global.payload.ApiResponse;
+import com.ttubeog.global.payload.CommonDto;
 import com.ttubeog.global.payload.Message;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -93,7 +93,7 @@ public class GameService {
                 .benefitContent(benefit.getContent())
                 .build();
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(createGiftRes)
                 .build();
@@ -149,7 +149,7 @@ public class GameService {
                 .benefitContent(benefit.getContent())
                 .build();
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(createBasketballRes)
                 .build();
@@ -207,7 +207,7 @@ public class GameService {
                 .options(rouletteGame.getOptions())
                 .build();
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(createRouletteRes)
                 .build();
@@ -250,7 +250,7 @@ public class GameService {
                 .benefitType(newBenefit.getType())
                 .build();
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(updateGiftRes)
                 .build();
@@ -296,7 +296,7 @@ public class GameService {
                 .benefitType(newBenefit.getType())
                 .build();
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(updateBasketballRes)
                 .build();
@@ -347,7 +347,7 @@ public class GameService {
                 .benefits(benefitResDtoList)
                 .build();
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(updateRouletteRes)
                 .build();
@@ -369,7 +369,7 @@ public class GameService {
 
         gameRepository.delete(game);
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(Message.builder().message("게임을 삭제했습니다.").build())
                 .build();
@@ -409,7 +409,7 @@ public class GameService {
 
         FindGameRes findGameRes = builder.build();
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(findGameRes)
                 .build();
@@ -433,7 +433,7 @@ public class GameService {
                         .build())
                 .collect(Collectors.toList());
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(benefitResDtoList)
                 .build();
@@ -483,7 +483,7 @@ public class GameService {
             findGameResList.add(findGameRes);
         }
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(findGameResList)
                 .build();

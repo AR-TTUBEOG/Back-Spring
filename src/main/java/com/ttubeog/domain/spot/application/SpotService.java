@@ -6,9 +6,7 @@ import com.ttubeog.domain.guestbook.domain.GuestBook;
 import com.ttubeog.domain.guestbook.domain.repository.GuestBookRepository;
 import com.ttubeog.domain.image.application.ImageService;
 import com.ttubeog.domain.image.domain.Image;
-import com.ttubeog.domain.image.domain.ImageType;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
-import com.ttubeog.domain.image.dto.request.CreateImageRequestDto;
 import com.ttubeog.domain.likes.domain.repository.LikesRepository;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
@@ -24,7 +22,7 @@ import com.ttubeog.domain.spot.exception.AlreadyExistsSpotException;
 import com.ttubeog.domain.spot.exception.InvalidImageListSizeException;
 import com.ttubeog.domain.spot.exception.InvalidSpotIdException;
 import com.ttubeog.domain.store.exception.NonExistentStoreException;
-import com.ttubeog.global.payload.ApiResponse;
+import com.ttubeog.global.payload.CommonDto;
 import com.ttubeog.global.payload.Message;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
@@ -67,7 +65,7 @@ public class SpotService {
                 .stars(spot.getStars())
                 .build();
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(createSpotResponseDto)
                 .build();
@@ -137,7 +135,7 @@ public class SpotService {
                 .isFavorited(isFavorited)
                 .build();
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(getSpotDetailRes)
                 .build();
@@ -203,7 +201,7 @@ public class SpotService {
         List<GuestBook> guestBookList = guestBookRepository.findAllBySpot(spot);
         guestBookRepository.deleteAll(guestBookList);
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(Message.builder().message("산책 스팟을 삭제햇습니다.").build())
                 .build();

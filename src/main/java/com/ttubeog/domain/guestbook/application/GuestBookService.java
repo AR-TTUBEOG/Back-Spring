@@ -1,6 +1,5 @@
 package com.ttubeog.domain.guestbook.application;
 
-import com.ttubeog.domain.UuidImage.domain.UuidImage;
 import com.ttubeog.domain.UuidImage.domain.repository.UuidImageRepository;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.aws.s3.AmazonS3Manager;
@@ -21,7 +20,7 @@ import com.ttubeog.domain.spot.exception.InvalidSpotIdException;
 import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.domain.store.exception.InvalidStoreIdException;
-import com.ttubeog.global.payload.ApiResponse;
+import com.ttubeog.global.payload.CommonDto;
 import com.ttubeog.global.payload.Message;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
@@ -32,9 +31,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
@@ -85,7 +82,7 @@ public class GuestBookService {
             throw new InvalidGuestBookException();
         }
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(guestBookResponseDto)
                 .build();
@@ -191,7 +188,7 @@ public class GuestBookService {
                         .build()
         ).toList();
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(guestBookResponseDtoList)
                 .build();
@@ -222,7 +219,7 @@ public class GuestBookService {
                         .build()
         ).toList();
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(guestBookResponseDtoList)
                 .build();
@@ -248,7 +245,7 @@ public class GuestBookService {
 
         //imageService.deleteImage(imageRepository.findByGuestBookId(guestBookId).orElseThrow(InvalidImageException::new).getId());
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(Message.builder().message("방명록을 삭제했습니다").build())
                 .build();

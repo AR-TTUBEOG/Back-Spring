@@ -29,7 +29,7 @@ import com.ttubeog.domain.store.dto.response.UpdateStoreRes;
 import com.ttubeog.domain.store.exception.UnathorizedMemberException;
 import com.ttubeog.domain.store.exception.NonExistentStoreException;
 import com.ttubeog.domain.member.domain.Member;
-import com.ttubeog.global.payload.ApiResponse;
+import com.ttubeog.global.payload.CommonDto;
 import com.ttubeog.global.payload.Message;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -98,7 +98,7 @@ public class StoreService {
                 .type(store.getType())
                 .build();
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(registerStoreRes)
                 .build();
@@ -145,7 +145,7 @@ public class StoreService {
                 .type(store.getType())
                 .build();
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(updateStoreRes)
                 .build();
@@ -203,7 +203,7 @@ public class StoreService {
 
         storeRepository.delete(store);
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(Message.builder().message("매장 정보가 정상적으로 삭제되었습니다.").build())
                 .build();
@@ -243,7 +243,7 @@ public class StoreService {
                 .isFavorited(isFavorited)
                 .build();
 
-        ApiResponse apiResponse = ApiResponse.builder()
+        CommonDto apiResponse = CommonDto.builder()
                 .check(true)
                 .information(getStoreDetailRes)
                 .build();
