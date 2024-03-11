@@ -60,7 +60,7 @@ public class StoreService {
 
     // 매장 등록
     @Transactional
-    public ResponseEntity<?> registerStore(HttpServletRequest request, RegisterStoreReq registerStoreReq) {
+    public CommonDto registerStore(HttpServletRequest request, RegisterStoreReq registerStoreReq) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
@@ -98,17 +98,12 @@ public class StoreService {
                 .type(store.getType())
                 .build();
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(registerStoreRes)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, registerStoreRes);
     }
 
     // 매장 수정
     @Transactional
-    public ResponseEntity<?> updateStore(HttpServletRequest request, UpdateStoreReq updateStoreReq) {
+    public CommonDto updateStore(HttpServletRequest request, UpdateStoreReq updateStoreReq) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
@@ -145,17 +140,12 @@ public class StoreService {
                 .type(store.getType())
                 .build();
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(updateStoreRes)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, updateStoreRes);
     }
 
     // 매장 삭제
     @Transactional
-    public ResponseEntity<?> deleteStore(HttpServletRequest request, Long storeId) {
+    public CommonDto deleteStore(HttpServletRequest request, Long storeId) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
@@ -203,16 +193,11 @@ public class StoreService {
 
         storeRepository.delete(store);
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(Message.builder().message("매장 정보가 정상적으로 삭제되었습니다.").build())
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, Message.builder().message("매장 정보가 정상적으로 삭제되었습니다.").build());
     }
 
     // 매장 세부사항 조회
-    public ResponseEntity<?> getStoreDetails(HttpServletRequest request, Long storeId) {
+    public CommonDto getStoreDetails(HttpServletRequest request, Long storeId) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
@@ -243,11 +228,6 @@ public class StoreService {
                 .isFavorited(isFavorited)
                 .build();
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(getStoreDetailRes)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, getStoreDetailRes);
     }
 }

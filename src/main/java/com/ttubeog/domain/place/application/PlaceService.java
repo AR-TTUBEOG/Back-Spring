@@ -164,19 +164,14 @@ public class PlaceService {
 
     // 전체 조회
     @Transactional
-    public ResponseEntity<?> getAllPlaces(HttpServletRequest request, Pageable pageable) {
+    public CommonDto getAllPlaces(HttpServletRequest request, Pageable pageable) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
 
         List<GetAllPlaceRes> allPlaces = getAllPlaceResList(request, pageable);
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(allPlaces)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, allPlaces);
     }
 
     public int calculateRecommendationScore(float stars, int guestbookCount, int likesCount) {
@@ -213,7 +208,7 @@ public class PlaceService {
 
     // 추천순 조회
     @Transactional
-    public ResponseEntity<?> getAllPlacesRecommended(HttpServletRequest request, Pageable pageable) {
+    public CommonDto getAllPlacesRecommended(HttpServletRequest request, Pageable pageable) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
@@ -226,12 +221,7 @@ public class PlaceService {
 
         allPlaces.sort(Comparator.comparingInt(GetAllPlaceRes::getRecommendationScore).reversed());
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(allPlaces)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, allPlaces);
     }
 
     private double calculateDistance(Double lat1, Double lon1, Double lat2, Double lon2) {
@@ -252,7 +242,7 @@ public class PlaceService {
 
     // 거리순 조회
     @Transactional
-    public ResponseEntity<?> getAllPlacesNearby(HttpServletRequest request, GetNearbyPlaceReq getNearbyPlaceReq, Pageable pageable) {
+    public CommonDto getAllPlacesNearby(HttpServletRequest request, GetNearbyPlaceReq getNearbyPlaceReq, Pageable pageable) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
@@ -268,34 +258,24 @@ public class PlaceService {
 
         allPlaces.sort(Comparator.comparingDouble(GetAllPlaceRes::getDistance));
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(allPlaces)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, allPlaces);
     }
 
     // 최신순 조회
     @Transactional
-    public ResponseEntity<?> getAllPlacesLatest(HttpServletRequest request, Pageable pageable) {
+    public CommonDto getAllPlacesLatest(HttpServletRequest request, Pageable pageable) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         List<GetAllPlaceRes> allPlaces = getAllPlaceResList(request, pageable);
         allPlaces.sort(Comparator.comparing(GetAllPlaceRes::getCreatedAt).reversed());
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(allPlaces)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, allPlaces);
     }
 
     // 장소 검색
     @Transactional
-    public ResponseEntity<?> searchPlaces(HttpServletRequest request, SearchPlaceReq searchPlaceReq, Pageable pageable) {
+    public CommonDto searchPlaces(HttpServletRequest request, SearchPlaceReq searchPlaceReq, Pageable pageable) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
@@ -329,7 +309,7 @@ public class PlaceService {
 
         // 반환할 데이터가 없으면 빈 목록 반환
         if (paginatedResult.isEmpty()) {
-            return ResponseEntity.ok().body(Collections.emptyList());
+            return new CommonDto(true, Collections.emptyList());
         }
 
         List<SearchPlaceRes> searchPlaceRes = paginatedResult.stream()
@@ -350,11 +330,6 @@ public class PlaceService {
                         .build())
                 .collect(Collectors.toList());
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(searchPlaceRes)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, searchPlaceRes);
     }
 }

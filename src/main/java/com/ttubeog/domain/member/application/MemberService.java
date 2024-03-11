@@ -47,10 +47,8 @@ public class MemberService {
     private final SpotRepository spotRepository;
     private static final int WAITING_PERIOD_DAYS = 3;
 
-
-
     // 현재 유저 조회
-    public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
+    public CommonDto getCurrentUser(HttpServletRequest request) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
         Optional<Member> checkMember = memberRepository.findById(memberId);
@@ -63,16 +61,11 @@ public class MemberService {
                 .platform(member.getPlatform())
                 .build();
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(memberDetailDto)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, memberDetailDto);
     }
 
     @Transactional
-    public ResponseEntity<?> postMemberNickname(HttpServletRequest request, ProduceNicknameRequest produceNicknameRequest) {
+    public CommonDto postMemberNickname(HttpServletRequest request, ProduceNicknameRequest produceNicknameRequest) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
         // 닉네임 1회 변경 여부 확인
@@ -88,12 +81,7 @@ public class MemberService {
                         .nicknameChanged(checkMember.getNicknameChange())
                         .build();
 
-                CommonDto apiResponse = CommonDto.builder()
-                        .check(false)
-                        .information(memberNicknameDto)
-                        .build();
-
-                return ResponseEntity.ok(apiResponse);
+                return new CommonDto(false, memberNicknameDto);
             }
         }
 
@@ -113,31 +101,22 @@ public class MemberService {
                 .nicknameChanged(member.getNicknameChange())
                 .build();
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(memberNicknameDto)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, memberNicknameDto);
     }
 
     @Transactional
     // 닉네임 중복 확인
-    public ResponseEntity<?> postMemberNicknameCheck(HttpServletRequest request, ProduceNicknameRequest produceNicknameRequest) {
+    public CommonDto postMemberNicknameCheck(HttpServletRequest request, ProduceNicknameRequest produceNicknameRequest) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
         Boolean isNicknameUsed = memberRepository.existsByNickname(produceNicknameRequest.getNickname());
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(!isNicknameUsed)
-                .information("닉네임 중복이면 check -> false, 중복이 아니면 check -> true")
-                .build();
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(!isNicknameUsed, "닉네임 중복이면 check -> false, 중복이 아니면 check -> true");
     }
 
     @Transactional
     // 토큰 재발급 설정
-    public ResponseEntity<?> getMemberReissueToken(HttpServletRequest request) {
+    public CommonDto getMemberReissueToken(HttpServletRequest request) {
         Long memberId;
 
         try {
@@ -162,28 +141,19 @@ public class MemberService {
 
             OAuthTokenResponse oAuthTokenResponse = new OAuthTokenResponse(newAccessToken, newRefreshToken, member.isRegisteredOAuthMember());
 
-            CommonDto apiResponse = CommonDto.builder()
-                    .check(true)
-                    .information(oAuthTokenResponse)
-                    .build();
-            return ResponseEntity.ok(apiResponse);
+            return new CommonDto(true, oAuthTokenResponse);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new InvalidAccessTokenExpiredException());
+            throw new InvalidAccessTokenExpiredException();
         }
     }
 
     @Transactional
     // 로그아웃
-    public ResponseEntity<?> deleteLogout(HttpServletRequest request) {
+    public CommonDto deleteLogout(HttpServletRequest request) {
         Long memberId = jwtTokenProvider.getMemberId(request);
         deleteValueByKey(String.valueOf(memberId));
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(Message.builder().message("성공적으로 로그아웃 되었습니다.").build())
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, Message.builder().message("성공적으로 로그아웃 되었습니다.").build());
     }
 
     public void deleteValueByKey(String key) {
@@ -191,7 +161,7 @@ public class MemberService {
     }
 
     @Transactional
-    public ResponseEntity<?> deleteUser(HttpServletRequest request) {
+    public CommonDto deleteUser(HttpServletRequest request) {
         Long memberId = jwtTokenProvider.getMemberId(request);
         Optional<Member> checkMember = memberRepository.findById(memberId);
 
@@ -215,18 +185,11 @@ public class MemberService {
             memberRepository.save(member);
         }
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(Message.builder().message("성공적으로 회원탈퇴 되었습니다.").build())
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, Message.builder().message("성공적으로 회원탈퇴 되었습니다.").build());
     }
 
-
-
     @Transactional
-    public ResponseEntity<?> deleteInactiveMember() {
+    public CommonDto deleteInactiveMember() {
         try {
             // 비활성화 된 회원 찾기
             List<Member> memberStatus = memberRepository.findByStatus(Status.INACTIVE);
@@ -236,14 +199,14 @@ public class MemberService {
                 memberRepository.delete(member);
             }
 
-            return ResponseEntity.ok("비활성화된 회원 탈퇴 완료");
+            return new CommonDto(true, "비활성화된 회원 탈퇴 완료");
         } catch (Exception e) {
             throw new FailureMemberDeleteException();
         }
     }
 
     @Transactional
-    public ResponseEntity<?> getMySpotList(HttpServletRequest request, Integer pageNum) {
+    public CommonDto getMySpotList(HttpServletRequest request, Integer pageNum) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
         Page<Spot> spotPage = spotRepository.findAllByMemberId(memberId, PageRequest.of(pageNum, 10));
@@ -259,16 +222,11 @@ public class MemberService {
             memberPlaceDtoList.add(memberPlaceDto);
         }
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(memberPlaceDtoList)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, memberPlaceDtoList);
     }
 
     @Transactional
-    public ResponseEntity<?> getMyStoreList(HttpServletRequest request, Integer pageNum) {
+    public CommonDto getMyStoreList(HttpServletRequest request, Integer pageNum) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
         List<Store> spotsByMemberId = memberRepository.findStoreByMemberId(memberId);
@@ -286,11 +244,6 @@ public class MemberService {
             memberPlaceDtoList.add(memberPlaceDto);
         }
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(memberPlaceDtoList)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, memberPlaceDtoList);
     }
 }

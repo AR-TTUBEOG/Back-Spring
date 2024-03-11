@@ -47,7 +47,7 @@ public class RoadService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @Transactional
-    public ResponseEntity<?> createRoad(HttpServletRequest request, CreateRoadRequestDto createRoadRequestDto) {
+    public CommonDto createRoad(HttpServletRequest request, CreateRoadRequestDto createRoadRequestDto) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -144,15 +144,10 @@ public class RoadService {
             throw new InvalidRoadTypeException();
         }
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(roadResponseDto)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, roadResponseDto);
     }
 
-    public ResponseEntity<?> findRoadBySpotId(HttpServletRequest request, Long spotId, Integer pageNum) {
+    public CommonDto findRoadBySpotId(HttpServletRequest request, Long spotId, Integer pageNum) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -183,15 +178,10 @@ public class RoadService {
             roadResponseDtoList.add(roadResponseDto);
         }
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(roadResponseDtoList)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, roadResponseDtoList);
     }
 
-    public ResponseEntity<?> findRoadByStoreId(HttpServletRequest request, Long storeId, Integer pageNum) {
+    public CommonDto findRoadByStoreId(HttpServletRequest request, Long storeId, Integer pageNum) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -222,16 +212,11 @@ public class RoadService {
             roadResponseDtoList.add(roadResponseDto);
         }
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(roadResponseDtoList)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, roadResponseDtoList);
     }
 
     @Transactional
-    public ResponseEntity<?> deleteRoad(HttpServletRequest request, Long roadId) {
+    public CommonDto deleteRoad(HttpServletRequest request, Long roadId) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -249,11 +234,6 @@ public class RoadService {
 
         roadCoordinateRepository.deleteAll(roadCoordinateList);
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(Message.builder().message("산책로를 삭제했습니다.").build())
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, Message.builder().message("산책로를 삭제했습니다.").build());
     }
 }

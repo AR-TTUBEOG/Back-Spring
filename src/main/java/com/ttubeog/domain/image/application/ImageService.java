@@ -45,7 +45,7 @@ public class ImageService {
 
 
     @Transactional
-    public ResponseEntity<?> createSpotImage(HttpServletRequest request, Long spotId, List<MultipartFile> fileList) {
+    public CommonDto createSpotImage(HttpServletRequest request, Long spotId, List<MultipartFile> fileList) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -75,18 +75,12 @@ public class ImageService {
                     .build();
         }).collect(Collectors.toList());
 
-
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(imageResponseDtoList)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, imageResponseDtoList);
     }
 
 
     @Transactional
-    public ResponseEntity<?> createStoreImage(HttpServletRequest request, Long storeId, List<MultipartFile> fileList) {
+    public CommonDto createStoreImage(HttpServletRequest request, Long storeId, List<MultipartFile> fileList) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -116,17 +110,12 @@ public class ImageService {
                     .build();
         }).collect(Collectors.toList());
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(imageResponseDtoList)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, imageResponseDtoList);
     }
 
 
     @Transactional
-    public ResponseEntity<?> createGuestBookImage(HttpServletRequest request, Long guestBookId, List<MultipartFile> fileList) {
+    public CommonDto createGuestBookImage(HttpServletRequest request, Long guestBookId, List<MultipartFile> fileList) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -156,16 +145,11 @@ public class ImageService {
                     .build();
         }).collect(Collectors.toList());
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(imageResponseDtoList)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, imageResponseDtoList);
     }
 
 
-    public ResponseEntity<?> findImageBySpotId(HttpServletRequest request, Long spotId) {
+    public CommonDto findImageBySpotId(HttpServletRequest request, Long spotId) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -185,16 +169,11 @@ public class ImageService {
                         .build()
         ).toList();
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(imageResponseDtoList)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, imageResponseDtoList);
     }
 
 
-    public ResponseEntity<?> findImageByStoreId(HttpServletRequest request, Long storeId) {
+    public CommonDto findImageByStoreId(HttpServletRequest request, Long storeId) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -214,16 +193,11 @@ public class ImageService {
                         .build()
         ).toList();
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(imageResponseDtoList)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, imageResponseDtoList);
     }
 
 
-    public ResponseEntity<?> findImageByGuestBookId(HttpServletRequest request, Long guestBookId) {
+    public CommonDto findImageByGuestBookId(HttpServletRequest request, Long guestBookId) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -243,63 +217,43 @@ public class ImageService {
                         .build()
         ).toList();
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(imageResponseDtoList)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, imageResponseDtoList);
     }
 
 
     @Transactional
-    public ResponseEntity<?> deleteImageBySpotId(Long spotId) {
+    public CommonDto deleteImageBySpotId(Long spotId) {
 
         Spot spot = spotRepository.findById(spotId).orElseThrow(InvalidSpotIdException::new);
 
         List<Image> imageList = imageRepository.findAllBySpot(spot);
         imageRepository.deleteAll(imageList);
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information("정상적으로 삭제되었습니다.")
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, "정상적으로 삭제되었습니다.");
     }
 
 
     @Transactional
-    public ResponseEntity<?> deleteImageByStoreId(Long storeId) {
+    public CommonDto deleteImageByStoreId(Long storeId) {
 
         Store store = storeRepository.findById(storeId).orElseThrow(InvalidStoreIdException::new);
 
         List<Image> imageList = imageRepository.findAllByStore(store);
         imageRepository.deleteAll(imageList);
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information("정상적으로 삭제되었습니다.")
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, "정상적으로 삭제되었습니다.");
     }
 
 
     @Transactional
-    public ResponseEntity<?> deleteImageByGuestBookId(Long guestBookId) {
+    public CommonDto deleteImageByGuestBookId(Long guestBookId) {
 
         GuestBook guestBook = guestBookRepository.findById(guestBookId).orElseThrow(InvalidSpotIdException::new);
 
         List<Image> imageList = imageRepository.findAllByGuestBook(guestBook);
         imageRepository.deleteAll(imageList);
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information("정상적으로 삭제되었습니다.")
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, "정상적으로 삭제되었습니다.");
     }
 
 }

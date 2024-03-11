@@ -41,11 +41,11 @@ public class MemberController {
             @ApiResponse(responseCode = "400", description = "멤버 확인 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @GetMapping("")
-    public ResponseEntity<?> getCurrentMember(
+    public ResponseEntity<CommonDto> getCurrentMember(
             HttpServletRequest request
     ) {
 
-        return memberService.getCurrentUser(request);
+        return ResponseEntity.ok(memberService.getCurrentUser(request));
     }
 
     @Operation(summary = "닉네임 설정", description = "현재 접속된 멤버의 초기 닉네임을 설정합니다.닉네임을 이미 변경한 유저는 isChanged == true로 반환되며, 닉네임이 업데이트 되지 않습니다.")
@@ -54,10 +54,10 @@ public class MemberController {
             @ApiResponse(responseCode = "400", description = "닉네임 설정 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @PostMapping(value = "/nickname")
-    public ResponseEntity<?> postMemberNickname(
+    public ResponseEntity<CommonDto> postMemberNickname(
             HttpServletRequest request, @RequestBody ProduceNicknameRequest produceNicknameRequest
     ) {
-        return memberService.postMemberNickname(request, produceNicknameRequest);
+        return ResponseEntity.ok(memberService.postMemberNickname(request, produceNicknameRequest));
     }
 
     @Operation(summary = "닉네임 중복 확인", description = "닉네임의 중복을 확인합니다.")
@@ -66,10 +66,10 @@ public class MemberController {
             @ApiResponse(responseCode = "400", description = "닉네임 설정 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @PostMapping(value = "/nickname/check")
-    public ResponseEntity<?> checkNicknameAvailability(
+    public ResponseEntity<CommonDto> checkNicknameAvailability(
             HttpServletRequest request, @RequestBody ProduceNicknameRequest produceNicknameRequest
     ) {
-        return memberService.postMemberNicknameCheck(request, produceNicknameRequest);
+        return ResponseEntity.ok(memberService.postMemberNicknameCheck(request, produceNicknameRequest));
     }
 
 
@@ -79,11 +79,11 @@ public class MemberController {
             @ApiResponse(responseCode = "400", description = "토큰 재발급 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @GetMapping("/login/reissue")
-    public ResponseEntity<?> loginReissue(
+    public ResponseEntity<CommonDto> loginReissue(
             HttpServletRequest request
     ) {
 
-        return memberService.getMemberReissueToken(request);
+        return ResponseEntity.ok(memberService.getMemberReissueToken(request));
     }
 
     @Operation(summary = "로그아웃", description = "현재 접속된 멤버가 로그아웃 합니다.")
@@ -92,10 +92,10 @@ public class MemberController {
             @ApiResponse(responseCode = "400", description = "로그아웃 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
     })
     @DeleteMapping("/logout")
-    public ResponseEntity<?> logout(
+    public ResponseEntity<CommonDto> logout(
             HttpServletRequest request
     ) {
-        return memberService.deleteLogout(request);
+        return ResponseEntity.ok(memberService.deleteLogout(request));
     }
 
 //    @Operation(summary = "회원탈퇴", description = "현재 접속된 회원이 탈퇴 합니다.")
@@ -104,16 +104,16 @@ public class MemberController {
 //            @ApiResponse(responseCode = "400", description = "회원탈퇴 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))}),
 //    })
 //    @DeleteMapping("/delete")
-//    public ResponseEntity<?> deleteUser(
+//    public ResponseEntity<CommonDto> deleteUser(
 //            HttpServletRequest request
 //    ) {
-//        ResponseEntity<?> responseEntity = memberService.deleteUser(request);
+//        ResponseEntity<CommonDto> responseEntity = memberService.deleteUser(request);
 //
 //        if (responseEntity.getStatusCode().is2xxSuccessful()) {
 //            LocalDateTime localDateTime = LocalDateTime.now().plusDays(3);
 //
 //            scheduledExecutorService.schedule(() -> {
-//                ResponseEntity<?> deleteResponse = memberService.deleteInactiveMember();
+//                ResponseEntity<CommonDto> deleteResponse = memberService.deleteInactiveMember();
 //
 //                if (deleteResponse.getStatusCode().is2xxSuccessful()) {
 //                    System.out.println("회원 삭제 성공");
@@ -159,11 +159,11 @@ public class MemberController {
             }
     )
     @GetMapping("/spot&{pageNum}")
-    public ResponseEntity<?> getMySpotList(
+    public ResponseEntity<CommonDto> getMySpotList(
             @CurrentUser HttpServletRequest request,
             @RequestParam(name = "pageNum") Integer pageNum
     ) throws JsonProcessingException {
-        return memberService.getMySpotList(request, pageNum);
+        return ResponseEntity.ok(memberService.getMySpotList(request, pageNum));
     }
 
     /**
@@ -200,10 +200,10 @@ public class MemberController {
             }
     )
     @GetMapping("/store&{pageNum}")
-    public ResponseEntity<?> getMyStoreList(
+    public ResponseEntity<CommonDto> getMyStoreList(
             @CurrentUser HttpServletRequest request,
             @RequestParam(name = "pageNum") Integer pageNum
     ) throws JsonProcessingException {
-        return memberService.getMyStoreList(request, pageNum);
+        return ResponseEntity.ok(memberService.getMyStoreList(request, pageNum));
     }
 }

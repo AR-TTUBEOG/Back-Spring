@@ -51,7 +51,7 @@ public class SpotService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @NonNull
-    private ResponseEntity<?> getResponseEntity(Spot spot) {
+    private CommonDto getResponseEntity(Spot spot) {
 
         SpotResponseDto createSpotResponseDto = SpotResponseDto.builder()
                 .id(spot.getId())
@@ -65,17 +65,12 @@ public class SpotService {
                 .stars(spot.getStars())
                 .build();
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(createSpotResponseDto)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, createSpotResponseDto);
     }
 
     //Spot 생성 Method
     @Transactional
-    public ResponseEntity<?> createSpot(HttpServletRequest request, CreateSpotRequestDto createSpotRequestDto) {
+    public CommonDto createSpot(HttpServletRequest request, CreateSpotRequestDto createSpotRequestDto) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -110,7 +105,7 @@ public class SpotService {
     }
 
     //ID로 스팟 조회 Method
-    public ResponseEntity<?> findBySpotId(HttpServletRequest request, Long spotId) {
+    public CommonDto findBySpotId(HttpServletRequest request, Long spotId) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
@@ -135,16 +130,11 @@ public class SpotService {
                 .isFavorited(isFavorited)
                 .build();
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(getSpotDetailRes)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, getSpotDetailRes);
     }
 
     @Transactional
-    public ResponseEntity<?> updateSpot(HttpServletRequest request, Long spotId, UpdateSpotRequestDto updateSpotRequestDto) {
+    public CommonDto updateSpot(HttpServletRequest request, Long spotId, UpdateSpotRequestDto updateSpotRequestDto) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -180,7 +170,7 @@ public class SpotService {
 
     //Spot 삭제 Method
     @Transactional
-    public ResponseEntity<?> deleteSpot(HttpServletRequest request, Long spotId) {
+    public CommonDto deleteSpot(HttpServletRequest request, Long spotId) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -201,11 +191,6 @@ public class SpotService {
         List<GuestBook> guestBookList = guestBookRepository.findAllBySpot(spot);
         guestBookRepository.deleteAll(guestBookList);
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(Message.builder().message("산책 스팟을 삭제햇습니다.").build())
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, Message.builder().message("산책 스팟을 삭제햇습니다.").build());
     }
 }

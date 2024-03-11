@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ApiControllerAdvice {
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    protected ResponseEntity<?> handleHttpRequestMethodNotSupportedException(
+    protected ResponseEntity<CommonDto> handleHttpRequestMethodNotSupportedException(
             HttpRequestMethodNotSupportedException e) {
         
         final ErrorResponse response = ErrorResponse
@@ -26,12 +26,12 @@ public class ApiControllerAdvice {
                 .clazz(e.getMethod())
                 .message(e.getMessage())
                 .build();
-        CommonDto apiResponse = CommonDto.builder().check(false).information(response).build();
-        return new ResponseEntity<>(apiResponse, HttpStatus.METHOD_NOT_ALLOWED);
+        CommonDto commonDto = CommonDto.builder().check(false).information(response).build();
+        return new ResponseEntity<>(commonDto, HttpStatus.METHOD_NOT_ALLOWED);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<CommonDto> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         
         ErrorResponse response = ErrorResponse
                 .builder()
@@ -42,12 +42,12 @@ public class ApiControllerAdvice {
                 .fieldErrors(e.getFieldErrors())
                 .build();
 
-        CommonDto apiResponse = CommonDto.builder().check(false).information(response).build();
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+        CommonDto commonDto = CommonDto.builder().check(false).information(response).build();
+        return new ResponseEntity<>(commonDto, HttpStatus.OK);
     }
 
     @ExceptionHandler(InvalidParameterException.class)
-    public ResponseEntity<?> handleInvalidParameterException(InvalidParameterException e) {
+    public ResponseEntity<CommonDto> handleInvalidParameterException(InvalidParameterException e) {
         ErrorResponse response = ErrorResponse
                 .builder()
                 .status(HttpStatus.METHOD_NOT_ALLOWED.value())
@@ -56,13 +56,13 @@ public class ApiControllerAdvice {
                 .message(e.toString())
                 .fieldErrors(e.getFieldErrors())
                 .build();
-        
-        CommonDto apiResponse = CommonDto.builder().check(false).information(response).build();
-        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+
+        CommonDto commonDto = CommonDto.builder().check(false).information(response).build();
+        return new ResponseEntity<>(commonDto, HttpStatus.OK);
     }
 
     @ExceptionHandler(DefaultException.class)
-    protected ResponseEntity<?> handleDefaultException(DefaultException e) {
+    protected ResponseEntity<CommonDto> handleDefaultException(DefaultException e) {
         
         ErrorCode errorCode = e.getErrorCode();
 
@@ -73,56 +73,56 @@ public class ApiControllerAdvice {
                 .message(e.toString())
                 .build();
         
-        CommonDto apiResponse = CommonDto.builder().check(false).information(response).build();
-        return new ResponseEntity<>(apiResponse, HttpStatus.resolve(errorCode.getStatus()));
+        CommonDto commonDto = CommonDto.builder().check(false).information(response).build();
+        return new ResponseEntity<>(commonDto, HttpStatus.resolve(errorCode.getStatus()));
     }
 
     @ExceptionHandler(Exception.class)
-    protected ResponseEntity<?> handleException(Exception e) {
+    protected ResponseEntity<CommonDto> handleException(Exception e) {
         
         ErrorResponse response = ErrorResponse
                 .builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .message(e.toString())
                 .build();
-        CommonDto apiResponse = CommonDto.builder().check(false).information(response).build();
-        return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        CommonDto commonDto = CommonDto.builder().check(false).information(response).build();
+        return new ResponseEntity<>(commonDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(AuthenticationException.class)
-    protected ResponseEntity<?> handleAuthenticationException(AuthenticationException e) {
+    protected ResponseEntity<CommonDto> handleAuthenticationException(AuthenticationException e) {
         
         ErrorResponse response = ErrorResponse
                 .builder()
                 .status(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED.value())
                 .message(e.getMessage())
                 .build();
-        CommonDto apiResponse = CommonDto.builder().check(false).information(response).build();
-        return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        CommonDto commonDto = CommonDto.builder().check(false).information(response).build();
+        return new ResponseEntity<>(commonDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(DefaultAuthenticationException.class)
-    protected ResponseEntity<?> handleCustomAuthenticationException(DefaultAuthenticationException e) {
+    protected ResponseEntity<CommonDto> handleCustomAuthenticationException(DefaultAuthenticationException e) {
         ErrorResponse response = ErrorResponse
                 .builder()
                 .status(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED.value())
                 .message(e.getMessage())
                 .build();
-        CommonDto apiResponse = CommonDto.builder().check(false).information(response).build();
-        return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        CommonDto commonDto = CommonDto.builder().check(false).information(response).build();
+        return new ResponseEntity<>(commonDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     
     @ExceptionHandler(DefaultNullPointerException.class)
-    protected ResponseEntity<?> handleNullPointerException(DefaultNullPointerException e) {
+    protected ResponseEntity<CommonDto> handleNullPointerException(DefaultNullPointerException e) {
         ErrorResponse response = ErrorResponse
                 .builder()
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .message(e.getMessage())
                 .build();
 
-        CommonDto apiResponse = CommonDto.builder().check(false).information(response).build();
-        return new ResponseEntity<>(apiResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        CommonDto commonDto = CommonDto.builder().check(false).information(response).build();
+        return new ResponseEntity<>(commonDto, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

@@ -35,7 +35,7 @@ public class LikesService {
 
     // 매장 좋아요 누르기
     @Transactional
-    public ResponseEntity<?> likesStore(HttpServletRequest request, Long storeId) {
+    public CommonDto likesStore(HttpServletRequest request, Long storeId) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
@@ -52,17 +52,12 @@ public class LikesService {
 
         likesRepository.save(likes);
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(Message.builder().message("매장에 대한 좋아요를 눌렀습니다.").build())
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, Message.builder().message("매장에 대한 좋아요를 눌렀습니다.").build());
     }
 
     // 산책스팟 좋아요 누르기
     @Transactional
-    public ResponseEntity<?> likesSpot(HttpServletRequest request, Long spotId) {
+    public CommonDto likesSpot(HttpServletRequest request, Long spotId) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
@@ -79,11 +74,6 @@ public class LikesService {
 
         likesRepository.save(likes);
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(Message.builder().message("스팟에 대한 좋아요를 눌렀습니다.").build())
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, Message.builder().message("스팟에 대한 좋아요를 눌렀습니다.").build());
     }
 }

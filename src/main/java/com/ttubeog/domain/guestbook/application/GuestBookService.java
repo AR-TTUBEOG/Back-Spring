@@ -54,7 +54,7 @@ public class GuestBookService {
 
     // ResponseEntity 형식에 맞춰 빌드하는 메서드
     @NonNull
-    private ResponseEntity<?> getResponseEntity(GuestBook guestBook) {
+    private CommonDto getResponseEntity(GuestBook guestBook) {
 
         GuestBookResponseDto guestBookResponseDto;
 
@@ -82,18 +82,13 @@ public class GuestBookService {
             throw new InvalidGuestBookException();
         }
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(guestBookResponseDto)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, guestBookResponseDto);
     }
 
     // GuestBook(방명록) 을 하나 생성하는 Service Method 입니다.
     // Spot 이나 Store Controller 혹은 Service 단에서 불러와서 사용 가능합니다.
     @Transactional
-    public ResponseEntity<?> createGuestBook(HttpServletRequest request, CreateGuestBookRequestDto createGuestBookRequestDto) {
+    public CommonDto createGuestBook(HttpServletRequest request, CreateGuestBookRequestDto createGuestBookRequestDto) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -163,11 +158,11 @@ public class GuestBookService {
             throw new InvalidGuestBookException();
         }
 
-        return getResponseEntity(guestBook);
+        return new CommonDto(true, guestBook);
     }
 
     // Spot ID 로 GuestBook 을 조회하는 Method 입니다.
-    public ResponseEntity<?> findGuestBookBySpotId(HttpServletRequest request, Long spotId, Integer pageNum) {
+    public CommonDto findGuestBookBySpotId(HttpServletRequest request, Long spotId, Integer pageNum) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
@@ -188,17 +183,12 @@ public class GuestBookService {
                         .build()
         ).toList();
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(guestBookResponseDtoList)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, guestBookResponseDtoList);
     }
 
 
     // Store ID 로 GuestBook 을 조회하는 Method 입니다.
-    public ResponseEntity<?> findGuestBookByStoreId(HttpServletRequest request, Long storeId, Integer pageNum) {
+    public CommonDto findGuestBookByStoreId(HttpServletRequest request, Long storeId, Integer pageNum) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
@@ -219,18 +209,13 @@ public class GuestBookService {
                         .build()
         ).toList();
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(guestBookResponseDtoList)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, guestBookResponseDtoList);
     }
 
 
     // GuestBook 을 하나 Delete 하는 Method 입니다.
     @Transactional
-    public ResponseEntity<?> deleteGuestBook(HttpServletRequest request, Long guestBookId) {
+    public CommonDto deleteGuestBook(HttpServletRequest request, Long guestBookId) {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
@@ -245,11 +230,6 @@ public class GuestBookService {
 
         //imageService.deleteImage(imageRepository.findByGuestBookId(guestBookId).orElseThrow(InvalidImageException::new).getId());
 
-        CommonDto apiResponse = CommonDto.builder()
-                .check(true)
-                .information(Message.builder().message("방명록을 삭제했습니다").build())
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, Message.builder().message("방명록을 삭제했습니다").build());
     }
 }
