@@ -1,6 +1,5 @@
 package com.ttubeog.global.error;
 
-import com.ttubeog.global.payload.ErrorCode;
 import lombok.Getter;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;

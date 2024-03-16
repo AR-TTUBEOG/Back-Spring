@@ -4,7 +4,7 @@ import com.ttubeog.global.error.DefaultAuthenticationException;
 import com.ttubeog.global.error.DefaultException;
 import com.ttubeog.global.error.DefaultNullPointerException;
 import com.ttubeog.global.error.InvalidParameterException;
-import com.ttubeog.global.payload.ErrorCode;
+import com.ttubeog.global.error.ErrorCode;
 import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
 

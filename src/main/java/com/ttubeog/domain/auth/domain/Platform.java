@@ -2,8 +2,6 @@ package com.ttubeog.domain.auth.domain;
 
 
 import com.ttubeog.domain.auth.exception.PlatformException;
-import com.ttubeog.global.error.DefaultException;
-import com.ttubeog.global.payload.ErrorCode;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

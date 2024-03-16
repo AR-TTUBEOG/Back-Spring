@@ -1,7 +1,6 @@
 package com.ttubeog.global.error;
 
 import com.ttubeog.global.payload.ApiResponse;
-import com.ttubeog.global.payload.ErrorCode;
 import com.ttubeog.global.payload.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

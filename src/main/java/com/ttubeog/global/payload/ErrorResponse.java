@@ -2,77 +2,45 @@ package com.ttubeog.global.payload;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import org.springframework.validation.FieldError;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+@Getter
+@JsonNaming(value = PropertyNamingStrategies.SnakeCaseStrategy.class)
 @Data
-public class ErrorResponse {
-    private LocalDateTime timestamp = LocalDateTime.now();
+public class ErrorResponse<T> {
 
-    private String message;
+    @Schema(description = "에러가 발생한 데이터")
+    private final Map<String, T> data;
 
-    private String code;
+    @Schema(description = "에러 코드 [{알파벳}-{숫자}] 형태", example = "E-001")
+    private final String code;
 
-    @JsonProperty("class")
-    private String clazz;
+    @Schema(description = "에러 메세지", example = "잘못된 요청입니다.")
+    private final String message;
 
-    private int status;
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    @JsonProperty("errors")
-    private List<CustomFieldError> customFieldErrors = new ArrayList<>(); 
-
-    public ErrorResponse() {}
-
-    @Builder
-    public ErrorResponse(String code, int status, String message, String clazz, List<FieldError> fieldErrors){
+    private ErrorResponse(Map<String, T> data, String code, String message) {
+        this.data = data;
         this.code = code;
-        this.status = status;
         this.message = message;
-        this.clazz = clazz;
-        //setFieldErrors(fieldErrors);
     }
 
-    public void setFieldErrors(List<FieldError> fieldErrors) {
-        if(fieldErrors != null){
-            fieldErrors.forEach(error -> {
-                customFieldErrors.add(new CustomFieldError(
-                        error.getField(),
-                        error.getRejectedValue(),
-                        error.getDefaultMessage()
-                ));
-            });
-        }
+    public static ErrorResponse<Object> error(String code, String message) {
+        return error(Map.of(), code, message);
     }
 
-    public static class CustomFieldError {
-
-        private String field;
-        private Object value;
-        private String reason;
-
-        public CustomFieldError(String field, Object value, String reason) {
-            this.field = field;
-            this.value = value;
-            this.reason = reason;
-        }
-
-        public String getField() {
-            return field;
-        }
-
-        public Object getValue() {
-            return value;
-        }
-
-        public String getReason() {
-            return reason;
-        }
+    public static <T> ErrorResponse<T> error(Map<String, T> data, String code, String message) {
+        return new ErrorResponse<>(data, code, message);
     }
 
 }
