@@ -171,7 +171,7 @@ public class SpotController {
     @GetMapping("/{spotId}")
     public ResponseEntity<?> findBySpotId(
             @CurrentUser HttpServletRequest request,
-            @RequestParam(name = "spotId") Long spotId
+            @PathVariable(name = "spotId") Long spotId
     ) throws JsonProcessingException {
         return spotService.findBySpotId(request, spotId);
     }
