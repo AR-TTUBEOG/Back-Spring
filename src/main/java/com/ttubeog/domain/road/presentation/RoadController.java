@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Road", description = "Road API(산책로 API)")
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api/v1/road")
+@RequestMapping("/api/v1/road")
 public class RoadController {
 
     private final RoadService roadService;
