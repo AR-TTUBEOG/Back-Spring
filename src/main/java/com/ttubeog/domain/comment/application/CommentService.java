@@ -14,7 +14,7 @@ import com.ttubeog.domain.comment.exception.UnauthorizedMemberException;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
-import com.ttubeog.global.payload.ApiResponse;
+import com.ttubeog.global.payload.CommonDto;
 import com.ttubeog.global.payload.Message;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ public class CommentService {
 
     // 댓글 작성
     @Transactional
-    public ResponseEntity<?> writeComment(HttpServletRequest request, WriteCommentReq writeCommentReq) {
+    public CommonDto writeComment(HttpServletRequest request, WriteCommentReq writeCommentReq) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
@@ -58,17 +58,12 @@ public class CommentService {
                 .longitude(comment.getLongitude())
                 .build();
 
-        ApiResponse apiResponse = ApiResponse.builder()
-                .check(true)
-                .information(writeCommentRes)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, writeCommentRes);
     }
 
     // 댓글 수정
     @Transactional
-    public ResponseEntity<?> updateComment(HttpServletRequest request, UpdateCommentReq updateCommentReq) {
+    public CommonDto updateComment(HttpServletRequest request, UpdateCommentReq updateCommentReq) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
@@ -86,29 +81,19 @@ public class CommentService {
                 .content(comment.getContent())
                 .build();
 
-        ApiResponse apiResponse = ApiResponse.builder()
-                .check(true)
-                .information(updateCommentRes)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, updateCommentRes);
     }
 
     // 댓글 삭제
     @Transactional
-    public ResponseEntity<?> deleteComment(HttpServletRequest request, Long commentId) {
+    public CommonDto deleteComment(HttpServletRequest request, Long commentId) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
         memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
         Comment comment = commentRepository.findById(commentId).orElseThrow(NonExistentCommentException::new);
         commentRepository.delete(comment);
 
-        ApiResponse apiResponse = ApiResponse.builder()
-                .check(true)
-                .information(Message.builder().message("댓글이 정상적으로 삭제되었습니다.").build())
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, Message.builder().message("댓글이 정상적으로 삭제되었습니다.").build());
     }
 
     public List<Comment> getAllComments() {
@@ -116,7 +101,7 @@ public class CommentService {
     }
 
     // AR뷰를 위한 댓글 조회
-    public ResponseEntity<?> getCommentForAR(GetCommentReq getCommentReq) {
+    public CommonDto getCommentForAR(GetCommentReq getCommentReq) {
 
         Double userLatitude = getCommentReq.getLatitude();
         Double userLongitude = getCommentReq.getLongitude();
@@ -144,12 +129,7 @@ public class CommentService {
             }
         }
 
-        ApiResponse apiResponse = ApiResponse.builder()
-                .check(true)
-                .information(showComments)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, showComments);
     }
 
     // 거리 계산

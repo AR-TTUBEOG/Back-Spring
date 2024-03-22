@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttubeog.domain.game.application.GameService;
 import com.ttubeog.domain.game.dto.request.*;
 import com.ttubeog.domain.game.dto.response.*;
+import com.ttubeog.global.payload.CommonDto;
 import com.ttubeog.global.payload.ErrorResponse;
 import com.ttubeog.global.payload.Message;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,11 +34,11 @@ public class GameController {
             @ApiResponse(responseCode = "400", description = "선물 게임 생성 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @PostMapping("/gift")
-    public ResponseEntity<?> createGift(
+    public ResponseEntity<CommonDto> createGift(
             HttpServletRequest request,
             @Valid @RequestBody CreateGiftReq createGiftReq
     ) throws JsonProcessingException {
-        return gameService.createGift(request, createGiftReq);
+        return ResponseEntity.ok(gameService.createGift(request, createGiftReq));
     }
 
     //농구 게임 생성
@@ -47,11 +48,11 @@ public class GameController {
             @ApiResponse(responseCode = "400", description = "농구 게임 생성 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @PostMapping("/basketball")
-    public ResponseEntity<?> createBasketball(
+    public ResponseEntity<CommonDto> createBasketball(
             HttpServletRequest request,
             @Valid @RequestBody CreateBasketballReq createBasketballReq
             ) throws JsonProcessingException {
-        return gameService.createBasketBall(request, createBasketballReq);
+        return ResponseEntity.ok(gameService.createBasketBall(request, createBasketballReq));
     }
 
     //돌림판 게임 생성
@@ -61,11 +62,11 @@ public class GameController {
             @ApiResponse(responseCode = "400", description = "돌림판 게임 생성 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @PostMapping("/roulette")
-    public ResponseEntity<?> createRoulette(
+    public ResponseEntity<CommonDto> createRoulette(
             HttpServletRequest request,
             @Valid @RequestBody CreateRouletteReq createRouletteReq
             ) throws JsonProcessingException {
-        return gameService.createRoulette(request, createRouletteReq);
+        return ResponseEntity.ok(gameService.createRoulette(request, createRouletteReq));
     }
 
     //선물 게임 수정
@@ -75,11 +76,11 @@ public class GameController {
             @ApiResponse(responseCode = "400", description = "선물 게임 수정 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @PatchMapping("/gift")
-    public ResponseEntity<?> updateGift(
+    public ResponseEntity<CommonDto> updateGift(
             HttpServletRequest request,
             @Valid @RequestBody UpdateGiftReq updateGiftReq
             ) throws JsonProcessingException {
-        return gameService.updateGift(request, updateGiftReq);
+        return ResponseEntity.ok(gameService.updateGift(request, updateGiftReq));
     }
 
     //농구 게임 수정
@@ -89,11 +90,11 @@ public class GameController {
             @ApiResponse(responseCode = "400", description = "농구 게임 수정 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @PatchMapping("/basketball")
-    public ResponseEntity<?> updateBasketball(
+    public ResponseEntity<CommonDto> updateBasketball(
             HttpServletRequest request,
             @Valid @RequestBody UpdateBasketballReq updateBasketballReq
             ) throws JsonProcessingException {
-        return gameService.updateBasketball(request, updateBasketballReq);
+        return ResponseEntity.ok(gameService.updateBasketball(request, updateBasketballReq));
     }
 
     //돌림판 게임 수정
@@ -103,11 +104,11 @@ public class GameController {
             @ApiResponse(responseCode = "400", description = "돌림판 게임 수정 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @PatchMapping("/roulette")
-    public ResponseEntity<?> updateRoulette(
+    public ResponseEntity<CommonDto> updateRoulette(
             HttpServletRequest request,
             @Valid @RequestBody UpdateRouletteReq updateRouletteReq
     ) throws JsonProcessingException {
-        return gameService.updateRoulette(request, updateRouletteReq);
+        return ResponseEntity.ok(gameService.updateRoulette(request, updateRouletteReq));
     }
 
     //게임 삭제
@@ -117,11 +118,11 @@ public class GameController {
             @ApiResponse(responseCode = "400", description = "삭제 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @DeleteMapping("/{gameId}")
-    public ResponseEntity<?> deleteGame(
+    public ResponseEntity<CommonDto> deleteGame(
             HttpServletRequest request,
             @PathVariable(value = "gameId") Long gameId
     ) throws JsonProcessingException {
-        return gameService.deleteGame(request, gameId);
+        return ResponseEntity.ok(gameService.deleteGame(request, gameId));
     }
 
     //게임, 혜택 조회
@@ -131,11 +132,11 @@ public class GameController {
             @ApiResponse(responseCode = "400", description = "조회 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @GetMapping("/{gameId}")
-    public ResponseEntity<?> findGame(
+    public ResponseEntity<CommonDto> findGame(
             HttpServletRequest request,
             @PathVariable(value = "gameId") Long gameId
     ) throws JsonProcessingException {
-        return gameService.findGame(request, gameId);
+        return ResponseEntity.ok(gameService.findGame(request, gameId));
     }
 
     //게임 조회
@@ -145,11 +146,11 @@ public class GameController {
             @ApiResponse(responseCode = "400", description = "조회 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @GetMapping("/{gameId}/benefit")
-    public ResponseEntity<?> findBenefit(
+    public ResponseEntity<CommonDto> findBenefit(
             HttpServletRequest request,
             @PathVariable(value = "gameId") Long gameId
     ) throws JsonProcessingException {
-        return gameService.findBenefit(request, gameId);
+        return ResponseEntity.ok(gameService.findBenefit(request, gameId));
     }
 
 }

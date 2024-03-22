@@ -7,6 +7,7 @@ import com.ttubeog.domain.comment.dto.request.WriteCommentReq;
 import com.ttubeog.domain.comment.dto.response.GetCommentRes;
 import com.ttubeog.domain.comment.dto.response.UpdateCommentRes;
 import com.ttubeog.domain.comment.dto.response.WriteCommentRes;
+import com.ttubeog.global.payload.CommonDto;
 import com.ttubeog.global.payload.ErrorResponse;
 import com.ttubeog.global.payload.Message;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,11 +37,11 @@ public class CommentController {
             @ApiResponse(responseCode = "400", description = "댓글 작성 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PostMapping
-    public ResponseEntity<?> writeComment(
+    public ResponseEntity<CommonDto> writeComment(
             HttpServletRequest request,
             @Valid @RequestBody WriteCommentReq writeCommentReq
     ) {
-        return commentService.writeComment(request, writeCommentReq);
+        return ResponseEntity.ok(commentService.writeComment(request, writeCommentReq));
     }
 
     // 댓글 수정
@@ -50,11 +51,11 @@ public class CommentController {
             @ApiResponse(responseCode = "400", description = "댓글 수정 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PatchMapping
-    public ResponseEntity<?> updateComment(
+    public ResponseEntity<CommonDto> updateComment(
             HttpServletRequest request,
             @Valid @RequestBody UpdateCommentReq updateCommentReq
     ) {
-        return commentService.updateComment(request, updateCommentReq);
+        return ResponseEntity.ok(commentService.updateComment(request, updateCommentReq));
     }
 
     // 댓글 삭제
@@ -64,11 +65,11 @@ public class CommentController {
             @ApiResponse(responseCode = "400", description = "댓글 삭제 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @DeleteMapping("/{commentId}")
-    public ResponseEntity<?> deleteComment(
+    public ResponseEntity<CommonDto> deleteComment(
             HttpServletRequest request,
             @PathVariable Long commentId
     ) {
-        return commentService.deleteComment(request, commentId);
+        return ResponseEntity.ok(commentService.deleteComment(request, commentId));
     }
 
     // AR뷰 댓글 조회 (반경 이용)
@@ -78,9 +79,9 @@ public class CommentController {
             @ApiResponse(responseCode = "400", description = "댓글 조회 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @GetMapping
-    public ResponseEntity<?> getCommentForAR(
+    public ResponseEntity<CommonDto> getCommentForAR(
             @Valid GetCommentReq getCommentReq
     ) {
-        return commentService.getCommentForAR(getCommentReq);
+        return ResponseEntity.ok(commentService.getCommentForAR(getCommentReq));
     }
 }

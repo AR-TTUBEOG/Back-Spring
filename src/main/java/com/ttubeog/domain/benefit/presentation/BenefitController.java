@@ -3,6 +3,7 @@ package com.ttubeog.domain.benefit.presentation;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.ttubeog.domain.benefit.application.BenefitService;
 import com.ttubeog.domain.benefit.dto.response.SaveBenefitRes;
+import com.ttubeog.global.payload.CommonDto;
 import com.ttubeog.global.payload.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -30,7 +31,7 @@ public class BenefitController {
             @ApiResponse(responseCode = "400", description = "혜택 저장 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @PatchMapping("/{benefitId}")
-    public ResponseEntity<?> saveBenefit(
+    public ResponseEntity<CommonDto> saveBenefit(
             HttpServletRequest request,
             @PathVariable(value = "benefitId") Long benefitId
     ) throws JsonProcessingException {
@@ -44,7 +45,7 @@ public class BenefitController {
             @ApiResponse(responseCode = "400", description = "혜택 사용 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @PatchMapping("/{benefitId}/use")
-    public ResponseEntity<?> useBenefit(
+    public ResponseEntity<CommonDto> useBenefit(
             HttpServletRequest request,
             @PathVariable(value = "benefitId") Long benefitId
     ) throws JsonProcessingException {
@@ -58,7 +59,7 @@ public class BenefitController {
             @ApiResponse(responseCode = "400", description = "혜택 조회 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @GetMapping
-    public ResponseEntity<?> findMyBenefit(
+    public ResponseEntity<CommonDto> findMyBenefit(
             HttpServletRequest request,
             @RequestParam(name = "page") Integer page
     ) throws JsonProcessingException {

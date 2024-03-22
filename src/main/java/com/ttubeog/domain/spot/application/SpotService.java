@@ -20,7 +20,7 @@ import com.ttubeog.domain.spot.exception.AlreadyExistsSpotException;
 import com.ttubeog.domain.spot.exception.InvalidImageListSizeException;
 import com.ttubeog.domain.spot.exception.InvalidSpotIdException;
 import com.ttubeog.domain.store.exception.NonExistentStoreException;
-import com.ttubeog.global.payload.ApiResponse;
+import com.ttubeog.global.payload.CommonDto;
 import com.ttubeog.global.payload.Message;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
@@ -46,7 +46,7 @@ public class SpotService {
     private final JwtTokenProvider jwtTokenProvider;
 
     @NonNull
-    private ResponseEntity<?> getResponseEntity(Spot spot) {
+    private CommonDto getResponseEntity(Spot spot) {
 
         SpotResponseDto createSpotResponseDto = SpotResponseDto.builder()
                 .id(spot.getId())
@@ -60,17 +60,12 @@ public class SpotService {
                 .stars(spot.getStars())
                 .build();
 
-        ApiResponse apiResponse = ApiResponse.builder()
-                .check(true)
-                .information(createSpotResponseDto)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, createSpotResponseDto);
     }
 
     //Spot 생성 Method
     @Transactional
-    public ResponseEntity<?> createSpot(HttpServletRequest request, CreateSpotRequestDto createSpotRequestDto) {
+    public CommonDto createSpot(HttpServletRequest request, CreateSpotRequestDto createSpotRequestDto) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -105,7 +100,7 @@ public class SpotService {
     }
 
     //ID로 스팟 조회 Method
-    public ResponseEntity<?> findBySpotId(HttpServletRequest request, Long spotId) {
+    public CommonDto findBySpotId(HttpServletRequest request, Long spotId) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
         Member member = memberRepository.findById(memberId).orElseThrow(InvalidMemberException::new);
@@ -130,16 +125,11 @@ public class SpotService {
                 .isFavorited(isFavorited)
                 .build();
 
-        ApiResponse apiResponse = ApiResponse.builder()
-                .check(true)
-                .information(getSpotDetailRes)
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, getSpotDetailRes);
     }
 
     @Transactional
-    public ResponseEntity<?> updateSpot(HttpServletRequest request, Long spotId, UpdateSpotRequestDto updateSpotRequestDto) {
+    public CommonDto updateSpot(HttpServletRequest request, Long spotId, UpdateSpotRequestDto updateSpotRequestDto) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -175,7 +165,7 @@ public class SpotService {
 
     //Spot 삭제 Method
     @Transactional
-    public ResponseEntity<?> deleteSpot(HttpServletRequest request, Long spotId) {
+    public CommonDto deleteSpot(HttpServletRequest request, Long spotId) {
 
         Long memberId = jwtTokenProvider.getMemberId(request);
 
@@ -196,11 +186,6 @@ public class SpotService {
         List<GuestBook> guestBookList = guestBookRepository.findAllBySpot(spot);
         guestBookRepository.deleteAll(guestBookList);
 
-        ApiResponse apiResponse = ApiResponse.builder()
-                .check(true)
-                .information(Message.builder().message("산책 스팟을 삭제햇습니다.").build())
-                .build();
-
-        return ResponseEntity.ok(apiResponse);
+        return new CommonDto(true, Message.builder().message("산책 스팟을 삭제햇습니다.").build());
     }
 }

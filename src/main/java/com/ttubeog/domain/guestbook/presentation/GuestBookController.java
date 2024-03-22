@@ -6,6 +6,7 @@ import com.ttubeog.domain.guestbook.dto.request.CreateGuestBookRequestDto;
 import com.ttubeog.domain.guestbook.dto.response.GuestBookResponseDto;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
 import com.ttubeog.global.config.security.token.CurrentUser;
+import com.ttubeog.global.payload.CommonDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -59,11 +60,11 @@ public class GuestBookController {
     )
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
-    public ResponseEntity<?> createGuestBook(
+    public ResponseEntity<CommonDto> createGuestBook(
             @CurrentUser HttpServletRequest request,
             @RequestBody CreateGuestBookRequestDto createGuestBookRequestDto
     ) throws JsonProcessingException {
-        return guestBookService.createGuestBook(request, createGuestBookRequestDto);
+        return ResponseEntity.ok(guestBookService.createGuestBook(request, createGuestBookRequestDto));
     }
 
 
@@ -101,12 +102,12 @@ public class GuestBookController {
     )
     @GetMapping("/{spotId}&{pageNum}")
     @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntity<?> findGuestBookBySpotId(
+    public ResponseEntity<CommonDto> findGuestBookBySpotId(
             @CurrentUser HttpServletRequest request,
             @RequestParam(name = "spotId") Long spotId,
             @RequestParam(name = "pageNum") Integer pageNum
     ) throws JsonProcessingException {
-        return guestBookService.findGuestBookBySpotId(request, spotId, pageNum);
+        return ResponseEntity.ok(guestBookService.findGuestBookBySpotId(request, spotId, pageNum));
     }
 
 
@@ -144,12 +145,12 @@ public class GuestBookController {
     )
     @GetMapping("/{storeId}&{pageNum}")
     @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntity<?> findGuestBookByStoreId(
+    public ResponseEntity<CommonDto> findGuestBookByStoreId(
             @CurrentUser HttpServletRequest request,
             @RequestParam(name = "storeId") Long storeId,
             @RequestParam(name = "pageNum") Integer pageNum
     ) throws JsonProcessingException {
-        return guestBookService.findGuestBookByStoreId(request, storeId, pageNum);
+        return ResponseEntity.ok(guestBookService.findGuestBookByStoreId(request, storeId, pageNum));
     }
 
 
@@ -186,11 +187,11 @@ public class GuestBookController {
     )
     @DeleteMapping("/{guestBookId}")
     @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntity<?> deleteGuestBook(
+    public ResponseEntity<CommonDto> deleteGuestBook(
             @CurrentUser HttpServletRequest request,
             @RequestParam(name = "guestBookId") Long guestBookId
     ) throws  JsonProcessingException {
-        return guestBookService.deleteGuestBook(request, guestBookId);
+        return ResponseEntity.ok(guestBookService.deleteGuestBook(request, guestBookId));
     }
 
 }

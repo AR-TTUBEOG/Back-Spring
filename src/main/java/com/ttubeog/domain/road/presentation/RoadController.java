@@ -7,6 +7,7 @@ import com.ttubeog.domain.road.domain.repository.RoadRepository;
 import com.ttubeog.domain.road.dto.request.CreateRoadRequestDto;
 import com.ttubeog.domain.road.dto.response.RoadResponseDto;
 import com.ttubeog.global.config.security.token.CurrentUser;
+import com.ttubeog.global.payload.CommonDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -60,11 +61,11 @@ public class RoadController {
     )
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
-    public ResponseEntity<?> createRoad(
+    public ResponseEntity<CommonDto> createRoad(
             @CurrentUser HttpServletRequest request,
             @RequestBody CreateRoadRequestDto createRoadRequestDto
     ) throws JsonProcessingException {
-        return roadService.createRoad(request, createRoadRequestDto);
+        return ResponseEntity.ok(roadService.createRoad(request, createRoadRequestDto));
     }
 
     /**
@@ -101,12 +102,12 @@ public class RoadController {
     )
     @GetMapping("/{spotId}&{pageNum}")
     @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntity<?> findRoadBySpotId(
+    public ResponseEntity<CommonDto> findRoadBySpotId(
             @CurrentUser HttpServletRequest request,
             @RequestParam(name = "spotId") Long spotId,
             @RequestParam(name = "pageNum") Integer pageNum
     ) throws JsonProcessingException {
-        return roadService.findRoadBySpotId(request, spotId, pageNum);
+        return ResponseEntity.ok(roadService.findRoadBySpotId(request, spotId, pageNum));
     }
 
 
@@ -144,12 +145,12 @@ public class RoadController {
     )
     @GetMapping("/{storeId}&{pageNum}")
     @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntity<?> findRoadByStoreId(
+    public ResponseEntity<CommonDto> findRoadByStoreId(
             @CurrentUser HttpServletRequest request,
             @RequestParam(name = "storeId") Long storeId,
             @RequestParam(name = "pageNum") Integer pageNum
     ) throws JsonProcessingException {
-        return roadService.findRoadByStoreId(request, storeId, pageNum);
+        return ResponseEntity.ok(roadService.findRoadByStoreId(request, storeId, pageNum));
     }
 
 
@@ -186,10 +187,10 @@ public class RoadController {
     )
     @DeleteMapping("/{roadId}")
     @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntity<?> deleteRoad(
+    public ResponseEntity<CommonDto> deleteRoad(
             @CurrentUser HttpServletRequest request,
             @RequestParam(name = "roadId") Long roadId
     ) throws JsonProcessingException {
-        return roadService.deleteRoad(request, roadId);
+        return ResponseEntity.ok(roadService.deleteRoad(request, roadId));
     }
 }

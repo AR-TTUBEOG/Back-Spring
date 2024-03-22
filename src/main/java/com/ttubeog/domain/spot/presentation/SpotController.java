@@ -12,6 +12,7 @@ import com.ttubeog.domain.spot.exception.AlreadyExistsSpotException;
 import com.ttubeog.domain.spot.exception.InvalidDongAreaException;
 import com.ttubeog.domain.spot.exception.InvalidImageListSizeException;
 import com.ttubeog.global.config.security.token.CurrentUser;
+import com.ttubeog.global.payload.CommonDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -98,11 +99,11 @@ public class SpotController {
     )
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
-    public ResponseEntity<?> createSpot(
+    public ResponseEntity<CommonDto> createSpot(
             @CurrentUser HttpServletRequest request,
             @RequestBody CreateSpotRequestDto createSpotRequestDto
     ) throws JsonProcessingException {
-        return spotService.createSpot(request, createSpotRequestDto);
+        return ResponseEntity.ok(spotService.createSpot(request, createSpotRequestDto));
     }
 
 
@@ -168,11 +169,11 @@ public class SpotController {
             }
     )
     @GetMapping("/{spotId}")
-    public ResponseEntity<?> findBySpotId(
+    public ResponseEntity<CommonDto> findBySpotId(
             @CurrentUser HttpServletRequest request,
-            @RequestParam(name = "spotId") Long spotId
+            @PathVariable(name = "spotId") Long spotId
     ) throws JsonProcessingException {
-        return spotService.findBySpotId(request, spotId);
+        return ResponseEntity.ok(spotService.findBySpotId(request, spotId));
     }
 
 
@@ -241,12 +242,12 @@ public class SpotController {
             }
     )
     @PatchMapping
-    public ResponseEntity<?> updateSpot(
+    public ResponseEntity<CommonDto> updateSpot(
             @CurrentUser HttpServletRequest request,
             @RequestParam(name = "spotId") Long spotId,
             @RequestBody UpdateSpotRequestDto updateSpotRequestDto
     ) throws JsonProcessingException {
-        return spotService.updateSpot(request, spotId, updateSpotRequestDto);
+        return ResponseEntity.ok(spotService.updateSpot(request, spotId, updateSpotRequestDto));
     }
 
     /**
@@ -312,11 +313,11 @@ public class SpotController {
             }
     )
     @DeleteMapping("/{spotId}")
-    public ResponseEntity<?> deleteSpot(
+    public ResponseEntity<CommonDto> deleteSpot(
             @CurrentUser HttpServletRequest request,
             @RequestParam(name = "spotId") Long spotId
     ) throws JsonProcessingException {
-        return spotService.deleteSpot(request, spotId);
+        return ResponseEntity.ok(spotService.deleteSpot(request, spotId));
     }
 
 
@@ -383,10 +384,10 @@ public class SpotController {
             }
     )
     @PatchMapping("/{spotId}/likes")
-    public ResponseEntity<?> likeSpot(
+    public ResponseEntity<CommonDto> likeSpot(
             @CurrentUser HttpServletRequest request,
             @RequestParam(name = "spotId") Long spotId
     ) throws JsonProcessingException {
-        return likesService.likesSpot(request, spotId);
+        return ResponseEntity.ok(likesService.likesSpot(request, spotId));
     }
 }
