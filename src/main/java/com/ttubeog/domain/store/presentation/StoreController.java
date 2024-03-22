@@ -1,7 +1,6 @@
 package com.ttubeog.domain.store.presentation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.ttubeog.domain.benefit.application.BenefitService;
 import com.ttubeog.domain.game.application.GameService;
 import com.ttubeog.domain.game.dto.response.FindGameRes;
 import com.ttubeog.domain.likes.application.LikesService;
@@ -37,10 +36,15 @@ public class StoreController {
     private final GameService gameService;
 
 
-    // 매장 등록
+    /**
+     * 매장 등록 API
+     * @param request 유저 검증
+     * @param registerStoreReq 매장 등록 DTO
+     * @return ApiResponse (check: true, information: registerStoreRes)
+     */
     @Operation(summary = "매장 등록", description = "매장을 등록합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "매장 등록 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = RegisterStoreRes.class))}),
+            @ApiResponse(responseCode = "200", description = "OK", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = RegisterStoreRes.class))}),
             @ApiResponse(responseCode = "400", description = "매장 등록 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PostMapping
@@ -51,10 +55,15 @@ public class StoreController {
         return ResponseEntity.ok(storeService.registerStore(request, registerStoreReq));
     }
 
-    // 매장 수정
+    /**
+     * 매장 수정 API
+     * @param request 유저 검증
+     * @param updateStoreReq 매장 수정 DTO
+     * @return ApiResponse (check: true, information: updateStoreRes)
+     */
     @Operation(summary = "매장 수정", description = "매장 정보를 수정합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "매장 수정 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = UpdateStoreRes.class))}),
+            @ApiResponse(responseCode = "200", description = "OK", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = UpdateStoreRes.class))}),
             @ApiResponse(responseCode = "400", description = "매장 수정 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PatchMapping
@@ -65,10 +74,15 @@ public class StoreController {
         return ResponseEntity.ok(storeService.updateStore(request, updateStoreReq));
     }
 
-    // 매장 삭제
+    /**
+     * 매장 삭제 API
+     * @param request 유저 검증
+     * @param storeId 매장 ID
+     * @return ApiResponse (check: true, information: message)
+     */
     @Operation(summary = "매장 삭제", description = "매장 정보를 삭제합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "매장 삭제 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}),
+            @ApiResponse(responseCode = "200", description = "OK", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}),
             @ApiResponse(responseCode = "400", description = "매장 삭제 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @DeleteMapping("/{storeId}")
@@ -79,10 +93,15 @@ public class StoreController {
         return ResponseEntity.ok(storeService.deleteStore(request, storeId));
     }
 
-    // 매장 세부사항 조회
+    /**
+     * 매장 세부사항 조회 API
+     * @param request 유저검증
+     * @param storeId 매장 ID
+     * @return ApiResponse (check: true, information: getStoreDetailRes)
+     */
     @Operation(summary = "매장 세부사항 조회", description = "매장 세부사항을 조회합니다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "매장 세부사항 조회 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = GetStoreDetailRes.class))}),
+            @ApiResponse(responseCode = "200", description = "매장 ", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = GetStoreDetailRes.class))}),
             @ApiResponse(responseCode = "400", description = "매장 세부사항 조회 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @GetMapping("/{storeId}")
@@ -93,7 +112,12 @@ public class StoreController {
         return ResponseEntity.ok(storeService.getStoreDetails(request, storeId));
     }
 
-    // 매장 좋아요 누르기
+    /**
+     * 매장 좋아요 누르기 API
+     * @param request 유저 검증
+     * @param storeId 매장 ID
+     * @return ApiResponse (check: true, information: message)
+     */
     @Operation(summary = "매장 좋아요 누르기", description = "매장에 대한 좋아요를 누릅니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "매장 좋아요 누르기 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Message.class))}),
@@ -107,7 +131,13 @@ public class StoreController {
         return ResponseEntity.ok(likesService.likesStore(request, storeId));
     }
 
-    //StoreId로 매장, 혜택 조회
+    /**
+     * 매장 혜택 조회 API
+     * @param request 유저 검증
+     * @param storeId 매장 ID
+     * @return ApiResponse (check: true, information: findGameRes)
+     * @throws JsonProcessingException JSON Processing 에러
+     */
     @Operation(summary = "매장으로 게임, 혜택 조회", description = "매장ID에 해당하는 모든 게임과 해당 혜택을 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "게임 조회 누르기 성공", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = FindGameRes.class))}),

@@ -35,7 +35,6 @@ public class BenefitService {
     private final MemberRepository memberRepository;
     private final BenefitRepository benefitRepository;
     private final MemberBenefitRepository memberBenefitRepository;
-    private final StoreRepository storeRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     //게임 성공 후 혜택 저장
@@ -68,7 +67,7 @@ public class BenefitService {
                 .content(benefit.getContent())
                 .type(benefit.getType())
                 .used(memberBenefit.getUsed())
-                .expried(memberBenefit.getExpired())
+                .expired(memberBenefit.getExpired())
                 .createdAt(memberBenefit.getCreatedAt())
                 .build();
 
@@ -100,7 +99,7 @@ public class BenefitService {
                 .storeId(benefit.getStore().getId())
                 .storeName(benefit.getStore().getName())
                 .used(memberBenefit.getUsed())
-                .expried(memberBenefit.getExpired())
+                .expired(memberBenefit.getExpired())
                 .createdAt(memberBenefit.getCreatedAt())
                 .content(benefit.getContent())
                 .type(benefit.getType())
@@ -123,7 +122,7 @@ public class BenefitService {
                         .storeId(memberBenefit.getBenefit().getStore().getId())
                         .storeName(memberBenefit.getBenefit().getStore().getName())
                         .used(memberBenefit.getUsed())
-                        .expried(memberBenefit.getExpired())
+                        .expired(memberBenefit.getExpired())
                         .createdAt(memberBenefit.getCreatedAt())
                         .content(memberBenefit.getBenefit().getContent())
                         .type(memberBenefit.getBenefit().getType())

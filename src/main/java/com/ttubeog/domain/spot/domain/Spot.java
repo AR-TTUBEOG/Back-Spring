@@ -1,8 +1,6 @@
 package com.ttubeog.domain.spot.domain;
 
-import com.ttubeog.domain.area.domain.DongArea;
 import com.ttubeog.domain.common.BaseEntity;
-import com.ttubeog.domain.image.domain.Image;
 import com.ttubeog.domain.member.domain.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -10,10 +8,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.apache.ibatis.annotations.Many;
-import org.hibernate.annotations.Fetch;
-
-import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter

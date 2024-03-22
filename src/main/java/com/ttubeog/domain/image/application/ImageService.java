@@ -62,7 +62,7 @@ public class ImageService {
                     .spot(spot)
                     .build();
 
-            String imageUrl = amazonS3Manager.uploadFile(amazonS3Manager.generateStoreKeyName(image), multipartFile);
+            String imageUrl = amazonS3Manager.uploadFile(amazonS3Manager.generateSpotKeyName(image), multipartFile);
             image.updateImageUrl(imageUrl);
             Image savedImage = imageRepository.save(image);
 
@@ -132,7 +132,7 @@ public class ImageService {
                     .guestBook(guestBook)
                     .build();
 
-            String imageUrl = amazonS3Manager.uploadFile(amazonS3Manager.generateStoreKeyName(image), multipartFile);
+            String imageUrl = amazonS3Manager.uploadFile(amazonS3Manager.generateGuestBookKeyName(image), multipartFile);
             image.updateImageUrl(imageUrl);
             Image savedImage = imageRepository.save(image);
 

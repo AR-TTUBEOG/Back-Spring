@@ -5,5 +5,5 @@ import lombok.Getter;
 @Getter
 public enum GuestBookType {
     SPOT,
-    STORE;
+    STORE
 }
