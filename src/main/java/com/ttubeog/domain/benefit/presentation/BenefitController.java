@@ -43,7 +43,7 @@ public class BenefitController {
             @ApiResponse(responseCode = "200", description = "혜택 사용 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = SaveBenefitRes.class) ) } ),
             @ApiResponse(responseCode = "400", description = "혜택 사용 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
-    @PatchMapping("{benefitId}/use")
+    @PatchMapping("/{benefitId}/use")
     public ResponseEntity<?> useBenefit(
             HttpServletRequest request,
             @PathVariable(value = "benefitId") Long benefitId
