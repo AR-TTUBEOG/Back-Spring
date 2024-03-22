@@ -1,6 +1,5 @@
 package com.ttubeog.domain.store.domain;
 
-import com.ttubeog.domain.area.domain.DongArea;
 import com.ttubeog.domain.common.BaseEntity;
 import com.ttubeog.domain.member.domain.Member;
 import jakarta.persistence.Table;
