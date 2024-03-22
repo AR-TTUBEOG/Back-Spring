@@ -20,6 +20,7 @@ public enum ErrorCode {
     /**
      * Etc
      */
+    TEMP_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "T-001", "temp"),
     INVALID_TYPE_VALUE(HttpStatus.BAD_REQUEST, "E-001", "잘못된 요청입니다."),
 
     /**

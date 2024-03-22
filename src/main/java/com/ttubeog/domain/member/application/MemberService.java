@@ -19,7 +19,6 @@ import com.ttubeog.domain.spot.domain.Spot;
 import com.ttubeog.domain.spot.domain.repository.SpotRepository;
 import com.ttubeog.domain.store.domain.Store;
 import com.ttubeog.domain.store.domain.repository.StoreRepository;
-import com.ttubeog.global.DefaultAssert;
 import com.ttubeog.global.payload.ApiResponse;
 import com.ttubeog.global.payload.Message;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -55,7 +53,14 @@ public class MemberService {
         Long memberId = jwtTokenProvider.getMemberId(request);
 
         Optional<Member> checkMember = memberRepository.findById(memberId);
-        DefaultAssert.isOptionalPresent(checkMember);
+        //DefaultAssert.isOptionalPresent(checkMember);
+        /*
+        public static void isOptionalPresent(Optional<?> value){
+            if(!value.isPresent()){
+                throw new DefaultException(ErrorCode.INVALID_PARAMETER);
+            }
+        }
+         */
         Member member = checkMember.get();
 
         MemberDetailDto memberDetailDto = MemberDetailDto.builder()
