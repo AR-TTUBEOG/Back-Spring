@@ -1,8 +1,6 @@
 package com.ttubeog.domain.spot.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.ttubeog.domain.benefit.domain.BenefitType;
-import com.ttubeog.domain.store.domain.StoreType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
