@@ -5,6 +5,7 @@ import com.ttubeog.domain.place.dto.request.GetNearbyPlaceReq;
 import com.ttubeog.domain.place.dto.request.SearchPlaceReq;
 import com.ttubeog.domain.place.dto.response.GetAllPlaceRes;
 import com.ttubeog.domain.place.dto.response.SearchPlaceRes;
+import com.ttubeog.global.payload.CommonDto;
 import com.ttubeog.global.payload.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -35,13 +36,13 @@ public class PlaceController {
             @ApiResponse(responseCode = "400", description = "전체 장소 조회 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @GetMapping
-    public ResponseEntity<?> getAllPlaces(
+    public ResponseEntity<CommonDto> getAllPlaces(
             HttpServletRequest request,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        return placeService.getAllPlaces(request, pageable);
+        return ResponseEntity.ok(placeService.getAllPlaces(request, pageable));
     }
 
     // 추천순 조회
@@ -51,13 +52,13 @@ public class PlaceController {
             @ApiResponse(responseCode = "400", description = "추천순 조회 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @GetMapping("/recommended")
-    public ResponseEntity<?> getAllPlacesRecommended(
+    public ResponseEntity<CommonDto> getAllPlacesRecommended(
             HttpServletRequest request,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        return placeService.getAllPlacesRecommended(request, pageable);
+        return ResponseEntity.ok(placeService.getAllPlacesRecommended(request, pageable));
     }
 
     // 거리순 조회
@@ -67,14 +68,14 @@ public class PlaceController {
             @ApiResponse(responseCode = "400", description = "거리순 조회 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @GetMapping("/nearby")
-    public ResponseEntity<?> getAllPlacesNearby(
+    public ResponseEntity<CommonDto> getAllPlacesNearby(
             HttpServletRequest request,
             @Valid GetNearbyPlaceReq getNearbyPlaceReq,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        return placeService.getAllPlacesNearby(request, getNearbyPlaceReq, pageable);
+        return ResponseEntity.ok(placeService.getAllPlacesNearby(request, getNearbyPlaceReq, pageable));
     }
 
     // 최신순 조회
@@ -84,13 +85,13 @@ public class PlaceController {
             @ApiResponse(responseCode = "400", description = "최신순 조회 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @GetMapping("/latest")
-    public ResponseEntity<?> getAllPlacesLatest(
+    public ResponseEntity<CommonDto> getAllPlacesLatest(
             HttpServletRequest request,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        return placeService.getAllPlacesLatest(request, pageable);
+        return ResponseEntity.ok(placeService.getAllPlacesLatest(request, pageable));
     }
 
     // 장소 검색
@@ -100,13 +101,13 @@ public class PlaceController {
             @ApiResponse(responseCode = "400", description = "장소 검색 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @GetMapping("/search")
-    public ResponseEntity<?> searchPlace(
+    public ResponseEntity<CommonDto> searchPlace(
             HttpServletRequest request,
             @Valid SearchPlaceReq searchPlaceReq,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        return placeService.searchPlaces(request, searchPlaceReq, pageable);
+        return ResponseEntity.ok(placeService.searchPlaces(request, searchPlaceReq, pageable));
     }
 }

@@ -11,6 +11,7 @@ import com.ttubeog.domain.store.dto.request.UpdateStoreReq;
 import com.ttubeog.domain.store.dto.response.GetStoreDetailRes;
 import com.ttubeog.domain.store.dto.response.RegisterStoreRes;
 import com.ttubeog.domain.store.dto.response.UpdateStoreRes;
+import com.ttubeog.global.payload.CommonDto;
 import com.ttubeog.global.payload.Message;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -43,11 +44,11 @@ public class StoreController {
             @ApiResponse(responseCode = "400", description = "매장 등록 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PostMapping
-    public ResponseEntity<?> registerStore(
+    public ResponseEntity<CommonDto> registerStore(
             HttpServletRequest request,
             @Valid @RequestBody RegisterStoreReq registerStoreReq
     ) {
-        return storeService.registerStore(request, registerStoreReq);
+        return ResponseEntity.ok(storeService.registerStore(request, registerStoreReq));
     }
 
     // 매장 수정
@@ -57,11 +58,11 @@ public class StoreController {
             @ApiResponse(responseCode = "400", description = "매장 수정 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PatchMapping
-    public ResponseEntity<?> updateStore(
+    public ResponseEntity<CommonDto> updateStore(
             HttpServletRequest request,
             @Valid @RequestBody UpdateStoreReq updateStoreReq
     ) {
-        return storeService.updateStore(request, updateStoreReq);
+        return ResponseEntity.ok(storeService.updateStore(request, updateStoreReq));
     }
 
     // 매장 삭제
@@ -71,11 +72,11 @@ public class StoreController {
             @ApiResponse(responseCode = "400", description = "매장 삭제 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @DeleteMapping("/{storeId}")
-    public ResponseEntity<?> deleteStore(
+    public ResponseEntity<CommonDto> deleteStore(
             HttpServletRequest request,
             @PathVariable Long storeId
     ) {
-        return storeService.deleteStore(request, storeId);
+        return ResponseEntity.ok(storeService.deleteStore(request, storeId));
     }
 
     // 매장 세부사항 조회
@@ -85,11 +86,11 @@ public class StoreController {
             @ApiResponse(responseCode = "400", description = "매장 세부사항 조회 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @GetMapping("/{storeId}")
-    public ResponseEntity<?> getStoreDetails(
+    public ResponseEntity<CommonDto> getStoreDetails(
             HttpServletRequest request,
             @PathVariable Long storeId
     ) {
-        return storeService.getStoreDetails(request, storeId);
+        return ResponseEntity.ok(storeService.getStoreDetails(request, storeId));
     }
 
     // 매장 좋아요 누르기
@@ -99,11 +100,11 @@ public class StoreController {
             @ApiResponse(responseCode = "400", description = "매장 좋아요 누르기 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @PostMapping("/{storeId}/likes")
-    public ResponseEntity<?> likesStore(
+    public ResponseEntity<CommonDto> likesStore(
             HttpServletRequest request,
             @PathVariable Long storeId
     ) {
-        return likesService.likesStore(request, storeId);
+        return ResponseEntity.ok(likesService.likesStore(request, storeId));
     }
 
     //StoreId로 매장, 혜택 조회
@@ -113,10 +114,10 @@ public class StoreController {
             @ApiResponse(responseCode = "400", description = "게임 조회 누르기 실패", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))})
     })
     @GetMapping("/{storeId}/game")
-    public ResponseEntity<?> findBenefitByStore(
+    public ResponseEntity<CommonDto> findBenefitByStore(
             HttpServletRequest request,
             @PathVariable Long storeId
     ) throws JsonProcessingException {
-        return gameService.findByStore(request, storeId);
+        return ResponseEntity.ok(gameService.findByStore(request, storeId));
     }
 }

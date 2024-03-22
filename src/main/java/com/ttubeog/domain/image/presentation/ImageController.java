@@ -5,6 +5,7 @@ import com.ttubeog.domain.benefit.dto.response.SaveBenefitRes;
 import com.ttubeog.domain.image.application.ImageService;
 import com.ttubeog.domain.image.dto.response.ImageResponseDto;
 import com.ttubeog.global.config.security.token.CurrentUser;
+import com.ttubeog.global.payload.CommonDto;
 import com.ttubeog.global.payload.ErrorResponse;
 import com.ttubeog.global.payload.Message;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,12 +39,12 @@ public class ImageController {
     })
 //    @ResponseStatus(value = HttpStatus.CREATED)
     @PostMapping(value = "/spot", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> createSpotImage(
+    public ResponseEntity<CommonDto> createSpotImage(
             @CurrentUser HttpServletRequest request,
             @RequestParam Long spotId,
             @RequestPart List<MultipartFile> fileList
     ) {
-        return imageService.createSpotImage(request, spotId, fileList);
+        return ResponseEntity.ok(imageService.createSpotImage(request, spotId, fileList));
     }
 
     @Operation(summary = "매장 이미지 저장", description = "매장의 이미지를 저장합니다.")
@@ -53,12 +54,12 @@ public class ImageController {
     })
     @PostMapping(value = "/store", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 //    @ResponseStatus(value = HttpStatus.CREATED)
-    public ResponseEntity<?> createStoreImage(
+    public ResponseEntity<CommonDto> createStoreImage(
             @CurrentUser HttpServletRequest request,
             @RequestParam Long storeId,
             @RequestPart List<MultipartFile> fileList
     ) {
-        return imageService.createStoreImage(request, storeId, fileList);
+        return ResponseEntity.ok(imageService.createStoreImage(request, storeId, fileList));
     }
 
     @Operation(summary = "방명록 이미지 저장", description = "방명록의 이미지를 저장합니다.")
@@ -68,12 +69,12 @@ public class ImageController {
     })
     @PostMapping(value = "/guestbook", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 //    @ResponseStatus(value = HttpStatus.CREATED)
-    public ResponseEntity<?> createGuestBookImage(
+    public ResponseEntity<CommonDto> createGuestBookImage(
             @CurrentUser HttpServletRequest request,
             @RequestParam Long guestBookId,
             @RequestPart List<MultipartFile> fileList
     ) {
-        return imageService.createGuestBookImage(request, guestBookId, fileList);
+        return ResponseEntity.ok(imageService.createGuestBookImage(request, guestBookId, fileList));
     }
 
     @Operation(summary = "산책스팟 이미지 조회", description = "산책스팟ID로 해당 이미지를 조회합니다.")
@@ -83,11 +84,11 @@ public class ImageController {
     })
     @GetMapping(value = "/{spotId}")
 //    @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntity<?> findImageBySpotId(
+    public ResponseEntity<CommonDto> findImageBySpotId(
             @CurrentUser HttpServletRequest request,
             @RequestParam Long spotId
     ) {
-        return imageService.findImageBySpotId(request, spotId);
+        return ResponseEntity.ok(imageService.findImageBySpotId(request, spotId));
     }
 
     @Operation(summary = "매장 이미지 조회", description = "매장ID로 해당 이미지를 조회합니다.")
@@ -97,11 +98,11 @@ public class ImageController {
     })
     @GetMapping(value = "/{storeId}")
 //    @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntity<?> findImageByStoreId(
+    public ResponseEntity<CommonDto> findImageByStoreId(
             @CurrentUser HttpServletRequest request,
             @RequestParam Long storeId
     ) {
-        return imageService.findImageByStoreId(request, storeId);
+        return ResponseEntity.ok(imageService.findImageByStoreId(request, storeId));
     }
 
     @Operation(summary = "방명록 이미지 조회", description = "방명록ID로 해당 이미지를 조회합니다.")
@@ -111,11 +112,11 @@ public class ImageController {
     })
     @GetMapping(value = "/{guestBookId}")
 //    @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntity<?> findImageByGuestBookId(
+    public ResponseEntity<CommonDto> findImageByGuestBookId(
             @CurrentUser HttpServletRequest request,
             @RequestParam Long guestBookId
     ) {
-        return imageService.findImageByGuestBookId(request, guestBookId);
+        return ResponseEntity.ok(imageService.findImageByGuestBookId(request, guestBookId));
     }
 
 
@@ -126,10 +127,10 @@ public class ImageController {
     })
     @DeleteMapping(value = "/{spotId}")
 //    @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntity<?> deleteImageBySpotId(
+    public ResponseEntity<CommonDto> deleteImageBySpotId(
             @RequestParam Long spotId
     ) {
-        return imageService.deleteImageBySpotId(spotId);
+        return ResponseEntity.ok(imageService.deleteImageBySpotId(spotId));
     }
 
     @Operation(summary = "매장 이미지 삭제", description = "매장의 이미지를 삭제합니다.")
@@ -139,10 +140,10 @@ public class ImageController {
     })
     @DeleteMapping(value = "/{storeId}")
 //    @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntity<?> deleteImageByStoreId(
+    public ResponseEntity<CommonDto> deleteImageByStoreId(
             @RequestParam Long storeId
     ) {
-        return imageService.deleteImageByStoreId(storeId);
+        return ResponseEntity.ok(imageService.deleteImageByStoreId(storeId));
     }
 
     @Operation(summary = "방명록 이미지 삭제", description = "방명록의 이미지를 삭제합니다.")
@@ -152,9 +153,9 @@ public class ImageController {
     })
     @DeleteMapping(value = "/{guestBookId}")
 //    @ResponseStatus(value = HttpStatus.OK)
-    public ResponseEntity<?> deleteImageByGuestBookId(
+    public ResponseEntity<CommonDto> deleteImageByGuestBookId(
             @RequestParam Long guestBookId
     ) {
-        return imageService.deleteImageByGuestBookId(guestBookId);
+        return ResponseEntity.ok(imageService.deleteImageByGuestBookId(guestBookId));
     }
 }
