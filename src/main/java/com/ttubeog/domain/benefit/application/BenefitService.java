@@ -14,13 +14,11 @@ import com.ttubeog.domain.benefit.exception.OverlappingBenefitException;
 import com.ttubeog.domain.member.domain.Member;
 import com.ttubeog.domain.member.domain.repository.MemberRepository;
 import com.ttubeog.domain.member.exception.InvalidMemberException;
-import com.ttubeog.domain.store.domain.repository.StoreRepository;
 import com.ttubeog.global.payload.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +34,6 @@ public class BenefitService {
     private final MemberRepository memberRepository;
     private final BenefitRepository benefitRepository;
     private final MemberBenefitRepository memberBenefitRepository;
-    private final StoreRepository storeRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
     //게임 성공 후 혜택 저장
