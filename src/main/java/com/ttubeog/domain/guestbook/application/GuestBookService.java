@@ -1,6 +1,5 @@
 package com.ttubeog.domain.guestbook.application;
 
-import com.ttubeog.domain.UuidImage.domain.UuidImage;
 import com.ttubeog.domain.UuidImage.domain.repository.UuidImageRepository;
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
 import com.ttubeog.domain.aws.s3.AmazonS3Manager;
@@ -32,9 +31,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
