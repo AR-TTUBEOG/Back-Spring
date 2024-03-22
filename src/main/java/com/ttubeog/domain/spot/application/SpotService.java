@@ -44,9 +44,6 @@ public class SpotService {
     private final ImageRepository imageRepository;
     private final GuestBookRepository guestBookRepository;
     private final LikesRepository likesRepository;
-    private final BenefitRepository benefitRepository;
-
-    private final ImageService imageService;
 
     private final JwtTokenProvider jwtTokenProvider;
 
