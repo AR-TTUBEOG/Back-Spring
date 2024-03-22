@@ -1,10 +1,8 @@
 package com.ttubeog.domain.spot.application;
 
 import com.ttubeog.domain.auth.security.JwtTokenProvider;
-import com.ttubeog.domain.benefit.domain.repository.BenefitRepository;
 import com.ttubeog.domain.guestbook.domain.GuestBook;
 import com.ttubeog.domain.guestbook.domain.repository.GuestBookRepository;
-import com.ttubeog.domain.image.application.ImageService;
 import com.ttubeog.domain.image.domain.Image;
 import com.ttubeog.domain.image.domain.repository.ImageRepository;
 import com.ttubeog.domain.likes.domain.repository.LikesRepository;
