@@ -86,7 +86,7 @@ public class ImageController {
 //    @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<CommonDto> findImageBySpotId(
             @CurrentUser HttpServletRequest request,
-            @RequestParam Long spotId
+            @PathVariable Long spotId
     ) {
         return ResponseEntity.ok(imageService.findImageBySpotId(request, spotId));
     }
@@ -100,7 +100,7 @@ public class ImageController {
 //    @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<CommonDto> findImageByStoreId(
             @CurrentUser HttpServletRequest request,
-            @RequestParam Long storeId
+            @PathVariable Long storeId
     ) {
         return ResponseEntity.ok(imageService.findImageByStoreId(request, storeId));
     }
