@@ -42,12 +42,6 @@ public class GuestBookService {
     private final MemberRepository memberRepository;
     private final SpotRepository spotRepository;
     private final StoreRepository storeRepository;
-    private final ImageRepository imageRepository;
-    private final UuidImageRepository uuidImageRepository;
-
-    //private final ImageService imageService;
-
-    private final AmazonS3Manager amazonS3Manager;
 
     private final JwtTokenProvider jwtTokenProvider;
 
