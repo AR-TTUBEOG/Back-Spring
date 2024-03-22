@@ -82,7 +82,7 @@ public class ImageController {
             @ApiResponse(responseCode = "200", description = "이미지 조회 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ImageResponseDto.class) ) } ),
             @ApiResponse(responseCode = "400", description = "이미지 조회 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
-    @GetMapping(value = "/{spotId}")
+    @GetMapping(value = "/spot/{spotId}")
 //    @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<CommonDto> findImageBySpotId(
             @CurrentUser HttpServletRequest request,
@@ -96,7 +96,7 @@ public class ImageController {
             @ApiResponse(responseCode = "200", description = "이미지 조회 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ImageResponseDto.class) ) } ),
             @ApiResponse(responseCode = "400", description = "이미지 조회 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
-    @GetMapping(value = "/{storeId}")
+    @GetMapping(value = "/store/{storeId}")
 //    @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<CommonDto> findImageByStoreId(
             @CurrentUser HttpServletRequest request,
@@ -110,11 +110,11 @@ public class ImageController {
             @ApiResponse(responseCode = "200", description = "이미지 조회 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ImageResponseDto.class) ) } ),
             @ApiResponse(responseCode = "400", description = "이미지 조회 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
-    @GetMapping(value = "/{guestBookId}")
+    @GetMapping(value = "/guestbook/{guestBookId}")
 //    @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<CommonDto> findImageByGuestBookId(
             @CurrentUser HttpServletRequest request,
-            @RequestParam Long guestBookId
+            @PathVariable Long guestBookId
     ) {
         return ResponseEntity.ok(imageService.findImageByGuestBookId(request, guestBookId));
     }
@@ -125,10 +125,10 @@ public class ImageController {
             @ApiResponse(responseCode = "200", description = "이미지 삭제 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = Message.class) ) } ),
             @ApiResponse(responseCode = "400", description = "이미지 삭제 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
-    @DeleteMapping(value = "/{spotId}")
+    @DeleteMapping(value = "/spot/{spotId}")
 //    @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<CommonDto> deleteImageBySpotId(
-            @RequestParam Long spotId
+            @PathVariable Long spotId
     ) {
         return ResponseEntity.ok(imageService.deleteImageBySpotId(spotId));
     }
@@ -138,10 +138,10 @@ public class ImageController {
             @ApiResponse(responseCode = "200", description = "이미지 삭제 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = Message.class) ) } ),
             @ApiResponse(responseCode = "400", description = "이미지 삭제 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
-    @DeleteMapping(value = "/{storeId}")
+    @DeleteMapping(value = "/store/{storeId}")
 //    @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<CommonDto> deleteImageByStoreId(
-            @RequestParam Long storeId
+            @PathVariable Long storeId
     ) {
         return ResponseEntity.ok(imageService.deleteImageByStoreId(storeId));
     }
@@ -151,10 +151,10 @@ public class ImageController {
             @ApiResponse(responseCode = "200", description = "이미지 삭제 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = Message.class) ) } ),
             @ApiResponse(responseCode = "400", description = "이미지 삭제 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
-    @DeleteMapping(value = "/{guestBookId}")
+    @DeleteMapping(value = "/guestbook/{guestBookId}")
 //    @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<CommonDto> deleteImageByGuestBookId(
-            @RequestParam Long guestBookId
+            @PathVariable Long guestBookId
     ) {
         return ResponseEntity.ok(imageService.deleteImageByGuestBookId(guestBookId));
     }
