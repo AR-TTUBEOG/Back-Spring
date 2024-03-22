@@ -114,7 +114,7 @@ public class ImageController {
 //    @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<CommonDto> findImageByGuestBookId(
             @CurrentUser HttpServletRequest request,
-            @RequestParam Long guestBookId
+            @PathVariable Long guestBookId
     ) {
         return ResponseEntity.ok(imageService.findImageByGuestBookId(request, guestBookId));
     }
@@ -128,7 +128,7 @@ public class ImageController {
     @DeleteMapping(value = "/spot/{spotId}")
 //    @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<CommonDto> deleteImageBySpotId(
-            @RequestParam Long spotId
+            @PathVariable Long spotId
     ) {
         return ResponseEntity.ok(imageService.deleteImageBySpotId(spotId));
     }
@@ -141,7 +141,7 @@ public class ImageController {
     @DeleteMapping(value = "/store/{storeId}")
 //    @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<CommonDto> deleteImageByStoreId(
-            @RequestParam Long storeId
+            @PathVariable Long storeId
     ) {
         return ResponseEntity.ok(imageService.deleteImageByStoreId(storeId));
     }
@@ -154,7 +154,7 @@ public class ImageController {
     @DeleteMapping(value = "/guestbook/{guestBookId}")
 //    @ResponseStatus(value = HttpStatus.OK)
     public ResponseEntity<CommonDto> deleteImageByGuestBookId(
-            @RequestParam Long guestBookId
+            @PathVariable Long guestBookId
     ) {
         return ResponseEntity.ok(imageService.deleteImageByGuestBookId(guestBookId));
     }
