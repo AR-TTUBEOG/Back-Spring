@@ -1,55 +1,73 @@
 package com.ttubeog.domain.member.domain;
 
+import com.ttubeog.domain.auth.domain.Platform;
+import com.ttubeog.domain.auth.domain.Status;
 import com.ttubeog.domain.common.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
+@Builder
 public class Member extends BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
     private Long id;
 
-    private String name;
+    private String oAuthId;
+
+    private String nickname;
+
+    @Size(max = 45)
+    @NotNull
+    private String memberNumber;
 
     @Email
     private String email;
 
-    private String imageUrl;
-
-    private String password;
+    private String platformId;
 
     @Enumerated(EnumType.STRING)
-    private Provider provider;
+    @Column(name = "platform")
+    private Platform platform;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    @Column(name = "status")
+    private Status status;
 
-    private String providerId;
+    @Column(name = "refresh_token")
+    private String refreshToken;
 
-    @Builder
-    public Member(Long id, String name, String email, String imageUrl, Boolean emailVerified, String password, Provider provider, Role role, String providerId) {
-        this.id = id;
-        this.name = name;
+    @Column(name = "nickname_changed")
+    private Integer nicknameChange;
+
+
+    public Member(String email, Platform platform, Status status, String memberNumber, Integer nicknameChange) {
         this.email = email;
-        this.imageUrl = imageUrl;
-        this.password = password;
-        this.provider = provider;
-        this.role = role;
-        this.providerId = providerId;
+        this.platform = platform;
+        this.platformId = platformId;
+        this.status = status;
+        this.memberNumber = memberNumber;
+        this.nicknameChange = nicknameChange;
     }
 
-    public void updateName(String name){
-        this.name = name;
+    public Member(Status status) {
+        this.status = status;
+    }
+    public boolean isRegisteredOAuthMember() {
+        return nickname != null;
+    }
+    public Integer isNickNameChanged() { return nicknameChange; }
+
+    public void updateName(String name) {
+        this.nickname = name;
     }
 
-    public void updateImageUrl(String imageUrl){
-        this.imageUrl = imageUrl;
-    }
 }
