@@ -125,4 +125,4 @@ jobs:
           script: |
             sudo fuser -k -n tcp 5000
             sleep 15
-            sudo docker run -t -i -p 5000:5000 -v "/home/ubuntu/osrm:/data" osrm/osrm-backend osrm-routed --algorithm mld /data/south-korea-latest.osrm
+            sudo docker run -i -p 5000:5000 -v "/home/ubuntu/osrm:/data" osrm/osrm-backend osrm-routed --algorithm mld /data/south-korea-latest.osrm
