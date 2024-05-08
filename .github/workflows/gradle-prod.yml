@@ -123,6 +123,7 @@ jobs:
           host: ${{ secrets.EC2_HOST_PROD }}
           username: ${{ secrets.EC2_USER_PROD }}
           script: |
+            sudo docker stop $(sudo docker ps -q)
             sudo fuser -k -n tcp 5000
             sleep 15
-            sudo docker run -i -p 5000:5000 -v "/home/ubuntu/osrm:/data" osrm/osrm-backend osrm-routed --algorithm mld /data/south-korea-latest.osrm
+            sudo docker run -d -p 5000:5000 -v "/home/ubuntu/osrm:/data" osrm/osrm-backend osrm-routed --algorithm mld /data/south-korea-latest.osrm
